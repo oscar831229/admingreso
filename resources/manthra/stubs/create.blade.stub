@@ -1,0 +1,31 @@
+@extends('layouts.portal.principal')
+
+@section('content')
+    <div class="br-mainpanel">
+        @include('includes/mensaje')
+        @include('includes/form-error')
+        <div class="br-pageheader pd-y-15 pd-l-20">
+            <nav class="breadcrumb pd-0 mg-0 tx-12">
+                <a class="breadcrumb-item" href="{{ url('/%%routeGroup%%%%viewName%%') }}">%%namecrud%%</a>
+                <span class="breadcrumb-item active">Nuevo registro</span>
+            </nav>
+        </div><!-- br-pageheader -->
+
+        <div class="br-pagebody">
+            <div class="br-section-wrapper">
+                <div class="table-wrapper">
+                    {!! Form::open([
+                        'url' => '/%%routeGroup%%%%viewName%%',
+                        'class' => 'form-horizontal',
+                        'files' => true,
+                        'onsubmit' => "submitButton.disabled = true"
+                    ]) !!}
+
+                    @include ('%%viewTemplateDir%%.form')
+
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

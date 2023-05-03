@@ -1,0 +1,126 @@
+@extends('layouts.portal.principal')
+
+@push('css')
+	<style>
+		.unstyled-button {
+		  border: none;
+		  padding: 0;
+		  background: none;
+		}
+	</style>
+@endpush
+
+@section('content')
+    <div class="br-mainpanel">
+
+        @include('includes/mensaje')
+        @include('includes/form-error')
+        <div class="br-pageheader pd-y-15 pd-l-20">
+            <nav class="breadcrumb pd-0 mg-0 tx-12">
+            <a class="breadcrumb-item" href="#">%%namegurpo%%</a>
+            <span class="breadcrumb-item active">%%namecrud%%</span>
+            </nav>
+        </div><!-- br-pageheader -->
+
+        <div class="pd-x-20 pd-sm-x-30 pd-t-20 pd-sm-t-30">
+            @can('role-create')
+                <a  href="{{ url('/%%routeGroup%%%%viewName%%/create') }}" class="btn btn-outline-primary btn-sm">Nueva registro</a>
+            @endcan
+
+            <br><br>
+            {!! Form::open(['url' => '/%%routeGroup%%%%viewName%%', 'class' => 'navbar-form navbar-right', 'method' => 'GET'])  !!}
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Nombre...">
+                    <span class="input-group-append">
+                        <button class="btn btn-dark" type="submit">
+                            Buscar
+                        </button>
+                    </span>
+                </div>
+            {!! Form::close() !!}
+        </div>
+
+        <div class="br-pagebody">
+            <div class="br-section-wrapper">
+                <div class="card-body table-responsive p-0">
+
+                    <div class="table-responsive py-4">
+                        <table class="table table-hover width60">
+                            <thead>
+                                <tr>
+                                    <th>#</th>%%formHeadingHtml%%<th>Estado</th><th style="width: 10%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($%%crudName%% as $item)
+                                <tr>
+                                    <td>{{ $loop->index + 1 }}</td>
+                                    %%formBodyHtml%%
+                                    <td><?= $item->labelstate() ?></td>
+                                    <td>
+                                        <a href="{{ url('/%%routeGroup%%%%viewName%%/' . $item->%%primaryKey%%) }}" class="mr-2" id="detail">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url('/%%routeGroup%%%%viewName%%/' . $item->%%primaryKey%% . '/edit') }}" class="mr-2">
+                                            <i class="fa fa-edit text-success"></i>
+                                        </a>
+                                        {!! Form::open([
+                                            'method'=>'DELETE',
+                                            'url' => ['/%%routeGroup%%%%viewName%%', $item->%%primaryKey%%],
+                                            'style' => 'display:inline'
+                                        ]) !!}
+                                            {!! Form::button('<i class="fa fa-times-circle text-danger"></i>', [
+                                                'type' => 'submit',
+                                                'style' => 'border:none;',
+                                                'onclick'=> 'return confirm("Confirmar eliminar?")'
+                                            ]) !!}
+                                        {!! Form::close() !!}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="{{ config('laravelmanthra.view_columns_number') + 3 }}">
+                                        No existen datos, <a href="{{ url('/%%routeGroup%%%%viewName%%/create') }}"> Nuevo registro </a>
+                                    </td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                        <div class="pagination-wrapper"> {!! $%%crudName%%->appends(['search' => request('search')])->render() !!} </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+
+    {{--modal for view detail --}}
+    <div class="modal fade" id="modal" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" id="modal-header">Detail</div>
+                <div class="modal-body" id="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    @include('manthra::include.flash_message')
+@endsection
+
+@push('js')
+<script>
+	const el = document.getElementById('detail')
+	el.addEventListener('click', (event) => {
+		event.preventDefault()
+		const url = el.href
+
+		const modalBody = document.getElementById('modal-body')
+
+		fetch(url)
+			.then(res => res.text())
+			.then(payload => modalBody.innerHTML = payload)
+			.catch(err => console.log(err))
+
+		$('#modal').appendTo("body").modal('show')
+	})
+</script>
+@endpush

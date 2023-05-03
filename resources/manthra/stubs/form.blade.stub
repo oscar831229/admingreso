@@ -1,0 +1,11 @@
+%%formFieldsHtml%%
+
+<div class="form-group">
+    <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+        {!! Form::submit(isset($submitButtonText) ? $submitButtonText : 'Crear', [
+            'class' => 'btn btn-primary btn-sm width-60',
+            'name' => 'submitButton',
+            'style' => 'width: 200px;'
+        ]) !!}
+    </div>
+</div>

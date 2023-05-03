@@ -1,0 +1,17 @@
+/node_modules
+/public/hot
+/public/img/perfiles/*
+/public/concentimientos/*
+/public/documentoscompromisos/*
+/public/storage
+/public/uploads
+/storage/*.key
+/vendor
+/storage/removable/*.pdf
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
