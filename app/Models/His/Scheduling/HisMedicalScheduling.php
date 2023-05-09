@@ -128,7 +128,7 @@ class HisMedicalScheduling extends Model
             
         }
 
-        return  $schedulings;
+        return  array_values($schedulings);
 
     }
 

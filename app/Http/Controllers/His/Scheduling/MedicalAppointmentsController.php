@@ -14,6 +14,13 @@ use Carbon\Carbon;
 class MedicalAppointmentsController extends Controller
 {
 
+    
+
+    function __construct()
+    {
+         $this->middleware('permission:his-medical-appointments-index', ['only' => ['index']]);
+    }
+    
     /**
      * Display a listing of the resource.
      *

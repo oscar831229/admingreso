@@ -51,24 +51,14 @@ class PermissionTableSeeder extends Seeder
                 'descripcion' => 'Generar token a usuario'
             ],
             [
-                'name' => 'his-schedule-index',
+                'name' => 'his-medical-appointments-index',
                 'module' => 'system-his',
                 'descripcion' => 'Consultar agenda clinica HIS (INDIGO)' 
             ],
             [
-                'name' => 'his-schedule-show',
+                'name' => 'his-schedule-listings-index',
                 'module' => 'system-his',
-                'descripcion' => 'Visualizar agenda clinica HIS (INDIGO)' 
-            ],
-            [
-                'name' => 'his-schedule-created',
-                'module' => 'system-his',
-                'descripcion' => 'Crear agenda clinica HIS (INDIGO)' 
-            ],
-            [
-                'name' => 'his-schedule-update',
-                'module' => 'system-his',
-                'descripcion' => 'Actualizar agenda clinica HIS (INDIGO)' 
+                'descripcion' => 'Consultar especialidas y profesionales agenda HIS (INDIGO)' 
             ]
         ];
    

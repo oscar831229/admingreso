@@ -8,6 +8,12 @@ use App\Models\His\Scheduling\HisMedicalScheduling;
 
 class ListingController extends Controller
 {
+
+    function __construct()
+    {
+         $this->middleware('permission:his-schedule-listings-index', ['only' => ['index']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
