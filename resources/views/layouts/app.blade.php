@@ -35,7 +35,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" style="background-color: #244f70 !important;">
             <div class="container">
                 <a class="navbar-brand" href="{{ route('home') }}">
                     <img style="width: 30%;" src="{{ url('images/logo.png') }}">
