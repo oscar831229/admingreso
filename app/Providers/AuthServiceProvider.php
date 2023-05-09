@@ -5,6 +5,8 @@ use App\Extensions\MyEloquentUserProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
+use Laravel\Passport\Passport;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -24,6 +26,8 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        Passport::routes(); 
 
         Auth::provider('custom_user', function ($app, array $config) {
             $model = $app['config']['auth.providers.users.model'];

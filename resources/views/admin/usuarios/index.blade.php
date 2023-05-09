@@ -101,6 +101,11 @@
                           <i class="fa fa-edit"></i>
                       </a>
                     @endcan
+                    @can('user-generate-token')
+                      <a href="{{ route('users.show',$user->id) }}?generate_token=true" class="btn-accion-tabla tooltipsC" title="Generar token">
+                          <i class="fa fa-lock"></i>
+                      </a>
+                    @endcan
                   </td>
                 </tr>
               @endforeach

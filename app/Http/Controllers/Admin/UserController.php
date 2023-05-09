@@ -9,10 +9,11 @@ use DB;
 use Hash;
 use Illuminate\Support\Arr;
 use App\Models\Admin\Servicio;
-use App\Models\Admin\MedicalUnit;
 use App\Http\Requests\ValidacionUsuario;
 use App\Http\Requests\ValiarUpdateUser;
 use App\Models\Admin\AuthenticationLog;
+
+use Carbon\Carbon;
 
     
 class UserController extends Controller
@@ -51,9 +52,8 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::OrderBy('name')->pluck('name','name')->all();
-        $MedicalUnit = MedicalUnit::OrderBy('name')->pluck('name','name')->all();
 
-        return view('admin.usuarios.create',['roles' => $roles, 'MedicalUnit' => $MedicalUnit]);
+        return view('admin.usuarios.create',['roles' => $roles]);
     }
     
     /**
@@ -72,13 +72,9 @@ class UserController extends Controller
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
 
-        if($request->input('Units')){
-            $medical_units = DB::table('medical_units')->whereIn('name',$request->input('Units'))->get()->pluck('id');
-            $user->units()->attach($medical_units);
-        }
-    
         return redirect()->route('users.index')
-                        ->with('success','Usuarios creado con exito');
+            ->with('success','Usuarios creado con exito');
+
     }
     
     /**
@@ -93,7 +89,28 @@ class UserController extends Controller
 
         $autenticate_logs = AuthenticationLog::where(['user_id' => $id])->orderBy('created_at','desc')->get();
 
-        return view('admin.usuarios.show',compact('user','autenticate_logs'));
+        # GENERAR ACCESS TOKEN
+        $request = request();
+        $access_token = '';
+
+        if($request->has('generate_token')){
+
+            $userTokens = $user->tokens;
+            foreach($userTokens as $token) {
+                $token->revoke();   
+            }
+
+            $tokenResult = $user->createToken('Personal Access Token');
+            $token = $tokenResult->token;
+            $token->expires_at = Carbon::now()->addWeeks(400);            
+            $token->save();
+
+            $access_token = $tokenResult->accessToken;
+
+        }
+
+        return view('admin.usuarios.show',compact('user','autenticate_logs', 'access_token'));
+
     }
     
     /**
@@ -104,20 +121,15 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        
-        $roles = Role::OrderBy('name')->pluck('name','name')->all();
-        $MedicalUnit = MedicalUnit::OrderBy('name')->pluck('name','name')->all();
 
+        $roles = Role::OrderBy('name')->pluck('name','name')->all();
         $user = User::find($id);
         $userRole = $user->roles->pluck('name','name')->all();
-        $userUnits = $user->units->pluck('name','name')->all();
 
         return view('admin.usuarios.edit',[
             'user'=>$user,
             'roles' => $roles,
-            'userRole' => $userRole, 
-            'MedicalUnit' => $MedicalUnit, 
-            'userUnits' => $userUnits
+            'userRole' => $userRole
         ]);
 
     }
@@ -170,14 +182,6 @@ class UserController extends Controller
         DB::table('model_has_roles')->where('model_id',$id)->delete();
         $user->assignRole($request->input('roles'));
 
-        # Actualizar unidad
-        DB::table('medical_units_users')->where('user_id',$id)->delete();
-
-        if($request->input('Units')){
-            $medical_units = DB::table('medical_units')->whereIn('name',$request->input('Units'))->get()->pluck('id');
-            $user->units()->attach($medical_units);
-        }
-    
         return redirect()->route('users.index')
                         ->with('success','Usuario actualizados con exito.');
     }

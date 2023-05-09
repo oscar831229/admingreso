@@ -17,13 +17,38 @@ class PermissionTableSeeder extends Seeder
        $permissions = [
             [
                 'name' => 'role-list',
-                'module' => 'system-core',
-                'descripcion' => 'Permisos listar roles'
+                'module' => 'core-role',
+                'descripcion' => 'Permisos listar roles' 
             ],
             [
                 'name' => 'role-create',
-                'module' => 'system-core',
+                'module' => 'core-role',
                 'descripcion' => 'Permisos crear roles' 
+            ],
+            [
+                'name' => 'role-edit',
+                'module' => 'core-role',
+                'descripcion' => 'Permisos editar roles' 
+            ],
+            [
+                'name' => 'user-list',
+                'module' => 'core-user',
+                'descripcion' => 'Permisos listar usuarios' 
+            ],
+            [
+                'name' => 'user-create',
+                'module' => 'core-user',
+                'descripcion' => 'Permisos crear usuarios' 
+            ],
+            [
+                'name' => 'user-edit',
+                'module' => 'core-user',
+                'descripcion' => 'Permisos editar usuarios' 
+            ],
+            [
+                'name' => 'user-generate-token',
+                'module' => 'core-user',
+                'descripcion' => 'Generar token a usuario'
             ],
             [
                 'name' => 'his-schedule-index',

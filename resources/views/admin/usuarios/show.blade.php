@@ -37,18 +37,12 @@
                                 {{ $user->active }}
                             </div>
                         </div>
-                        {{-- <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
-                                <strong>Unidad:</strong>
-                                {{ $user->negocio->nombre_un }}
+                                <strong>Access Token:</strong>
+                                {{ $access_token }}
                             </div>
-                        </div> --}}
-                        {{-- <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group">
-                                <strong>Sucursal:</strong>
-                                {{ $user->sucursal->nombre_sucursal }}
-                            </div>
-                        </div> --}}
+                        </div>
                         <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong>Roles:</strong>

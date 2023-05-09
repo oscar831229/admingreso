@@ -91,44 +91,34 @@ return [
             'prefix_indexes' => true,
         ],
 
-        'INDIGO019' => [
+        'ERP' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST_INDIGO019', 'localhost'),
-            'port' => env('DB_PORT_INDIGO019', '1433'),
-            'database' => env('DB_DATABASE_INDIGO019', 'forge'),
-            'username' => env('DB_USERNAME_INDIGO019', 'forge'),
-            'password' => env('DB_PASSWORD_INDIGO019', ''),
+            'host' => env('DB_HOST_ERP', 'localhost'),
+            'port' => env('DB_PORT_ERP', '1433'),
+            'database' => env('DB_DATABASE_ERP', 'forge'),
+            'username' => env('DB_USERNAME_ERP', 'forge'),
+            'password' => env('DB_PASSWORD_ERP', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
         ],
 
-        'SIGH' => [
+        'HIS' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST_SIGH', 'localhost'),
-            'port' => env('DB_PORT_SIGH', '1433'),
-            'database' => env('DB_DATABASE_SIGH', 'forge'),
-            'username' => env('DB_USERNAME_SIGH', 'forge'),
-            'password' => env('DB_PASSWORD_SIGH', ''),
+            'host' => env('DB_HOST_HIS', 'localhost'),
+            'port' => env('DB_PORT_HIS', '1433'),
+            'database' => env('DB_DATABASE_HIS', 'forge'),
+            'username' => env('DB_USERNAME_HIS', 'forge'),
+            'password' => env('DB_PASSWORD_HIS', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
         ],
 
-        'mongodb' => [
-            'driver' => 'mongodb',
-            'host' => env('DB_HOST_MONGODB', 'localhost'),
-            'port' => env('DB_PORT_MONGODB', 27017),
-            'database' => env('DB_DATABASE_MONGODB'),
-            'username' => env('DB_USERNAME_MONGODB'),
-            'password' => env('DB_PASSWORD_MONGODB'),
-            'options' => [
-                'database' => 'Invoicessor' // sets the authentication database required by mongo 3
-            ]
-        ],
 
+        
     ],
 
     /*
