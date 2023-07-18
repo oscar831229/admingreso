@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Admin\Permiso;
-use App\Models\Officials\Definition;
+use App\Models\Common\Definition;
 use App\Models\BudgetManagement\VIEBudgetBudgetaryValidity;
 
 # EMAIL
@@ -184,6 +184,27 @@ if (!function_exists('findUser')) {
 
     }
 }
+
+if (!function_exists('findWalletUsers')) {
+    function findWalletUsers($name)
+    {
+        $names = explode(' ', $name);
+        $where = "";
+
+        $bd = DB::table('wallet_users')
+            ->selectRaw("id, CONCAT(first_name, ' ', second_name, ' ', first_surname, ' ', second_surname) as name");
+        
+        foreach ($names as $index=>$value){
+            $bd->whereRaw("CONCAT(first_name, ' ', second_name, ' ', first_surname, ' ', second_surname) like '%{$value}%'");
+        }
+
+        return  $bd->get();
+
+    }
+}
+
+
+
 
 
 if (!function_exists('findentidad')) {

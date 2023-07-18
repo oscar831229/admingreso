@@ -18,7 +18,7 @@ class CrearPlantillas extends Seeder
         #Plantillas 
         $procesos = [
             [
-                'codigo' => 'notificar_renovación_token', 
+                'codigo' => 'notificar_renovacion_token', 
                 'nombre' => 'Plantilla envio token de acceso'
             ]           
         ];

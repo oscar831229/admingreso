@@ -1,8 +1,4 @@
-@extends('layouts.portal.principal')
-
-@section('scripts_content')
-  <script src="{{ asset('js/portal/solicitudes/cotizacion/cotizacion.crear.js') }}"></script>
-@endsection
+@extends('layouts.belectronica.principal')
 
 @section('content')
   <div class="br-mainpanel">

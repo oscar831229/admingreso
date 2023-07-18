@@ -1,4 +1,4 @@
-@extends('layouts.portal.principal')
+@extends('layouts.belectronica.principal')
 
 @section('css_custom')
   <link href="{{ asset('css/portal/style-datetable.css') }}" rel="stylesheet">
@@ -26,19 +26,21 @@
 @endsection
 
 @section('content')
-  <div class="br-mainpanel">
-    @include('includes.form-error')
-    @include('includes.mensaje')
-    <div class="br-pageheader pd-y-15 pd-l-20">
-      <nav class="breadcrumb pd-0 mg-0 tx-12">
-        <a class="breadcrumb-item" href="#">Panel administración</a>
-        <span class="breadcrumb-item active">Plantillas</span>
-      </nav>
-    </div><!-- br-pageheader -->
-
-    <div class="br-pagebody" style="padding: 0 10px;">
-      <div class="br-section-wrapper">
-
+<div class="row">
+  <div class="col-md-12 col-sm-12 ">
+    @include('includes/mensaje')
+    @include('includes/form-error')
+    <div class="x_panel">
+      <div class="x_title">
+        <div class="br-pageheader pd-y-15 pd-l-20">
+          <nav class="breadcrumb pd-0 mg-0 tx-12">
+            <a class="breadcrumb-item" href="#">Panel administración</a>
+            <span class="breadcrumb-item active">Plantillas</span>
+          </nav>
+        </div><!-- br-pageheader -->
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
         <table width='100%' style="margin-bottom: 40px;">
           <tr>
               <td width='50' align="center" valign="top" class="pr-4">
@@ -51,7 +53,6 @@
           </tr>
         </table>
 
-        <div class="card-body table-responsive p-0">
           <table class="table table-hover width60" id="tabla-data">
               <thead>
                   <tr>
@@ -80,22 +81,11 @@
                   @endforeach
               </tbody>
           </table>
-      </div>
-
         
         </div>
-      </div><!-- br-section-wrapper -->
-    </div><!-- br-pagebody -->
-    <footer class="br-footer">
-      <div class="footer-left">
-        <div class="mg-b-2"></div>
-        <div></div>
       </div>
-      <div class="footer-right d-flex align-items-center">
-        <span class="tx-uppercase mg-r-10">Share:</span>
       </div>
-    </footer>
+    </div>
   </div>
-
-
+</div>  
 @endsection

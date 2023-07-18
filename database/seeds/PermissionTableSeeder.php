@@ -51,6 +51,46 @@ class PermissionTableSeeder extends Seeder
                 'descripcion' => 'Generar token a usuario'
             ],
             [
+                'name' => 'menu-rol-list',
+                'module' => 'core-user',
+                'descripcion' => 'Permisos listar menu rol' 
+            ],
+            [
+                'name' => 'emails-list',
+                'module' => 'core-user',
+                'descripcion' => 'Listar emails' 
+            ],
+            [
+                'name' => 'emails-create',
+                'module' => 'core-user',
+                'descripcion' => '' 
+            ],
+            [
+                'name' => 'emails-edit',
+                'module' => 'core-user',
+                'descripcion' => 'Editar emails' 
+            ],
+            [
+                'name' => 'emails-delete',
+                'module' => 'core-user',
+                'descripcion' => 'Borrar emails' 
+            ],
+            [
+                'name' => 'plantillas-create',
+                'module' => 'core-user',
+                'descripcion' => 'Crear plantillas' 
+            ],
+            [
+                'name' => 'plantillas-edit',
+                'module' => 'core-user',
+                'descripcion' => 'Editar plantilla' 
+            ],
+            [
+                'name' => 'menu-rol-edit',
+                'module' => 'core-user',
+                'descripcion' => 'Permisos editar menu rol' 
+            ],
+            [
                 'name' => 'his-medical-appointments-index',
                 'module' => 'system-his',
                 'descripcion' => 'Consultar agenda clinica HIS (INDIGO)' 

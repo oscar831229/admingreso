@@ -1,4 +1,4 @@
-@extends('layouts.portal.principal')
+@extends('layouts.belectronica.principal')
 
 @section('css_custom')
   <link href="{{ asset('css/portal/style-datetable.css') }}" rel="stylesheet">
@@ -31,18 +31,21 @@
 
 
 @section('content')
-<div class="br-mainpanel">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 ">
       @include('includes/mensaje')
       @include('includes/form-error')
-      <div class="br-pageheader pd-y-15 pd-l-20">
-        <nav class="breadcrumb pd-0 mg-0 tx-12">
-          <a class="breadcrumb-item" href="#">Panel administración</a>
-          <span class="breadcrumb-item active">Roles</span>
-        </nav>
-      </div><!-- br-pageheader -->
-
-      <div class="br-pagebody">
-        <div class="br-section-wrapper">
+      <div class="x_panel">
+        <div class="x_title">
+          <div class="br-pageheader pd-y-15 pd-l-20">
+            <nav class="breadcrumb pd-0 mg-0 tx-12">
+              <a class="breadcrumb-item" href="#">Panel administración</a>
+              <span class="breadcrumb-item active">Roles</span>
+            </nav>
+          </div><!-- br-pageheader -->
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
           <div class="card-body table-responsive p-0">
             <table width='100%' style="margin-bottom: 40px;">
               <tr>
@@ -85,50 +88,8 @@
                 </tbody>
             </table>
         </div>
-          
-          {{-- <div class="table-wrapper">
-            
-            <table id="datatable1" class="table display responsive nowrap dataTable no-footer dtr-inline" role="grid" aria-describedby="datatable1_info" style="width: 1110px;">
-              <thead>
-                <tr role="row">
-                  <th class="wd-15p sorting_asc" tabindex="0" aria-controls="datatable1" rowspan="1" colspan="1" style="width: 143px;" aria-sort="ascending" aria-label="First name: activate to sort column descending">#</th>
-                  <th class="wd-15p sorting" tabindex="0" aria-controls="datatable1" rowspan="1" colspan="1" style="width: 143px;" aria-label="Last name: activate to sort column ascending">Name</th>
-                  <th class="wd-20p sorting" tabindex="0" aria-controls="datatable1" rowspan="1" colspan="1" style="width: 198px;" aria-label="Position: activate to sort column ascending">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              @foreach ($roles as $key => $role)
-                <tr>
-                    <td>{{ ++$i }}</td>
-                    <td>{{ $role->name }}</td>
-                    <td>
-                        <a class="btn btn-info btn-sm" href="{{ route('roles.show',$role->id) }}">Show</a>
-                        @can('role-edit')
-                            <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}">Edit</a>
-                        @endcan
-                        @can('role-delete')
-                            {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
-                                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}
-                            {!! Form::close() !!}
-                        @endcan
-                    </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table><!-- table-wrapper --> --}}
-
-          
-            </div>
-        </div><!-- br-section-wrapper -->
-      </div><!-- br-pagebody -->
-      <footer class="br-footer">
-        <div class="footer-left">
-          <div class="mg-b-2"></div>
-          <div></div>
         </div>
-        <div class="footer-right d-flex align-items-center">
-          <span class="tx-uppercase mg-r-10"></span>
-          </div>
-      </footer>
+      </div>
     </div>
+  </div>
 @endsection

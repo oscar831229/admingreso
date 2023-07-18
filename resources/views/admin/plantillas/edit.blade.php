@@ -1,5 +1,4 @@
-@extends('layouts.portal.principal')
-
+@extends('layouts.belectronica.principal')
 
 @section('css_custom')
   <style>
@@ -44,17 +43,21 @@
 @endsection
 
 @section('content')
-  <div class="br-mainpanel">
+<div class="row">
+  <div class="col-md-12 col-sm-12 ">
     @include('includes/mensaje')
     @include('includes/form-error')
-    <div class="br-pageheader pd-y-15 pd-l-20">
-      <nav class="breadcrumb pd-0 mg-0 tx-12">
-        <a class="breadcrumb-item" href="{{ url('Admin/plantillas') }}">Plantillas</a>
-        <span class="breadcrumb-item active">Actualizando - Plantilla</span>
-      </nav>
-    </div><!-- br-pageheader -->
-    <div class="br-pagebody">
-      <div class="br-section-wrapper">
+    <div class="x_panel">
+      <div class="x_title">
+        <div class="br-pageheader pd-y-15 pd-l-20">
+          <nav class="breadcrumb pd-0 mg-0 tx-12">
+            <a class="breadcrumb-item" href="{{ url('Admin/plantillas') }}">Plantillas</a>
+            <span class="breadcrumb-item active">Actualizando - Plantilla</span>
+          </nav>
+        </div><!-- br-pageheader -->
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
         <div class="table-wrapper">
           <div class="row">
               <div class="col-sm-2">
@@ -71,19 +74,19 @@
                   <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
                       <strong>Codigo:</strong>
-                      {!! Form::text('codigo', $plantilla->codigo, array('placeholder' => 'Codigo','class' => 'form-control','readOnly' => 'readOnly')) !!}
+                      {!! Form::text('codigo', $plantilla->codigo, array('placeholder' => 'Codigo','class' => 'form-control form-control-sm','readOnly' => 'readOnly')) !!}
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
                       <strong>Nombre:</strong>
-                      {!! Form::text('name', $plantilla->nombre, array('placeholder' => 'Nombre','class' => 'form-control','readOnly')) !!}
+                      {!! Form::text('name', $plantilla->nombre, array('placeholder' => 'Nombre','class' => 'form-control form-control-sm','readOnly')) !!}
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
                       <strong>Asunto:</strong>
-                      {!! Form::text('asunto', $plantilla->asunto, array('placeholder' => 'Asunto','class' => 'form-control','required' => 'required')) !!}
+                      {!! Form::text('asunto', $plantilla->asunto, array('placeholder' => 'Asunto','class' => 'form-control form-control-sm','required' => 'required')) !!}
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-12 col-md-12">
@@ -95,7 +98,7 @@
                   <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
                       <strong>Email:</strong>
-                      {!! Form::select('emails_id', $emails, null, array('placeholder'=>'Seleccione...','class' => 'form-control','required' => 'required')) !!}
+                      {!! Form::select('emails_id', $emails, null, array('placeholder'=>'Seleccione...','class' => 'form-control form-control-sm','required' => 'required')) !!}
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-12 col-md-12 text-center">
@@ -106,16 +109,8 @@
               </div>
           </div>
         </div>
-      </div><!-- br-section-wrapper -->
-    </div><!-- br-pagebody -->
-    <footer class="br-footer">
-      <div class="footer-left">
-        <div class="mg-b-2"></div>
-        <div></div>
       </div>
-      <div class="footer-right d-flex align-items-center">
-        <span class="tx-uppercase mg-r-10"></span>
-        </div>
-    </footer>
+    </div>
   </div>
+</div>
 @endsection

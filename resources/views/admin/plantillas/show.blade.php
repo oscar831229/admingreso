@@ -1,4 +1,4 @@
-@extends('layouts.portal.principal')
+@extends('layouts.belectronica.principal')
 
 @section('content')
     <div class="br-mainpanel">
@@ -62,14 +62,5 @@
                 </div>
             </div><!-- br-section-wrapper -->
         </div><!-- br-pagebody -->
-        <footer class="br-footer">
-            <div class="footer-left">
-                <div class="mg-b-2"></div>
-                <div></div>
-            </div>
-            <div class="footer-right d-flex align-items-center">
-                <span class="tx-uppercase mg-r-10"></span>
-            </div>
-        </footer>
     </div>
 @endsection

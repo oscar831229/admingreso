@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer("layouts.portal.left_panel", function ($view) {
+        View::composer("layouts.belectronica.left_panel", function ($view) {
             $menus = Menu::getMenu(true);
             $view->with('menusComposer', $menus);
         });

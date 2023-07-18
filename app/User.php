@@ -113,6 +113,29 @@ class User extends Authenticatable
     }
 
 
+    public function getStores(){
+
+        $companies = $this->select(
+                'stores.id',
+                'stores.code',
+                'stores.name',
+                'stores.address',
+                'stores.phone',
+                'store_user.id as store_user_id'
+            )
+            ->crossJoin('stores')
+            ->leftJoin('store_user', function($query){
+                $query->on('store_user.user_id','=','users.id');
+                $query->on('store_user.store_id','=','stores.id');
+            })
+            ->where(['users.id' => $this->id])
+            ->get();
+
+        return $companies;
+
+    }
+
+
     public function companies()
     {
         return $this->belongsToMany('App\Models\Officials\Company');
@@ -121,6 +144,11 @@ class User extends Authenticatable
     public function permissionuser()
     {
         return $this->belongsToMany('App\Models\PossibleDonor\PdaPermissionUser');
+    }
+
+    public function stores()
+    {
+        return $this->belongsToMany('App\Models\Wallet\Store');
     }
 
     public function enableCompany($company_id){

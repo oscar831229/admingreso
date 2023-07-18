@@ -1,4 +1,4 @@
-@extends('layouts.portal.principal')
+@extends('layouts.belectronica.principal')
 
 @section('scripts_content')
   <script>
@@ -9,18 +9,21 @@
 @endsection
 
 @section('content')
-  <div class="br-mainpanel">
+<div class="row">
+  <div class="col-md-12 col-sm-12 ">
     @include('includes/mensaje')
     @include('includes/form-error')
-    <div class="br-pageheader pd-y-15 pd-l-20">
-      <nav class="breadcrumb pd-0 mg-0 tx-12">
-        <a class="breadcrumb-item" href="{{ url('Admin/users') }}">Usuarios</a>
-        <span class="breadcrumb-item active">Nuevo usuario</span>
-      </nav>
-    </div><!-- br-pageheader -->
-    
-    <div class="br-pagebody">
-      <div class="br-section-wrapper">
+    <div class="x_panel">
+      <div class="x_title">
+        <div class="br-pageheader pd-y-15 pd-l-20">
+          <nav class="breadcrumb pd-0 mg-0 tx-12">
+            <a class="breadcrumb-item" href="#">Panel administración</a>
+            <span class="breadcrumb-item active">Usuarios</span>
+          </nav>
+        </div><!-- br-pageheader -->
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
         <div class="table-wrapper">
           {!! Form::open(array('route' => 'users.store','method'=>'POST','id'=>'usuario-crear')) !!}
             <div class="row">
@@ -72,16 +75,8 @@
             </div>
           {!! Form::close() !!}
         </div>
-      </div><!-- br-section-wrapper -->
-    </div><!-- br-pagebody -->
-    <footer class="br-footer">
-      <div class="footer-left">
-        <div class="mg-b-2"></div>
-        <div></div>
       </div>
-      <div class="footer-right d-flex align-items-center">
-        <span class="tx-uppercase mg-r-10"></span>
-        </div>
-    </footer>
+    </div>
   </div>
+</div>
 @endsection
