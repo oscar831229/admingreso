@@ -8,7 +8,7 @@ use App\Clases\DataTable\SSP;
 class WalletUser extends Model
 {
     
-    protected $fillable = ['document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'email', 'phone', 'uuid', 'user_created', 'user_updated'];
+    protected $fillable = ['identification_document_type_id','document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'email', 'phone', 'uuid', 'user_created', 'user_updated', 'token'];
 
     private $columnsdatatable = array(
         array( 'db' => 'wu.id', 'dt' => 0 ),
@@ -118,4 +118,15 @@ class WalletUser extends Model
         return $datares;
 
     }
+
+    public function ElectronicPockets()
+    {
+        return $this->belongsToMany('App\Models\Wallet\ElectricalPocket')->withPivot('id', 'balance', 'last_movement_date');
+    }
+
+    public function identification_document_type()
+    {
+        return $this->belongsTo('App\Models\Common\DetailDefinition');
+    }
+
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Wallet\WalletUser;
+use App\Models\Wallet\WalletUserMovement;
 use App\Clases\DataTable\TableServer;
 
 class WalletUsersController extends Controller
@@ -127,37 +128,69 @@ class WalletUsersController extends Controller
      */
     public function show($id)
     {
-        $possibledonor = PdaPossibleDonor::where(['pda_possible_donors.id' => $id])->with([
-            'possibledonorevolutions' => function($query){
-                $query->selectRaw("pda_possible_donor_evolutions.*, ps.name as pda_step_name, uc.name as user_create_name, pcnd.name as pda_cause_non_donation_name")
-                ->join('pda_steps as ps', 'ps.id', '=', 'pda_possible_donor_evolutions.step_id')
-                ->join('users as uc', 'uc.id', '=', 'pda_possible_donor_evolutions.user_created')
-                ->leftJoin('pda_cause_non_donations as pcnd', 'pcnd.id', '=', 'pda_possible_donor_evolutions.pda_cause_non_donation_id');
-            },
-            'possibledonordocumentations' => function($query){
-                $query->selectRaw("pda_possible_donor_documentations.*, uc.name as user_created_name")
-                ->join('users as uc', 'uc.id', '=', 'pda_possible_donor_documentations.user_created');
-            },
-            'type_document',
-            'gender',
-            'city_reports_alert' => function($query){
-                $query->selectRaw("*, nommunicipio as name");
-            },
-            'pda_health_provider_unit',
-            'gender',
-            'user_invoice'
-        ])
-        ->selectRaw('pda_possible_donors.*, ur.name as user_register_name')
-        ->join('users as ur', 'ur.id', '=', 'pda_possible_donors.user_created')
-        ->first();
 
+        $wallet_user = WalletUser::find($id);
+
+        if(!$wallet_user){
+            return response()->json([
+                'success' => false,
+                'message' => 'No existe el usuario requerido',
+                'data' => []
+            ]);
+        }
+
+        $customer = [
+            'document_type' =>  $wallet_user->identification_document_type->name,
+            'document_number' => $wallet_user->document_number,
+            'name' => $wallet_user->first_name.' '.$wallet_user->second_name.' '.$wallet_user->first_surname.' '.$wallet_user->second_surname,
+            'email' => $wallet_user->email,
+            'phone' => $wallet_user->phone,
+            'municipality' => '',
+            'address' => 'CALLE 24 1F 36'
+        ];
+
+        $electronic_pockets = $wallet_user->ElectronicPockets()->get();
+        $pocket = [];
+        foreach ($electronic_pockets as $key => $electronic_pocket) {
+            $pocket[] = [
+                'id' => $electronic_pocket->pivot->id,
+                'code' => $electronic_pocket->code,
+                'name' => $electronic_pocket->name,
+                'balance' => $electronic_pocket->pivot->balance,
+                'last_movement_date' => $electronic_pocket->pivot->last_movement_date,
+            ];
+        }
+        
         return response()->json([
             'success' => true,
             'message' => '',
-            'data' => $possibledonor
+            'data' => [
+                'customer' => $customer,
+                'electrical_pockets' => $pocket
+            ]
         ]);
 
-        
+    }
+
+
+    public function getTransactions(Request $request){
+
+        $electrical_pocket_wallet_user_id = $request->electrical_pocket_wallet_user_id;
+            
+        $param = array( 
+            'model'=> new WalletUserMovement,
+            'method_consulta'=>'getDataTable',
+            'method_cantidad'=>'getCountDatatable',
+            'extradata' => [
+                'electrical_pocket_wallet_user_id' => $electrical_pocket_wallet_user_id
+            ]
+        );
+
+        $tableserver = new TableServer($param);
+        $datos = $tableserver->getDatos();
+
+        return response()->json($datos);
+
     }
 
     public function storeTrackingDocument(Request $request){

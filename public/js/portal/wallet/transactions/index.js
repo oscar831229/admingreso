@@ -221,8 +221,9 @@ step = {
       var title = $(this).text();
       if($(this).hasClass('search-disabled'))
         $(this).html(title);
-
-      $(this).html(title+' <input type="text" class="col-search-input" placeholder="" />');
+      else{
+        $(this).html(title+' <input type="text" class="col-search-input" placeholder="" />');
+      }
     });
 
     var data = $("#form-transaction").serialize().split("&");
@@ -255,9 +256,9 @@ step = {
       initComplete : function(settings, json){
       },
       createdRow: function (row, data, index) {
-        var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-register-process" title="Realizar seguimiento"><i class="fa fa-exchange" aria-hidden="true"></i></a>'
-        $('td', row).eq(7).html(btnaction).addClass('dt-center');
-        $('td', row).eq(0).html(data[7]).addClass('dt-center');
+        var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-register-process" title="Visualizar transacción"><i class="fa fa-exchange" aria-hidden="true"></i></a>'
+        $('td', row).eq(10).html(btnaction).addClass('dt-center');
+        $('td', row).eq(0).html(data[12]).addClass('dt-center');
       }                                                              
     });
 

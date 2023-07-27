@@ -92,27 +92,6 @@ class User extends Authenticatable
 
     }
 
-    public function getpermissionsOnDonorAlerts(){
-
-        $companies = $this->select(
-                'pda_permission_users.id',
-                'pda_permission_users.document_number',
-                'pda_permission_users.name as user_name',
-                'pda_permission_user_user.id as pda_permission_user_user_id'    
-            )
-            ->crossJoin('pda_permission_users')
-            ->leftJoin('pda_permission_user_user', function($query){
-                $query->on('pda_permission_user_user.user_id','=','users.id');
-                $query->on('pda_permission_user_user.pda_permission_user_id','=','pda_permission_users.id');
-            })
-            ->where(['users.id' => $this->id])
-            ->get();
-
-        return $companies;
-
-    }
-
-
     public function getStores(){
 
         $companies = $this->select(

@@ -16,9 +16,9 @@ class ParametrosWallet extends Seeder
         # CREACION DE BOLSILLOS DISPONIBLES
         $pockets = [
             [
-                'code' => '001',
-                'name' => 'Tiqutera',
-                'description' => 'Bolsillo principal del usuario sobre el cual trabaja la tiquetera',
+                'code' => '01',
+                'name' => 'BOLSILLO TIQUETERA',
+                'description' => 'BOLSILLO TIQUETERA',
                 'main' => 1,
                 'user_created' => 1
             ]

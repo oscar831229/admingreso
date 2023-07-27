@@ -78,8 +78,23 @@
         
         # FUNCION BUSCAR USUARIOS BILLETERA
         Route::get('find-wallet-user', 'WalletUsersController@findWalletUser');
+        Route::post('wallet-user-transactions', 'WalletUsersController@getTransactions');
+
+        # BOLSILLO DISPONIBLES
+        Route::resource('electrical-pockets','ElectricalPocketController');
+        Route::get('details-electrical-pockets', 'ElectricalPocketController@getDetailElectricalPockets');
+        Route::get('wallet-user-tickets/{electrical_pocket_wallet_user_id}', 'ElectricalPocketController@getDetailElectricalPocketTickets');
         
         
+
+        # CONSECUTIVOS TIQUETERA
+        Route::resource('consecutive-tickets','ConsecutiveTicketController');
+        Route::get('details-consecutive-tickets', 'ConsecutiveTicketController@getDetailConsecutiveTickets');
+
+        
+        
+        
+                
 
 
     }); 

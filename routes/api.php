@@ -61,9 +61,27 @@ Route::group([
         # Consulta de especialidades con agendas disponibles indigo
         Route::apiResource('listings', 'His\Scheduling\ListingController');
 
-        # Consulta de especialistas que tiene agendas disponibles con indigo
+    });
 
+
+    # SERVICIOS  BILLETERA ELECTRÓNICA
+    Route::group([
+        'prefix' => 'wallet',
+        'middleware' => 'auth:api'
+    ], function () {
+        
+        # Consulta de agendas medicas parametrizadas en indigo
+        Route::apiResource('transaction', 'wallet\TransactionsController');
+        Route::post('transaction/{movement_type}', 'wallet\TransactionsController@store');
+        
+        # Consulta de parametros
+        Route::apiResource('wallet-users', 'wallet\WalletUsersController');
+        Route::post('wallet-user-transactions', 'wallet\WalletUsersController@getTransactions');
 
 
     });
+
+
+
+
 });

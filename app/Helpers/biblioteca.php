@@ -203,9 +203,16 @@ if (!function_exists('findWalletUsers')) {
     }
 }
 
-
-
-
+if (!function_exists('generarCodigo')) {
+    function generarCodigo($longitud)
+    {
+        $key = '';
+        $pattern = '1234567890';
+        $max = strlen($pattern)-1;
+        for($i=0;$i < $longitud;$i++) $key .= $pattern{mt_rand(0,$max)};
+        return $key;
+    }
+}
 
 if (!function_exists('findentidad')) {
     function findentidad($entidad)

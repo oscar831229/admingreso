@@ -170,15 +170,35 @@
             <div class="well profile_view" style="width: 100%;">
               <div class="col-sm-12">
                 <div class="left col-md-6 col-sm-6">
-                  <h2><i class="fa fa-user mr-2" aria-hidden="true"></i>Oscar Augusto Parra Bolaños</h2>
+                  <h2><i class="fa fa-user mr-1" aria-hidden="true"></i><span id="customer_name"></span></h2>
                   <ul class="list-unstyled">
-                    <li><i class="fa fa-building"></i> Dirección: Calle24 1f 23</li>
-                    <li><i class="fa fa-phone"></i> Teléfono #: 3124508317</li>
-                    <li><i class="fa fa-envelope"></i> Email : oscar831229@hotmail.com</li>
+                    <li><i class="fa fa-phone"></i> Teléfono # :<span id="customer_phone"></span></li>
+                    <li><i class="fa fa-envelope"></i> Email : <span id="customer_email"></span></li>
                   </ul>
                 </div>
                 <div class="left col-md-6 col-sm-6">
-                  <h4><i class="fa fa-credit-card-alt mr-2" aria-hidden="true"></i>Saldo disponible: $4.000.00</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped jambo_table bulk_action" id="tbl-pocket">
+                      <thead>
+                        <tr class="headings">
+                          <th class="column-title">Bolsillo</th>
+                          <th class="column-title">Saldo</th>
+                          <th class="column-title no-link last"><span class="nobr">Action</span></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="even pointer">
+                          <td class="a-center ">
+                            <div class="icheckbox_flat-green" style="position: relative;"><input type="checkbox" class="flat" name="table_records" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 <div class="right col-md-5 col-sm-5 text-center">
                   <img src="images/img.jpg" alt="" class="img-circle img-fluid">
@@ -190,20 +210,21 @@
             <div class="col-sm-12 col-lg-12">
                 <div class="row mg-b-25 person-basic" style="margin-top: 20px;">
                     <div class="col-sm-12 col-lg-12">
-                        <h6 class="tx-gray-800"><i class="fa fa-table mr-2" aria-hidden="true"></i>Historico de movimientos</h6>
+                        <center><h2 class="tx-gray-800 headings"><i class="fa fa-table mr-2" aria-hidden="true"></i><span id="pocket_name"></span></h2></center>
+                        <h6 class="tx-gray-800"><i class="fa fa-history mr-2" aria-hidden="true"></i>Historico de movimientos</h6>
                         <div class="card-body table-responsive p-0 mb-4">
-                            <table class="table table-hover width60" id="tabla-data-person">
+                            <table class="table table-hover width60" id="tbl-waller-user-movements">
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Documento</th>
-                                        <th>Número</th>
+                                        <th>Cuenta</th>
+                                        <th>Cedula</th>
                                         <th>Movimiento</th>
-                                        <th>Valor</th>
+                                        <th>valor</th>
                                         <th>Usuario</th>
                                         <th>Comercio</th>
                                         <th>CUS</th>
-                                        <th>Fecha movimiento</th>
+                                        <th>Fecha transaccion</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -212,14 +233,36 @@
                         </div>
                     </div>
                 </div>
-            </div><!-- card -->
+            </div>
         </div>
-
+        <div class="row" id="row-tickets" style="display: none;">
+          <div class="col-sm-12">
+            <h2 class="tx-gray-800 headings"><i class="fa fa-tablet mr-2" aria-hidden="true"></i><span id="pocket_name">Tiquetera pendiente de redimir</span></h2>
+            <div class="card-body table-responsive p-0 mb-4">
+              <table class="table table-hover width60" id="tbl-tickets">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>Número</th>
+                          <th>Valor</th>
+                          <th>CUS</th>
+                          <th>Codigo Usuario</th>
+                          <th>Fecha transaccion</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+              </table>
+          </div>
+          </div>
+        </div>
         </div>
         <div class="modal-footer">
         </div>
       </div>
     </div>
   </div>
+
+  
 
 @endsection

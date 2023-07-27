@@ -25,11 +25,12 @@ class CrearMenuSeeder extends Seeder
             array('id' => '7', 'menu_id' =>  '0' , 'nombre' => 'Billetera'                  , 'url' => '#'                           , 'orden' => '7' , 'icono' => 'fa fa-money', 'created_at' => $now, 'updated_at' => $now),
             array('id' => '8' , 'menu_id' => '7' , 'nombre' => 'Comercios'                  , 'url' => 'wallet/business'             , 'orden' => '8' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '9' , 'menu_id' => '7' , 'nombre' => 'Permisos comercios'         , 'url' => 'wallet/business-users'       , 'orden' => '9' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '10' , 'menu_id' => '7' , 'nombre' => 'Tipos de movimientos'       , 'url' => 'wallet/movement-types'      , 'orden' => '10' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '11', 'menu_id' => '7' , 'nombre' => 'Usuarios'                   , 'url' => 'wallet/wallet-users'         , 'orden' => '11' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '12', 'menu_id' => '7' , 'nombre' => 'Transacciones'              , 'url' => 'wallet/transactions'         , 'orden' => '12' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '13','menu_id' =>  '7', 'nombre'  => 'Reportes'                   , 'url' => 'wallet/wallet-reports'              , 'orden' => '13' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            
+            array('id' => '14','menu_id' =>  '7', 'nombre'  => 'Bolsillos electrónicos'     , 'url' => 'wallet/electrical-pockets'   , 'orden' => '10' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '15','menu_id' =>  '7', 'nombre'  => 'Consecutivos tiquetera'     , 'url' => 'wallet/consecutive-tickets'  , 'orden' => '9' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '10' , 'menu_id' => '7' , 'nombre' => 'Tipos de movimientos'       , 'url' => 'wallet/movement-types'      , 'orden' => '12' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '11', 'menu_id' => '7' , 'nombre' => 'Usuarios'                   , 'url' => 'wallet/wallet-users'         , 'orden' => '13' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '12', 'menu_id' => '7' , 'nombre' => 'Transacciones'              , 'url' => 'wallet/transactions'         , 'orden' => '14' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '13','menu_id' =>  '7', 'nombre'  => 'Reportes'                   , 'url' => 'wallet/wallet-reports'       , 'orden' => '15' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
         ];
 
         foreach ($menus as $key => $menu) {

@@ -180,6 +180,12 @@
             <div class="row">
               <div class="col-sm-2">
                 <div class="form-group">
+                  {!! Form::label('store_id', 'Comercio', ['class' => 'col-md-4 control-label']) !!}
+                  {!! Form::select('store_id', $stores, null, array('class' => 'form-control form-control-sm','id'=>'store_id', 'style' => 'height: 25px;', 'placeholder' => '[ Todos ]')) !!}
+                </div>
+              </div>
+              <div class="col-sm-2">
+                <div class="form-group">
                   <label for="from_date">Fecha inicial</label>
                   {!! Form::date('from_date', date('Y-m-d'), array('class' => 'form-control form-control-sm','id'=>'from_date', 'placeholder' => 'Seleccione..', 'style' => 'height: 25px;', 'required'=>'required', 'data-live-search' => 'true')) !!}
                 </div>
@@ -188,6 +194,12 @@
                 <div class="form-group">
                   <label for="to_date">Fecha final</label> 
                   {!! Form::date('to_date', date('Y-m-d'), array('class' => 'form-control form-control-sm','id'=>'to_date', 'placeholder' => 'Seleccione..', 'style' => 'height: 25px;', 'required'=>'required', 'data-live-search' => 'true')) !!}
+                </div>
+              </div>
+              <div class="col-sm-2">
+                <div class="form-group">
+                  {!! Form::label('movement_type_id', 'Movimiento', ['class' => 'col-md-4 control-label']) !!}
+                  {!! Form::select('movement_type_id', $movement_types, null, array('class' => 'form-control form-control-sm','id'=>'movement_type_id', 'style' => 'height: 25px;', 'placeholder' => '[ Todos ]')) !!}
                 </div>
               </div>
               <div class="col-sm-2">
@@ -204,13 +216,16 @@
               <thead>
                   <tr>
                     <th class="search-disabled" style="width: 2%">#</th>
-                    <th style="width: 5%">Identificación</th>
-                    <th>Donante</th>
-                    <th>F. ingreso</th>
-                    <th>Municipio</th>
-                    <th style="width: 10%">IPS</th>
-                    <th style="width: 10%">Usuario registro</th>
-                    <th class="text-center search-disabled" style="width: 10%">TODAS</th>
+                    <th>Bolsillo</th>
+                    <th>Dcumento</th>
+                    <th>Cliente</th>
+                    <th>Movimiento</th>
+                    <th>Valor</th>
+                    <th>Usuario</th>
+                    <th>Comercio</th>
+                    <th>CUS</th>
+                    <th>Fecha Mov</th>
+                    <th class="search-disabled"></th>
                 </tr>
               </thead>
               <tbody>

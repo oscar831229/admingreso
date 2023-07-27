@@ -294,7 +294,7 @@ step = {
       initComplete : function(settings, json){
       },
       createdRow: function (row, data, index) {
-        var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-register-process" title="Realizar seguimiento"><i class="fa fa-exchange" aria-hidden="true"></i></a>'
+        var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-register-process" title="Consultar saldo"><i class="fa fa-exchange" aria-hidden="true"></i></a>'
         $('td', row).eq(7).html(btnaction).addClass('dt-center');
         $('td', row).eq(0).html(data[7]).addClass('dt-center');
       }                                                              
@@ -312,18 +312,100 @@ step = {
   },
 
   loadDataStep : function(){
-    
-    step.resetForm();
-    
-    $.each(step.data, function(index, value){
-      if($('#' + step.formmodal).find("#"+index).length > 0){
-        $('#' + step.formmodal).find("#"+index).val(value);
-      }
+
+    // Cargando datos cliente
+      $('#customer_name').html(step.data.customer.name);
+      $('#customer_phone').html(step.data.customer.phone);
+      $('#customer_email').html(step.data.customer.email);
+
+      var tr = '';
+      var btnedit  = '';
+      
+      $.each(step.data.electrical_pockets, function(index, value){
+
+        var pocket_name = value.code + ' ' + value.name;
+        btnedit = '<a href="javaScript:void(0)" data-pocket_id="'+value.id+'" data-pocket_name="'+pocket_name+'" class="mr-2 view-step" title="Ver historico movimientos bolsillo">'
+        + '<i class="fa fa-history mr-2" style="color:#0a548f;"></i>'
+        + '</a>';
+
+        btnviewtickets = '<a href="javaScript:void(0)" data-pocket_id="'+value.id+'" data-pocket_name="'+pocket_name+'" class="mr-2 view-tickets" title="Ver ticketara">'
+        + '<i class="fa fa-tablet mr-2 text-primary"></i>'
+        + '</a>';
+
+
+        tr += '<tr data-index="'+index+'">'
+        +'     <td>'+ pocket_name +'</td>'
+        +'     <td>'+value.balance+'</td>'
+        +'     <td>'+btnedit+'</td>'
+        +' </tr>';
+
+        console.log(tr);
+      });
+
+      $('#tbl-pocket tbody').html(tr);
+
+      var pocket_name = step.data.electrical_pockets[0].code +  ' ' + step.data.electrical_pockets[0].name;
+
+      this.loadMovements(step.data.electrical_pockets[0].id, pocket_name);
+      
+
+  },
+
+  loadMovements(electrical_pocket_wallet_user_id, name_pocket){
+
+    $('#pocket_name').html(name_pocket);
+
+    this.loadEnabledTickets(electrical_pocket_wallet_user_id);
+
+    tblalertdonor= $('#tbl-waller-user-movements').DataTable();
+    tblalertdonor.destroy();
+
+    $('#tbl-waller-user-movements thead th').each(function () {
+      var title = $(this).text();
+      if($(this).hasClass('search-disabled'))
+        $(this).html(title);
+      else   
+        $(this).html(title+' <input type="text" class="col-search-input" placeholder="" />');
     });
 
-    $('#md-new-step').modal();
+    tblalertdonor = $('#tbl-waller-user-movements').DataTable({
+      language: language_es,
+      pagingType: "numbers",
+      processing: true,
+      serverSide: true,
+      ajax: {
+          url: '/wallet/wallet-user-transactions',
+          type: "POST",
+          data: {
+            '_token' : $('input[name=_token]').val(),
+            'electrical_pocket_wallet_user_id': electrical_pocket_wallet_user_id,
+          },
+          "dataSrc": function (json) {
+            return json.data;
+          },
+          async: true
+      },
+      columnDefs: [{
+          targets: "_all",
+          orderable: false
+      }],
 
-    
+      initComplete : function(settings, json){
+      },
+      createdRow: function (row, data, index) {
+        $('td', row).eq(0).html(data[12]).addClass('dt-center');
+      }                                                              
+    });
+
+    tblalertdonor.columns().every(function () {
+      var table = this;
+      $('input', this.header()).on('keyup change', function () {
+          if (table.search() !== this.value && (this.value.length > 2  || this.value.length == 0)) {
+            table.search(this.value).draw();
+          }
+      });
+    });
+
   },
 
   editStep : function(){
@@ -374,11 +456,55 @@ step = {
 
   registerProcess : function(){
     
-    step.pda_possible_donor_id = $(this).data('id');
-    step.loadRegistroDonante($(this))
-    $('#md-procces-donor').modal();
-    $('#v-pills-home-tab').trigger('click');
-    tracking.cancelTracking();
+    var wallet_user_id = $(this).data('id');
+    var element = $(this);
+    
+    btn.loading(element);
+
+    setTimeout(function(){
+      $.ajax({
+          url: '/wallet/wallet-users/' + wallet_user_id,
+          async: true,
+          data: {},		
+          beforeSend: function(objeto){
+              
+          },        
+          complete: function(objeto, exito){
+              btn.reset(element);
+              if(exito != "success"){
+                  alert("No se completo el proceso!");
+              }            
+          },
+          contentType: "application/x-www-form-urlencoded",
+          dataType: "json",
+          error: function(objeto, quepaso, otroobj){
+              alert("Ocurrio el siguiente error: "+quepaso);
+              btn.reset(element);
+          },
+          global: true,
+          ifModified: false,
+          processData:true,
+          success: function(response){
+            btn.reset(element);
+            if(response.success){
+              step.data = response.data;
+              step.loadDataStep();
+              $('#md-info-customer').modal()
+            }else{
+                Biblioteca.notificaciones(response.message, 'Pasos posibles donantes', 'error');
+            }                
+          },
+          timeout: 30000,
+          type: 'GET'
+      });
+    },100)
+
+    // step.wallet_user_id = $(this).data('id');
+    // step.loadRegistroDonante($(this))
+    // $('#md-procces-donor').modal();
+    // $('#v-pills-home-tab').trigger('click');
+    // tracking.cancelTracking();
+    
     
   },
 
@@ -485,6 +611,80 @@ step = {
         }
      });
   },
+  
+  loadHistoryMovements : function(){
+    var pocket_id = $(this).data('pocket_id');
+    var pocket_name = $(this).data('pocket_name');
+    step.loadMovements(pocket_id, pocket_name);
+  },
+
+  loadEnabledTickets : function(pocket_id){
+
+    setTimeout(function(){
+
+      $(".tooltip").tooltip("hide");
+
+      $.ajax({
+          url: 'wallet-user-tickets/' + pocket_id,
+          async: true,
+          data: {},		
+          beforeSend: function(objeto){
+              
+          },        
+          complete: function(objeto, exito){
+              if(exito != "success"){
+                  alert("No se completo el proceso!");
+              }            
+          },
+          contentType: "application/x-www-form-urlencoded",
+          dataType: "json",
+          error: function(objeto, quepaso, otroobj){
+              alert("Ocurrio el siguiente error: "+quepaso);
+          },
+          global: true,
+          ifModified: false,
+          processData:true,
+          success: function(response){
+            if(response.success){
+              step.loadDataTicketFile(response.data);
+            }else{
+                Biblioteca.notificaciones(response.message, 'Pasos posibles donantes', 'error');
+            }                
+          },
+          timeout: 30000,
+          type: 'GET'
+      });
+    },100)
+
+  },
+
+  loadDataTicketFile: function(tickets){
+
+
+      $('#row-tickets').hide()
+
+      if(tickets.length > 0){
+        $('#row-tickets').show()
+      }
+
+      var tr = '';
+      var btnedit  = '';
+      var number = 1;
+      
+      $.each(tickets, function(index, value){
+        tr += '<tr data-index="'+index+'">'
+        +'     <td>'+ number +'</td>'
+        +'     <td>'+value.number_ticket+'</td>'
+        +'     <td>'+value.value+'</td>'
+        +'     <td>'+value.cus+'</td>'
+        +'     <td>'+value.user_code+'</td>'
+        +'     <td>'+value.created_at+'</td>'
+        +' </tr>';
+        number++;
+      });
+
+      $('#tbl-tickets tbody').html(tr);
+  },
 
   init : function(){
 
@@ -495,6 +695,10 @@ step = {
     $('body').on('change', '#change_status', this.changeStatus);
     $('body').on('click', '.btn-register-process', this.registerProcess);
     $('body').on('click', '#btn-refresh', this.loadSteps);
+    $('body').on('click', '.view-step', this.loadHistoryMovements);
+    $('body').on('click', '.view-tickets', this.loadEnabledTickets);
+    
+    
     
     $('#city_reports_alert_id').selectpicker();
     $('#pda_health_provider_unit_id').selectpicker();
