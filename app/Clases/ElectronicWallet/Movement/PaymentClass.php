@@ -231,6 +231,49 @@ class PaymentClass
 
     }
 
+
+    public function MovementValidations(){
+
+        $validation_rules = [
+            'transaction.electrical_pocket' => 'required|exists:electrical_pockets,code',
+            'transaction.value' => 'required|numeric',
+            'transaction.store' => 'required|exists:stores,code'
+        ];
+
+        # VALOR - CODIGO USUARIO PROCESO.
+        $validator = Validator::make($this->request->all(), $validation_rules, $this->validation_message);
+
+        if ($validator->fails()) {            
+            $errors = array_values($validator->errors()->toArray());
+            $expection = '';
+            foreach ($errors as $key => $error) {
+                $separador = empty($expection) ? '':', ';
+                $expection .= $separador.implode(', ', $error);
+            }
+            throw new \Exception($expection, 1);
+        }
+
+        # CARGAR DATOS TRANSACCIÓN
+        $this->customer = (object) $this->request->customer;
+        $this->transaction = (object) $this->request->transaction;
+        $this->movement_type = MovementType::where(['code' => $this->movement_type_code ])->first();
+        $this->store = Store::where(['code' => $this->transaction->store])->first();
+
+        # VERIFICA PERSMISOS DEL USUARIO AUTENTICADO TENGA PERMISOS CON EL COMERCIO
+        $this->validateStorePermissions();
+
+        # CARGAR BOLSILLO ELECTRONICO USUARIO TRANSACCION
+        $this->electronic_pocket = ElectricalPocket::where(['code' => $this->transaction->electrical_pocket ])->first();
+
+        # VALIDACION TIQUETERA
+        $ticekhelper = new TicketHelperClass($this);
+        $ticekhelper->runValidation();
+
+    }
+
+
+
+
     public function getMovemenRegister(){
         return $this->movement_register;
     }

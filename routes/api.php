@@ -40,43 +40,32 @@ Route::group([
     'prefix' => 'v1'
 ], function () {
 
-    # VIE - MODULO NOMINA
-    Route::group([
-        'prefix' => 'vie/payroll',
-        'middleware' => 'auth:api'
-    ], function () {
-        Route::apiResource('schedule-shifts', 'Payroll\ScheduleShiftController');
-    });
-
-
-    # CRISTAL
-    Route::group([
-        'prefix' => 'his/scheduling',
-        'middleware' => 'auth:api'
-    ], function () {
-        
-        # Consulta de agendas medicas parametrizadas en indigo
-        Route::apiResource('medical-appointments', 'His\Scheduling\MedicalAppointmentsController');
-        
-        # Consulta de especialidades con agendas disponibles indigo
-        Route::apiResource('listings', 'His\Scheduling\ListingController');
-
-    });
-
-
     # SERVICIOS  BILLETERA ELECTRÓNICA
     Route::group([
         'prefix' => 'wallet',
         'middleware' => 'auth:api'
     ], function () {
-        
+
+        # Consutla definiciones
+        Route::apiResource('listings', 'wallet\ListingController');
+               
         # Consulta de agendas medicas parametrizadas en indigo
         Route::apiResource('transaction', 'wallet\TransactionsController');
         Route::post('transaction/{movement_type}', 'wallet\TransactionsController@store');
+
+        # Validar datos transaccion de abono 
+        Route::post('validate-transaction/{movement_type}', 'wallet\TransactionsController@validateTransaction');
+        
         
         # Consulta de parametros
         Route::apiResource('wallet-users', 'wallet\WalletUsersController');
         Route::post('wallet-user-transactions', 'wallet\WalletUsersController@getTransactions');
+
+        # REGENERAR TOKEN Y NOTIFICARLOS
+        Route::get('generate-token/{document_number}/{mail}', 'wallet\WalletUsersController@generateToken');
+        
+
+        
 
 
     });

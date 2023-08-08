@@ -29,12 +29,12 @@ class MovementClass
 
         # EJECUTA MOVIMIENTOS
         return $this->executeMovement();
+
     }
 
     public function executeMovement(){
 
         # VALIDAR TRANSACCION TIEMPO Y EVITA QUE SOLO PERMITA GENERA NUEVA TRANSACCION DEL MISMO MOVIMIENTO 5 SEGUNDOS
-
 
 
         /**
@@ -89,6 +89,56 @@ class MovementClass
         WHERE id = ?";
 
         \DB::update($queryUpdate, [$electrical_pocket_wallet_user_id]);
+
+    }
+
+    public function validation($request){
+
+        # EJECUTA MOVIMIENTO
+        $this->request = $request;
+
+        # EJECUTA MOVIMIENTOS
+        return $this->executeValidationMovement();
+
+    }
+
+    public function executeValidationMovement(){
+
+        /**
+         *  MOVIMIENTOS
+         * 01 => ABONOS
+         * 02 => REVERSO ABONO
+         * 03 => CONSUMO
+         * 04 => REVERSO CONSUMO
+         */
+        switch ($this->movement_type) {
+
+            case '01':
+                $movement = new PaymentClass($this->request);
+                $movement->MovementValidations();
+                break;
+            case '02':
+                $movement = new ReversePaymentClass($this->request);
+                $movement->MovementValidations();
+                break;
+            case '03':
+                $movement = new ConsumeClass($this->request);
+                $movement->MovementValidations();
+                break;
+            case '04':
+                $movement = new ReverseConsumeClass($this->request);
+                $movement->MovementValidations();
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        # ACTUALIZAR SALDOS BOLSILLO.
+        $this->movement_register = $movement->getMovemenRegister();
+        $this->updateBalancePocketUser($this->movement_register->electrical_pocket_wallet_user_id);
+
+        return $this->movement_register;
 
     }
 
