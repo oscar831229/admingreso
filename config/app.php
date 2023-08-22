@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => 'Billetera electrónica',
+    'name' => 'Tiquetera electrónica',
 
     /*
     |--------------------------------------------------------------------------

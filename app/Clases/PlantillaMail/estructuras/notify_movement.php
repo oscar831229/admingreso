@@ -83,7 +83,7 @@ $notify_movement = array(
 			'detailField' => 'm.movement_date',
 		),
 		'nombre_usuario' => array(
-			'caption' => 'Nombre usuario billetera',
+			'caption' => 'Nombre usuario tiquetera',
 			'detailField' => "CONCAT(IFNULL(first_name, ''), ' ', IFNULL(second_name, ''), ' ', IFNULL(first_surname, ''), ' ', IFNULL(second_surname, ''))"
 		),
 	),

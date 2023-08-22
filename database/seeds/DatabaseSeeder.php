@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 		# CREAR DEFINICIONES
         $this->call(DefinitionsSeeder::class);
 
-        # PARAMETROS BILLETERA ELECTRONICA
+        # PARAMETROS TIQUETERA ELECTRONICA
         $this->call(ParametrosWallet::class);
 
         # REGISTRAR REPORTES

@@ -12,7 +12,7 @@ $send_new_token = array(
 	),
 	'components' => array(
 		'nombre_usuario' => array(
-			'caption' => 'Nombre usuario billetera',
+			'caption' => 'Nombre usuario tiquetera',
 			'detailField' => "CONCAT(IFNULL(first_name, ''), ' ', IFNULL(second_name, ''), ' ', IFNULL(first_surname, ''), ' ', IFNULL(second_surname, ''))"
 		),
 		'imgqr_base64' => array(

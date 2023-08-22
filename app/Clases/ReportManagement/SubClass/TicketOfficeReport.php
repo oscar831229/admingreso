@@ -5,7 +5,7 @@ use App\Models\Wallet\Store;
 
 class TicketOfficeReport
 {
-	public static $filename = 'ticketsbilletera.xlsx';
+	public static $filename = 'tickets_tiquetera_electronica.xlsx';
 
     public static $columns = [
         'ID TICKET',

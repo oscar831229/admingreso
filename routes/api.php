@@ -40,7 +40,7 @@ Route::group([
     'prefix' => 'v1'
 ], function () {
 
-    # SERVICIOS  BILLETERA ELECTRÓNICA
+    # SERVICIOS  TIQUETERA ELECTRÓNICA
     Route::group([
         'prefix' => 'wallet',
         'middleware' => 'auth:api'
@@ -64,7 +64,7 @@ Route::group([
         # REGENERAR TOKEN Y NOTIFICARLOS
         Route::get('generate-token/{document_number}', 'wallet\WalletUsersController@generateToken');
 
-        # CONSULTAR SALDO BILLETERA Y TIQUETERA DISPONIBLE
+        # CONSULTAR SALDO TIQUETERA Y TIQUETERA DISPONIBLE
         Route::get('electronic-wallet-balance/{document_number}/{pocket}', 'wallet\WalletUsersController@getElectronicWalletBalance');
 
         Route::get('print-voucher-wallet/{document_number}/{cus}', 'wallet\TransactionsController@printVoucherWallet');

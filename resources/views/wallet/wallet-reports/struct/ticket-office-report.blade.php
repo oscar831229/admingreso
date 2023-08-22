@@ -12,7 +12,7 @@
     <thead>
     		<tr>
         		<td colspan="8" style="text-align:center; font-weight: bold;font-size: 15px; height: 20px; vertical-align: middle;">
-        			REPORTE DE TICKETS BILLETERA ELECTRONICA
+        			REPORTE DE TICKETS TIQUETERA ELECTRONICA
         		</td>
         	</tr>
             <tr>

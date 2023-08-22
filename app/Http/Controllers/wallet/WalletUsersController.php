@@ -159,7 +159,7 @@ class WalletUsersController extends Controller
         if(!$walletuser){
             return response()->json([
                 'success' => false,
-                'message' => 'El usuario con identificación '.$document_number.' no tiene cuenta en billetera electrónica.',
+                'message' => 'El usuario con identificación '.$document_number.' no tiene cuenta en tiquetera electrónica.',
                 'data' => []
             ], 401);
         }
@@ -185,7 +185,7 @@ class WalletUsersController extends Controller
         if(!$walletuser){
             return response()->json([
                 'success' => false,
-                'message' => "El usuario con número de documento {$document_number} no tiene registrado billetera electrónica",
+                'message' => "El usuario con número de documento {$document_number} no tiene registrado tiquetera electrónica",
                 'data' => []
             ], 401);
         }

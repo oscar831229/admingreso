@@ -155,7 +155,7 @@ class PaymentClass
             
         }
 
-        # SI NO EXISTE EL USUARIO DE BILLETERA
+        # SI NO EXISTE EL USUARIO DE TIQUETERA ELECTRÓNICA
         if(!$this->wallet_user){
             throw new Exception("Error Processing Request", 1);
         }

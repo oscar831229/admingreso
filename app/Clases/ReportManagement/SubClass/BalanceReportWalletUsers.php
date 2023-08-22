@@ -6,13 +6,13 @@ use App\Models\Wallet\Store;
 
 class BalanceReportWalletUsers
 {
-	public static $filename = 'balance_billetera_electronica.xlsx';
+	public static $filename = 'balance_tiquetera_electronica.xlsx';
 
     public static $columns = [
         'ID BILETERA USUA',
         'DOCUMENTO',
         'NOMBRE',
-        'CODIGO BILLETERA',
+        'CODIGO BOLSILLO',
         'SALDO'
     ];
 

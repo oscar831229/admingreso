@@ -18,7 +18,7 @@ class WalletReportController extends Controller
      */
     public function index()
     {
-        $module_name = 'Reportes módulo billetera electrónica';
+        $module_name = 'Reportes módulo tiquetera electrónica';
         $reports = [];
         foreach (ReportManagement::where(['state'=>'A', 'module'=>'electronic-wallet-module'])->get() as $key => $report) {
             if(auth()->user()->can($report->code)){

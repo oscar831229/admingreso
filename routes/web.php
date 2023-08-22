@@ -65,7 +65,7 @@
         Route::get('details-movement-types', 'MovementTypesController@getMovementTypes');
 
 
-        # USUARIOS BILLETERA ELECTRONICA
+        # USUARIOS TIQUETERA ELECTRONICA
         Route::resource('wallet-users','WalletUsersController');
         Route::post('detail-wallet-users','WalletUsersController@detailsWalletUsers');
 
@@ -76,7 +76,7 @@
         # REPORTES
         Route::resource('wallet-reports','WalletReportController');
         
-        # FUNCION BUSCAR USUARIOS BILLETERA
+        # FUNCION BUSCAR USUARIOS TIQUETERA
         Route::get('find-wallet-user', 'WalletUsersController@findWalletUser');
         Route::post('wallet-user-transactions', 'WalletUsersController@getTransactions');
 

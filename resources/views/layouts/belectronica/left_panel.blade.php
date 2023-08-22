@@ -3,7 +3,7 @@
   <div class="left_col scroll-view">
 
     <div class="navbar nav_title" style="border: 0;">
-      <a href="index.html" class="site_title" style="font-size: 18px;"><i class="fa fa-credit-card"></i> <span>Billetera electrónica</span></a>
+      <a href="index.html" class="site_title" style="font-size: 18px;"><i class="fa fa-credit-card"></i> <span>Tiquetera electrónica</span></a>
     </div>
 
     <div class="clearfix"></div>

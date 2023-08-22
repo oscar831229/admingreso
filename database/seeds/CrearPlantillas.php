@@ -19,7 +19,7 @@ class CrearPlantillas extends Seeder
         $procesos = [
             [
                 'codigo' => 'send_new_token', 
-                'nombre' => 'Plantilla utilizada para notificar token usuario billetera'
+                'nombre' => 'Plantilla utilizada para notificar token usuario tiquetera electrónica'
             ], [
                 'codigo' => 'notify_movement', 
                 'nombre' => 'Plantilla para notificar movimientos generados, abono, consumos, reversos etc'

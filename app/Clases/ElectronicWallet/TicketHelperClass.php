@@ -117,7 +117,7 @@ class TicketHelperClass
         }
 
         
-        # VALIDACION REVERSOS CONSUMO BILLETERA
+        # VALIDACION REVERSOS CONSUMO TIQUETERA ELECTRONICA
         if($this->movement->movement_type_code == '04'  && $this->movement->movement_parent->electrical_pocket_operation_type == 'T'){
             
             $this->tickets = WalletUserTicket::lockForUpdate()->where(['state_movement_id' => $this->movement->movement_parent->id])->get();
@@ -186,7 +186,7 @@ class TicketHelperClass
 
         }
 
-        # VALIDACION REVERSOS CONSUMO BILLETERA
+        # VALIDACION REVERSOS CONSUMO TIQUETERA ELECTRONICA
         if($this->movement->movement_type_code == '02'  && $this->movement->movement_parent->electrical_pocket_operation_type == 'T'){
             foreach ($this->tickets as $key => $ticket) {
                 $ticket->state = 'A';
@@ -204,7 +204,7 @@ class TicketHelperClass
             }
         }
 
-        # VALIDACION REVERSOS CONSUMO BILLETERA
+        # VALIDACION REVERSOS CONSUMO TIQUETERA
         if($this->movement->movement_type_code == '04'  && $this->movement->movement_parent->electrical_pocket_operation_type == 'T'){
             foreach ($this->tickets as $key => $ticket) {
                 $ticket->state = 'P';

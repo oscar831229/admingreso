@@ -111,8 +111,8 @@
 
     <div class="br-pageheader pd-y-15 pd-l-20">
       <nav class="breadcrumb pd-0 mg-0 tx-12">
-        <a class="breadcrumb-item" href="#">Billetera</a>
-        <span class="breadcrumb-item active">Usuarios billetera electrónica</span>
+        <a class="breadcrumb-item" href="#">Tiquetera</a>
+        <span class="breadcrumb-item active">Usuarios tiquetera electrónica</span>
       </nav>
     </div><!-- br-pageheader -->
 
@@ -125,7 +125,7 @@
                   <h1 class="text-primary"><i class="fa fa-bell-o" aria-hidden="true"></i></h1>
               </td>
               <td>
-                  <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Usuarios billetera electrónica</h4>
+                  <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Usuarios tiquetera electrónica</h4>
                   <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
               </td>
           </tr>

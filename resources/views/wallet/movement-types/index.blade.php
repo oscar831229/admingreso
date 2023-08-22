@@ -79,7 +79,7 @@
       <div class="x_title">
         <div class="br-pageheader pd-y-15 pd-l-20">
           <nav class="breadcrumb pd-0 mg-0 tx-12">
-            <a class="breadcrumb-item" href="#">Billetera</a>
+            <a class="breadcrumb-item" href="#">Tiquetera</a>
             <span class="breadcrumb-item active">Tipos de movimiento</span>
           </nav>
         </div><!-- br-pageheader -->

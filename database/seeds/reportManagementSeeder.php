@@ -20,12 +20,12 @@ class reportManagementSeeder extends Seeder
             [
                 'module'=>'electronic-wallet-module',
                 'code'=>'electronic-wallet-transactions',
-                'description'=>'Reportes transacciones billetera electrónica'
+                'description'=>'Reportes transacciones tiquetera electrónica'
             ],
             [
                 'module'=>'electronic-wallet-module',
                 'code'=>'balance-report-wallet-users',
-                'description'=>'Reportes saldos usuario billetera'
+                'description'=>'Reportes saldos usuario tiquetera'
             ],
             [
                 'module'=>'electronic-wallet-module',

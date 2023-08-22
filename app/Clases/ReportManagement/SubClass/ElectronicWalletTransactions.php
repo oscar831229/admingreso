@@ -5,7 +5,7 @@ use App\Models\Wallet\Store;
 
 class ElectronicWalletTransactions
 {
-	public static $filename = 'movimientobilleteraelec.xlsx';
+	public static $filename = 'movimientos_tiquetera_electronica.xlsx';
 
     public static $columns = [
         'ID MOVIMIENTO',

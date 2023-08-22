@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-  <title>Billetera electrónica</title>
+  <title>Tiquetera electrónica</title>
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <style type="text/css">
 	td, span, div, th, pre {
@@ -24,7 +24,7 @@ NIT No. : 890.200.106-1
 
 <br>
 <br>
-BILLETERA ELECTRÓNICA CAJASAN
+TIQUETERA ELECTRÓNICA CAJASAN
 <br>
 TRANSACCIÓN CUS No. {{ $movement->cus }}
 <br>

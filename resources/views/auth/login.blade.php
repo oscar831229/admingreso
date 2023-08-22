@@ -42,7 +42,7 @@
                   <br />
 
                   <div>
-                    <h1><i class="fa fa-credit-card mr-2"></i> Billetera electrónica</h1>
+                    <h1><i class="fa fa-credit-card mr-2"></i> Tiquetera electrónica</h1>
                 </div>
             </form>
         </section>
