@@ -12,6 +12,9 @@ use App\Clases\DataTable\TableServer;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Clases\Mail\MainSendMail;
+
 class WalletUsersController extends Controller
 {
     /**
@@ -42,7 +45,7 @@ class WalletUsersController extends Controller
 
     }
 
-    public function generateToken($document_number, $email){
+    public function generateToken($document_number){
 
         # Buscar usuario
         $wallet_user = WalletUser::where(['document_number' => $document_number])->first();
@@ -57,15 +60,16 @@ class WalletUsersController extends Controller
         # GENERAR TOKEN 
         $token_key = Str::random(15);
         $wallet_user->token = Crypt::encryptString($token_key);
-        $wallet_user->update();
 
         # Genera QR.
+        $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+        $wallet_user->imgqr = base64_encode($qrcode_base64);
+        $wallet_user->update();
 
-        # Notificar Genera cola de notificación
-        # Plantilla 
+        # NOTIFICAR 
+        MainSendMail::send('send_new_token', ['id' => $wallet_user->id ], [$wallet_user->email]);
 
-
-
+        # NOTIFICACION
         return response()->json([
             'success' => true,
             'message' => '',
@@ -74,88 +78,6 @@ class WalletUsersController extends Controller
          
     }
 
-
-
-    // public function storeTrackingDonor(Request $request)    {
-
-    //     # informacion de los posibles donantes
-
-    //     \DB::beginTransaction();
-
-
-    //     try {
-
-    //         $data = $request->all();
-    //         $pda_possible_donor_id = $data['pda_possible_donor_id'];
-
-    //         # CONSULTAR PASO
-    //         $step = PdaStep::findOrFail($data['step_id']);
-
-    //         # REGISTRAR SEGUIMIENTO
-    //         $data['user_created'] = auth()->user()->id;
-    //         $data['new_state'] = $step->new_state;
-    //         PdaPossibleDonorEvolution::create($data);
-
-    //         $dataupdate = [
-    //             'last_step_id' => $data['step_id'],
-    //             'last_step_date' => now(),
-    //             'user_updated' => auth()->user()->id
-    //         ];
-
-    //         if(!empty($step->new_state)){
-    //             $dataupdate['state'] = $step->new_state;
-    //         }
-
-    //         PdaPossibleDonor::find($pda_possible_donor_id)->update($dataupdate);
-
-    //         \DB::commit();
-
-    //     } catch (\Throwable $th) {
-            
-    //         \DB::rollback();
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $th->getMessage(),
-    //             'data'=> []
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => '',
-    //         'data' => PdaPossibleDonorEvolution::where(['pda_possible_donor_id' => $pda_possible_donor_id])->get()
-    //     ]);
-    // }
-
-    
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    // public function store(Request $request)
-    // {
-    //     $user_id = auth()->user()->id;
-    //     $data = $request->all();
-
-    //     if(empty($request->id)){
-    //         $data['user_created'] = $user_id;
-    //         PdaPossibleDonor::create($data);
-    //     }else{
-    //         $step = PdaPossibleDonor::findOrFail($request->id);
-    //         $data['user_updated'] = $user_id;
-    //         $step->update($data);
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => '',
-    //         'data' => []
-    //     ]);
-
-    // }
 
     /**
      * Display the specified resource.
@@ -229,79 +151,102 @@ class WalletUsersController extends Controller
         return response()->json($datos);
 
     }
-
-    // public function storeTrackingDocument(Request $request){
-
-    //     $request->validate([
-    //         'file' => 'required|max:2048',
-    //     ]);
-
-    //     $fileName = time().'.'.$request->file->extension(); 
-    //     $extension = $request->file->extension();
-    //     $request->file->move(storage_path('alertasdonantes'), $fileName);
+    
+    public function update(Request $request, $document_number){
         
-    //     $path = storage_path('alertasdonantes');
-    //     $user_id = isset(auth()->user()->id) ? auth()->user()->id : 1;
+        # BUSCAR USUARIO A ACTUALIZAR
+        $walletuser = WalletUser::where(['document_number' => $document_number])->first();
+        if(!$walletuser){
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario con identificación '.$document_number.' no tiene cuenta en billetera electrónica.',
+                'data' => []
+            ], 401);
+        }
 
-    //     $data = [
-    //         'original_name' => $request->input('original_name'),
-    //         'pda_possible_donor_id' => $request->input('pda_possible_donor_id'),
-    //         'full_path_store' => $path,
-    //         'store_name' => $fileName,
-    //         'extension' => $extension,
-    //         'user_created' => $user_id
-    //     ];
+        $walletuser->update([
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'user_code_update' => $request->user_code
+        ]);
 
-    //     # Cargar documento soporte del cumplimiento.
-    //     PdaPossibleDonorDocumentation::create($data);
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data' => []
+        ]);
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => '',
-    //         'data' => []
-    //     ]);
+    }
 
-    // }
+    public function getElectronicWalletBalance($document_number, $pocket){
 
-    // public function getDownload($documentation_id){
+        $walletuser = WalletUser::where(['document_number' => $document_number])->first();
 
-    //     $document = PdaPossibleDonorDocumentation::findOrFail($documentation_id);
-    //     $path = $document->full_path_store;
-    //     $filename = $document->store_name;
-    //     $extension = $document->extension;
-    //     $name = $document->original_name;
+        if(!$walletuser){
+            return response()->json([
+                'success' => false,
+                'message' => "El usuario con número de documento {$document_number} no tiene registrado billetera electrónica",
+                'data' => []
+            ], 401);
+        }
 
-    //     $file= $path. "/{$filename}";
+        $electricalpocket = $walletuser->ElectronicPockets()->where(['code' => $pocket])->first();
+        if(!$electricalpocket){
+            return response()->json([
+                'success' => false,
+                'message' => "El usuario con número de documento {$document_number} no tiene registro del bolsillo solicitado",
+                'data' => []
+            ], 401);
+        }
 
-    //     $headers = array(
-    //         "Content-Type: application/{$extension}",
-    //     );
+        $data['electrical_pocket'] = [
+            'code' => $electricalpocket->code,
+            'name' => $electricalpocket->name,
+            'operation_type' => $electricalpocket->operation_type,
+            'unit_value' => $electricalpocket->unit_value,
+            'minimum_purchase' => $electricalpocket->minimum_purchase,
+            'balance' => $electricalpocket->pivot->balance,
+            'last_movement_date' => $electricalpocket->pivot->last_movement_date,
+        ];
 
-    //     return \Response::download($file, "{$name}.{$extension}", $headers);
+        $data['ticket_holder'] = [];
 
-    // }
+        # Si el bolsillo es de ticketera
+        if($electricalpocket->operation_type == 'T'){
 
-    // public function findWalletUser(){
+            # TRAEMOS LOS TICKETS PENDIENTES DE REDIMIR
+            $data['ticket_holder'] = $walletuser->WalletUserTicket($electricalpocket->pivot->id, 'P');
+
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data' => $data
+        ]);
+
+
+    }
+
+    public function findWalletUser(){
         
-    //     $username = request()->name;
+        $name = request()->input('name');
+        $data = findWalletUsers($name);
 
-    //     $responseusers = findWalletUsers($username);
+        $arr = array('suggestions'=>array());
 
-    //     $arr = array('suggestions'=>array());
-
-    //     foreach($responseusers as $key=>$responseuser){
+        foreach($data as $key=>$value){
             
-    //         $arr['suggestions'][]= array(
-    //             'value'=> trim($responseuser->name),
-    //             'data'=>array(
-    //                 'id'=>$responseuser->id
-    //             )
-    //         );
-    //      }
+            $arr['suggestions'][]= array(
+                'value'=> trim($value->name),
+                'data'=>array(
+                    'id'=>$value->id
+                )
+            );
+         }
 
-    //     return response()->json($arr);
-        
+        return response()->json($arr);
+    }
 
-    // }
 
 }

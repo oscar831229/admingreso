@@ -1,7 +1,7 @@
 <?php
 
 
-$notificar_renovacion_token = array(
+$send_account_statement = array(
 
 	'source' => 'notify_infos',
 	'relationTable' => array(

@@ -6,23 +6,14 @@ use App\Models\Wallet\Store;
 
 class BalanceReportWalletUsers
 {
-	public static $filename = 'desagregado_cierre_cuipo.xlsx';
+	public static $filename = 'balance_billetera_electronica.xlsx';
 
     public static $columns = [
-        'NIT',
-        'NOMBRE TERCERO',
-        'CHIP',
-        'RUBRO',
-        'NOMBRE RUBRO',
-        'CÓDIGO FUENTE DE FINANCIAMIENTO',
-        'FUENTE DE FINANCIAMIENTO',
-        'VIGENCIA',
-        'VIGENCIA CODE',
-        'CÓDIGO DANE',
-        'DESC DANE',
-        'VALOR COMPROMETIDO',
-        'VALOR OBLIGADO',
-        'VALOR PAGADO' 
+        'ID BILETERA USUA',
+        'DOCUMENTO',
+        'NOMBRE',
+        'CODIGO BILLETERA',
+        'SALDO'
     ];
 
 	public static $data;
@@ -34,8 +25,26 @@ class BalanceReportWalletUsers
     }
 	
 	public function getData(){
-        dd($this->request->all());
-	}
+
+        $statement = \DB::table("electrical_pocket_wallet_user AS epwu")->selectRaw("
+                epwu.id,
+                wu.document_number,
+                CONCAT(IFNULL(wu.first_name, ''), ' ', IFNULL(wu.second_name, ''), ' ', IFNULL(wu.first_surname, ''), ' ', IFNULL(wu.second_surname,'')) AS customer_name,
+                CONCAT(ep.code, ' ', ep.name) AS electrical_pockets,
+                epwu.balance
+            ")        
+            ->join('wallet_users AS wu', 'wu.id', '=', 'epwu.wallet_user_id')
+            ->join('electrical_pockets AS ep', 'ep.id', '=', 'epwu.electrical_pocket_id')
+            ->orderBy('wu.document_number', 'ASC');
+
+        if($this->request->has('wallet_user_id') && !empty($this->request->wallet_user_id)){
+            $statement->where(['epwu.wallet_user_id'=>$this->request->wallet_user_id]);
+        }
+
+        return $statement->get();
+
+        
+    }
 
     /** Retorna nombres de columnas  */
     public function getColumns(){
@@ -53,7 +62,7 @@ class BalanceReportWalletUsers
     }
 
     public function getEstructView(){
-        return 'BudgetManagement.report-management.struct.report-disaggregated-budget-closing';
+        return 'wallet.wallet-reports.struct.balance-report-wallet-users';
     }
 	
 	

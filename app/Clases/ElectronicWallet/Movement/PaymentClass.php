@@ -10,6 +10,8 @@ use App\Models\Wallet\Store;
 
 use Illuminate\Support\Facades\Crypt;
 use App\Clases\ElectronicWallet\TicketHelperClass;
+use App\Clases\Mail\MainSendMail;
+use Illuminate\Support\Str;
 
 
 class PaymentClass
@@ -93,6 +95,7 @@ class PaymentClass
         $electrical_pocket_wallet_user= $this->electronic_pocket->pivot;
 
         \DB::beginTransaction();
+
         try {
 
             $this->movement_register = Movement::create([
@@ -103,6 +106,7 @@ class PaymentClass
                 'nature_movement' => $this->movement_type->nature_movement,
                 'value' =>  $this->transaction->value,
                 'user_code' => $this->transaction->user_code,
+                'transaction_document_number' => $this->transaction->transaction_document_number,
                 'store_id' => $this->store->id,
                 'cus' => $cus_code,
                 'movement_date' => date('Y-m-d'),
@@ -123,8 +127,6 @@ class PaymentClass
         # CREAR MOVIMIENTO
         
 
-        
-
     }
 
     public function getWalletUser(){
@@ -134,8 +136,7 @@ class PaymentClass
         if(!$this->wallet_user && $this->create_wallet_user){
 
             # GENERAR TOKEN 
-            $token_key = '123456';
-
+            $token_key = Str::random(15);
             $passwordencryt = Crypt::encryptString($token_key);
 
             $this->wallet_user = WalletUser::create([
@@ -148,6 +149,7 @@ class PaymentClass
                 'email' => $this->customer->email,
                 'phone' => $this->customer->phone,
                 'token' => $passwordencryt,
+                'user_code_create' => $this->transaction->user_code,
                 'user_created' => auth()->user()->id
             ]);
             
@@ -157,6 +159,8 @@ class PaymentClass
         if(!$this->wallet_user){
             throw new Exception("Error Processing Request", 1);
         }
+
+        MainSendMail::send('send_new_token', ['id' => $this->wallet_user->id ], [$this->wallet_user->email]);
 
     }
 
@@ -268,6 +272,7 @@ class PaymentClass
         # VALIDACION TIQUETERA
         $ticekhelper = new TicketHelperClass($this);
         $ticekhelper->runValidation();
+        
 
     }
 

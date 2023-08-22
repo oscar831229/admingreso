@@ -70,7 +70,6 @@ class Correo
 
     }
 
-
     public function getAsunto()
     {
         return $this->asunto;
@@ -99,11 +98,5 @@ class Correo
     public function getAdjuntos(){
         return $this->adjuntos;
     }
-
-
-
-
-    
-
    
 }

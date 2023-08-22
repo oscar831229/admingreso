@@ -62,11 +62,12 @@ Route::group([
         Route::post('wallet-user-transactions', 'wallet\WalletUsersController@getTransactions');
 
         # REGENERAR TOKEN Y NOTIFICARLOS
-        Route::get('generate-token/{document_number}/{mail}', 'wallet\WalletUsersController@generateToken');
-        
+        Route::get('generate-token/{document_number}', 'wallet\WalletUsersController@generateToken');
 
-        
+        # CONSULTAR SALDO BILLETERA Y TIQUETERA DISPONIBLE
+        Route::get('electronic-wallet-balance/{document_number}/{pocket}', 'wallet\WalletUsersController@getElectronicWalletBalance');
 
+        Route::get('print-voucher-wallet/{document_number}/{cus}', 'wallet\TransactionsController@printVoucherWallet');
 
     });
 

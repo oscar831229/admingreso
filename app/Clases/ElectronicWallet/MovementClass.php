@@ -6,6 +6,8 @@ use App\Clases\ElectronicWallet\Movement\ReversePaymentClass;
 use App\Clases\ElectronicWallet\Movement\ConsumeClass;
 use App\Clases\ElectronicWallet\Movement\ReverseConsumeClass;
 
+use App\Clases\Mail\MainSendMail;
+
 
 class MovementClass
 {
@@ -49,27 +51,55 @@ class MovementClass
             case '01':
                 $movement = new PaymentClass($this->request);
                 $movement->execute();
+
+                $this->movement_register = $movement->getMovemenRegister();
+                $alltickets = $this->movement_register->tickets;
+                $title = 'Nuevos tickets creados';
+
                 break;
             case '02':
                 $movement = new ReversePaymentClass($this->request);
                 $movement->execute();
+
+                $this->movement_register = $movement->getMovemenRegister();
+                
+                $alltickets = $this->movement_register->statetickets;
+                $title = 'Tickets anulados';
+
                 break;
             case '03':
+
                 $movement = new ConsumeClass($this->request);
                 $movement->execute();
+
+                $this->movement_register = $movement->getMovemenRegister();
+                $alltickets = $this->movement_register->statetickets;
+                $title = 'Tickets redimos en consumo';
+
                 break;
             case '04':
                 $movement = new ReverseConsumeClass($this->request);
                 $movement->execute();
+
+                $alltickets = $movement->getTickets();
+                $title = 'Tickets reversados por consumo';
+
                 break;
             default:
                 # code...
                 break;
         }
 
+        
+
         # ACTUALIZAR SALDOS BOLSILLO.
         $this->movement_register = $movement->getMovemenRegister();
+
         $this->updateBalancePocketUser($this->movement_register->electrical_pocket_wallet_user_id);
+
+        # NOTIFICAR MOVIMIENTO
+        $tablehtml = MainSendMail::tableTickets($alltickets, $title);
+        MainSendMail::send('notify_movement', ['m.id' => $this->movement_register->id ], [$movement->wallet_user->email], [], ['numrows' => count($alltickets), 'table' => $tablehtml]);
 
         return $this->movement_register;
 
@@ -135,10 +165,10 @@ class MovementClass
         }
 
         # ACTUALIZAR SALDOS BOLSILLO.
-        $this->movement_register = $movement->getMovemenRegister();
-        $this->updateBalancePocketUser($this->movement_register->electrical_pocket_wallet_user_id);
+        
+        
 
-        return $this->movement_register;
+        
 
     }
 

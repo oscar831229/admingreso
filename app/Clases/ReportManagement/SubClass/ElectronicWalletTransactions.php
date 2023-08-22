@@ -5,23 +5,24 @@ use App\Models\Wallet\Store;
 
 class ElectronicWalletTransactions
 {
-	public static $filename = 'desagregado_cierre_cuipo.xlsx';
+	public static $filename = 'movimientobilleteraelec.xlsx';
 
     public static $columns = [
-        'NIT',
-        'NOMBRE TERCERO',
-        'CHIP',
-        'RUBRO',
-        'NOMBRE RUBRO',
-        'CÓDIGO FUENTE DE FINANCIAMIENTO',
-        'FUENTE DE FINANCIAMIENTO',
-        'VIGENCIA',
-        'VIGENCIA CODE',
-        'CÓDIGO DANE',
-        'DESC DANE',
-        'VALOR COMPROMETIDO',
-        'VALOR OBLIGADO',
-        'VALOR PAGADO' 
+        'ID MOVIMIENTO',
+        'NUMERO DOCUMENTO',
+        'NOMBRE CLIENTE',
+        'EMAIL',
+        'TELEFONO',
+        'DOCUMENTO ORIGEN TRANSACCIÓN',
+        'MOVIMIENTO',
+        'BOLSILLO',
+        'VALOR',
+        'NATURALEZA MOVIMIENTO',
+        'CUS',
+        'USUARIO SISTEMA ORIGEN',
+        'COMERCIO',
+        'CUS ASOCIADO',
+        'FECHA'
     ];
 
 	public static $data;
@@ -33,7 +34,48 @@ class ElectronicWalletTransactions
     }
 	
 	public function getData(){
-        dd($this->request->all());
+
+        $statement = \DB::table("movements AS m")->selectRaw("
+                m.id,
+                wu.document_number,
+                CONCAT(IFNULL(wu.first_name, ''), ' ', IFNULL(wu.second_name, ''), ' ', IFNULL(wu.first_surname, ''), ' ', IFNULL(wu.second_surname,'')) AS customer_name,
+                wu.email,
+                wu.phone,
+                m.transaction_document_number,
+                CONCAT(mt.code, ' ', mt.name) AS movement_type,
+                CONCAT(ep.code, ' ', ep.name) AS electrical_pockets,
+                m.value,
+                CASE 
+                    WHEN m.nature_movement = 'C' THEN 'Credito'
+                    WHEN m.nature_movement = 'D' THEN 'Debito'
+                END AS nature_movement,
+                m.cus,
+                m.user_code,
+                CONCAT(s.code, ' ', s.name) AS store,
+                m.cus_transaction,
+                m.created_at")        
+        ->join('wallet_users AS wu', 'wu.id', '=', 'm.wallet_user_id')
+        ->join('electrical_pockets AS ep', 'ep.id', '=', 'm.electrical_pocket_id')
+        ->join('movement_types AS mt', 'mt.id', '=', 'm.movement_type_id')
+        ->join('stores AS s', 's.id', '=', 'm.store_id')
+        ->whereDate('m.created_at','>=', $this->request->movement_date_from)
+        ->whereDate('m.created_at','<=', $this->request->movement_date_to)
+        ->orderBy('m.id', 'ASC');
+
+        if($this->request->has('wallet_user_id') && !empty($this->request->wallet_user_id)){
+            $statement->where(['m.wallet_user_id'=>$this->request->wallet_user_id]);
+        }
+
+        if($this->request->has('store_id') && !empty($this->request->store_id)){
+            $statement->where(['m.store_id'=>$this->request->store_id]);
+        }
+
+        if($this->request->has('movement_type_id') && !empty($this->request->movement_type_id)){
+            $statement->where(['m.movement_type_id'=>$this->request->movement_type_id]);
+        }
+
+        return $statement->get();
+            
 	}
 
     /** Retorna nombres de columnas  */
@@ -57,7 +99,7 @@ class ElectronicWalletTransactions
     }
 
     public function getEstructView(){
-        return 'BudgetManagement.report-management.struct.report-disaggregated-budget-closing';
+        return 'wallet.wallet-reports.struct.electronic-wallet-transactions';
     }
 	
 	

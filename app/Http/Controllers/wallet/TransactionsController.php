@@ -70,7 +70,6 @@ class TransactionsController extends Controller
      */
     public function store(Request $request, $movement_type)
     {
-        
         try {
 
             $movement = new MovementClass($movement_type);
@@ -85,7 +84,7 @@ class TransactionsController extends Controller
         }
 
         return response()->json([
-            'success' => false,
+            'success' => true,
             'message' => '',
             'data' => [
                 'cus' => $movement_register->cus
@@ -112,11 +111,50 @@ class TransactionsController extends Controller
         return response()->json([
             'success' => false,
             'message' => '',
-            'data' => [
-                'cus' => $movement_register->cus
-            ]
+            'data' => []
         ]);
 
+    }
+
+    public function printVoucherWallet($document_number, $cus){
+
+        $walleteuser = WalletUser::where(['document_number' => $document_number])->first();
+        if(!$walleteuser){
+            return response()->json([
+                'success' => false,
+                'message' => 'No existe el usuario con documento de identificación '.$document_number,
+                'data' => []
+            ], 401);
+        }
+
+        $movement = Movement::where(['cus' => $cus, 'wallet_user_id' => $walleteuser->id ])->first();
+
+        if(!$movement){
+            return response()->json([
+                'success' => false,
+                'message' => 'No no existe la transacción con CUS '.$cus,
+                'data' => []
+            ], 401);
+        }
+
+
+        $view = view('wallet.print-voucher.vouchar-cus', compact('walleteuser', 'movement'));
+        
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data' => base64_encode($view->render())
+        ], 200);
+
+    }
+
+    public function show($movement_id){
+        $movement = Movement::getMovementById($movement_id);
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data' => $movement
+        ]);
     }
 
 }

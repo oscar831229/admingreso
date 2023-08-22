@@ -18,10 +18,18 @@ class CrearPlantillas extends Seeder
         #Plantillas 
         $procesos = [
             [
-                'codigo' => 'notificar_renovacion_token', 
-                'nombre' => 'Plantilla envio token de acceso'
-            ]           
+                'codigo' => 'send_new_token', 
+                'nombre' => 'Plantilla utilizada para notificar token usuario billetera'
+            ], [
+                'codigo' => 'notify_movement', 
+                'nombre' => 'Plantilla para notificar movimientos generados, abono, consumos, reversos etc'
+            ], [
+                'codigo' => 'send_account_statement', 
+                'nombre' => 'Plantilla para enviar el extracto de la cuenta del usuario'
+            ]                
         ];
+
+
 
         foreach ($procesos as $key => $proceso) {
 

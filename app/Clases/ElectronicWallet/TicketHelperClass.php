@@ -66,12 +66,12 @@ class TicketHelperClass
 
             # VALIDAR QUE EXISTAN TICKETS A REDIMIR
             if(!is_array($this->movement->transaction->tickets) || !isset($this->movement->transaction->tickets)){
-                throw new Exception("Error no se ha indicado los ticket a redimir.", 1);
+                throw new \Exception("Error no se ha indicado los ticket a redimir.", 1);
             }
 
             # VALIDAR
             if(count($this->movement->transaction->tickets) == 0){
-                throw new Exception("Error no exiten tickets para redimir.", 1);
+                throw new \Exception("Error no exiten tickets para redimir.", 1);
             }
 
             # VERIFICAR QUE TODOS LOS TICKETS EXISTAN CON EL USUARIO
@@ -121,6 +121,9 @@ class TicketHelperClass
         if($this->movement->movement_type_code == '04'  && $this->movement->movement_parent->electrical_pocket_operation_type == 'T'){
             
             $this->tickets = WalletUserTicket::lockForUpdate()->where(['state_movement_id' => $this->movement->movement_parent->id])->get();
+            $this->movement->setTickets($this->tickets);
+
+
             $total_value = 0;
             foreach ($this->tickets as $key => $ticket) {
 

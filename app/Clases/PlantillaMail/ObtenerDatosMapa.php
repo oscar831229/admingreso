@@ -153,8 +153,6 @@ class ObtenerDatosMapa
 			
 
 			if(isset($estructura['relationTable'])){
-
-
 				foreach ($estructura['relationTable'] as $key => $join) {
 
 					switch ($join['direccion']) {
@@ -168,9 +166,6 @@ class ObtenerDatosMapa
 							$DB->Join($join['tabla'], $join['enlace_left'], '=', $join['enlace_right']);
 							break;
 					}
-
-
-					
 				}
 			}		
 

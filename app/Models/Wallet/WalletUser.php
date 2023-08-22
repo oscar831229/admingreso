@@ -8,7 +8,7 @@ use App\Clases\DataTable\SSP;
 class WalletUser extends Model
 {
     
-    protected $fillable = ['identification_document_type_id','document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'email', 'phone', 'uuid', 'user_created', 'user_updated', 'token'];
+    protected $fillable = ['identification_document_type_id','document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'email', 'phone', 'uuid', 'user_created', 'user_updated', 'token', 'user_code_create', 'user_code_update'];
 
     private $columnsdatatable = array(
         array( 'db' => 'wu.id', 'dt' => 0 ),
@@ -113,7 +113,7 @@ class WalletUser extends Model
             ->join('users AS u', 'u.id', '=','wu.user_created')
             ->orderBy('wu.id', 'desc');
 
-        $datares['cantotal'] = $asset->count();;
+        $datares['cantotal'] = $asset->count();
         
         return $datares;
 
@@ -128,5 +128,13 @@ class WalletUser extends Model
     {
         return $this->belongsTo('App\Models\Common\DetailDefinition');
     }
+
+    public function WalletUserTicket($electrical_pocket_wallet_user_id, $state){
+        return $this->selectRaw('wallet_user_tickets.*')->join('wallet_user_tickets', 'wallet_user_tickets.wallet_user_id', '=', 'wallet_users.id')
+            ->join('movements', 'movements.id', '=', 'wallet_user_tickets.movement_id')
+            ->where(['electrical_pocket_wallet_user_id' => $electrical_pocket_wallet_user_id, 'state' => $state ])->get();
+    }
+
+
 
 }

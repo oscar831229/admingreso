@@ -26,6 +26,11 @@ class reportManagementSeeder extends Seeder
                 'module'=>'electronic-wallet-module',
                 'code'=>'balance-report-wallet-users',
                 'description'=>'Reportes saldos usuario billetera'
+            ],
+            [
+                'module'=>'electronic-wallet-module',
+                'code'=>'ticket-office-report',
+                'description'=>'Reportes estados tiquetera'
             ]
         ];
 

@@ -48,7 +48,7 @@ class Movement extends Model
                 m.id,
                 CONCAT(ep.code, ' ', ep.name)  AS electrical_pocket_name,
                 ws.document_number AS document_number,
-                CONCAT(ws.first_name, ' ', ws.second_name,  ' ',  ws.first_surname,  ' ', ws.second_surname) as name,
+                CONCAT(IFNULL(ws.first_name, ''), ' ', IFNULL(ws.second_name, ''),  ' ',  IFNULL(ws.first_surname,''),  ' ', IFNULL(ws.second_surname,'')) as name,
                 CONCAT(mt.code, ' ',mt.name) AS movement_type_name,
                 m.value,
                 m.user_code,
@@ -202,6 +202,54 @@ class Movement extends Model
     public function movement_type()
     {
         return $this->belongsTo('App\Models\Wallet\MovementType');
+    }
+
+    public function tickets(){
+        return $this->hasMany('App\Models\Wallet\WalletUserTicket');
+    }
+
+    public function statetickets(){
+        return $this->hasMany('App\Models\Wallet\WalletUserTicket', 'state_movement_id');
+    }
+
+    public function store(){
+        return $this->belongsTo('App\Models\Wallet\Store');
+    }
+    
+    public function electrical_pocket(){
+        return $this->belongsTo('App\Models\Wallet\ElectricalPocket');
+    }
+
+    public static function getMovementById($movement_id){
+
+        return 
+            \DB::table('movements AS m')
+            ->selectRaw("
+                m.id,
+                CONCAT(ep.code, ' ', ep.name)  AS electrical_pocket_name,
+                ws.document_number AS document_number,
+                CONCAT(IFNULL(ws.first_name, ''), ' ', IFNULL(ws.second_name, ''),  ' ',  IFNULL(ws.first_surname,''),  ' ', IFNULL(ws.second_surname,'')) as customer,
+                CONCAT(mt.code, ' ',mt.name) AS movement_type_name,
+                m.value,
+                m.transaction_document_number,
+                CASE
+                    WHEN m.electrical_pocket_operation_type = 'T' THEN 'Tiquetera'
+                    ELSE 'Cuenta general'
+                END as type_operation,
+                m.user_code,
+                s.name AS store_name,
+                m.cus,
+                m.created_at,
+                '' as action
+            ")
+            ->join('electrical_pocket_wallet_user AS wuep', 'wuep.id', '=','m.electrical_pocket_wallet_user_id')
+            ->join('electrical_pockets AS ep', 'ep.id', '=','wuep.electrical_pocket_id')
+            ->join('movement_types AS mt', 'mt.id', '=','m.movement_type_id')
+            ->join('stores AS s', 's.id', '=','m.store_id')
+            ->join('wallet_users AS ws', 'ws.id', '=','m.wallet_user_id')
+            ->leftJoin('detail_definitions AS tdt', 'tdt.id', '=','m.transaction_document_type_id')
+            ->orderBy('m.id', 'desc')
+            ->where(['m.id' => $movement_id])->first();
     }
 
 }

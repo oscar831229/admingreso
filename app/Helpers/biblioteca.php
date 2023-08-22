@@ -192,10 +192,10 @@ if (!function_exists('findWalletUsers')) {
         $where = "";
 
         $bd = DB::table('wallet_users')
-            ->selectRaw("id, CONCAT(first_name, ' ', second_name, ' ', first_surname, ' ', second_surname) as name");
+            ->selectRaw("id, CONCAT(IFNULL(first_name, ''), ' ', IFNULL(second_name,''), ' ', IFNULL(first_surname,''), ' ', IFNULL(second_surname,'')) as name");
         
         foreach ($names as $index=>$value){
-            $bd->whereRaw("CONCAT(first_name, ' ', second_name, ' ', first_surname, ' ', second_surname) like '%{$value}%'");
+            $bd->whereRaw("CONCAT(IFNULL(first_name, ''), ' ', IFNULL(second_name,''), ' ', IFNULL(first_surname,''), ' ', IFNULL(second_surname,'')) like '%{$value}%'");
         }
 
         return  $bd->get();
@@ -896,6 +896,31 @@ if (!function_exists('validateDate')) {
     {
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;
+    }
+}
+
+
+if (!function_exists('generarPdfHtml')) {
+    function generarPdfHtml($documento)
+    {
+
+        // Create the mPDF document
+        $mpdf = new PDF( [
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'margin_header' => '3',
+            'margin_top' => '20',
+            'margin_bottom' => '20',
+            'margin_footer' => '2',
+        ]);
+        
+        $mpdf->WriteHTML($documento->html);
+        $path_file = storage_path('app/cotizaciones/').$documento->nombre_archivo;
+        $mpdf->Output($path_file);
+
+        return $path_file;
+        
+
     }
 }
  

@@ -245,4 +245,12 @@ class ReverseConsumeClass
         return $this->movement_register;
     }
 
+    public function setTickets($tickets){
+        $this->tickets = $tickets;
+    }
+
+    public function getTickets(){
+        return isset($this->tickets) ? $this->tickets : [];
+    }
+
 }

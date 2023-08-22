@@ -12,7 +12,7 @@
     <thead>
     		<tr>
         		<td colspan="8" style="text-align:center; font-weight: bold;font-size: 15px; height: 20px; vertical-align: middle;">
-        			ALERTAS POSIBLES DONANTES - TRASPLANTES
+        			REPORTE DE MOVIMIENTOS BILLETERA ELECTRÓNICA
         		</td>
         	</tr>
             <tr>

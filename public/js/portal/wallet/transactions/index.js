@@ -256,7 +256,7 @@ step = {
       initComplete : function(settings, json){
       },
       createdRow: function (row, data, index) {
-        var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-register-process" title="Visualizar transacción"><i class="fa fa-exchange" aria-hidden="true"></i></a>'
+        var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-view-transaction" title="Visualizar transacción"><i class="fa fa-exchange" aria-hidden="true"></i></a>'
         $('td', row).eq(10).html(btnaction).addClass('dt-center');
         $('td', row).eq(0).html(data[12]).addClass('dt-center');
       }                                                              
@@ -334,13 +334,11 @@ step = {
 
   },
 
-  registerProcess : function(){
+  viewDetailTransaction : function(){
     
-    step.pda_possible_donor_id = $(this).data('id');
+    step.movement_id = $(this).data('id');
     step.loadRegistroDonante($(this))
-    $('#md-procces-donor').modal();
-    $('#v-pills-home-tab').trigger('click');
-    tracking.cancelTracking();
+    $('#md-view-detail').modal();
     
   },
 
@@ -353,7 +351,7 @@ step = {
       $(".tooltip").tooltip("hide");
 
       $.ajax({
-          url: 'donor-alerts/' + step.pda_possible_donor_id,
+          url: 'transactions/' + step.movement_id,
           async: true,
           data: {},		
           beforeSend: function(objeto){
@@ -377,8 +375,13 @@ step = {
           success: function(response){
             btn.reset(element);
             if(response.success){
-              step.donor_file = response.data;
-              step.loadDataDonorFile();
+              
+              $.each(response.data, function(key, value){
+                if($('#md-view-detail').find('#'+key).length > 0){
+                  $('#md-view-detail').find('#'+key).val(value);
+                }
+              })
+              
             }else{
                 Biblioteca.notificaciones(response.message, 'Pasos posibles donantes', 'error');
             }                
@@ -455,7 +458,7 @@ step = {
     $('body').on('click', '#btn-new-step', this.newStep.bind(this, $('#btn-new-step')));
     $('body').on('click', '#btn-save-step', this.saveStep.bind(this, $('#btn-save-step')));
     $('body').on('change', '#change_status', this.changeStatus);
-    $('body').on('click', '.btn-register-process', this.registerProcess);
+    $('body').on('click', '.btn-view-transaction', this.viewDetailTransaction);
     $('body').on('click', '#btn-refresh', this.loadSteps);
     
     $('#city_reports_alert_id').selectpicker();
