@@ -84,6 +84,9 @@
     #tbl-tracking td p, #tbl-tracking td h6 {
       font-size: 12px !important;
     }
+    #tbl-waller-user-movements{
+      width: 100% !important;
+    }
   </style>
 @endsection
 
