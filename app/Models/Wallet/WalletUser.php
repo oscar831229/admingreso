@@ -8,7 +8,7 @@ use App\Clases\DataTable\SSP;
 class WalletUser extends Model
 {
     
-    protected $fillable = ['identification_document_type_id','document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'email', 'phone', 'uuid', 'user_created', 'user_updated', 'token', 'user_code_create', 'user_code_update'];
+    protected $fillable = ['identification_document_type_id','document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'email', 'phone', 'uuid', 'user_created', 'user_updated', 'token', 'user_code_create', 'user_code_update', 'imgqr'];
 
     private $columnsdatatable = array(
         array( 'db' => 'wu.id', 'dt' => 0 ),

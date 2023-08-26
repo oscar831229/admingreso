@@ -11,7 +11,10 @@
             <img src="{{ asset(imgperfil()) }}" alt="">{{ auth()->user()->name ?? 'Usuario externo' }}
           </a>
           <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item"  href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar sesión</a>
+            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fa fa-sign-out pull-right"></i> Cerrar sesión</a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>
           </div>
         </li>
       </ul>

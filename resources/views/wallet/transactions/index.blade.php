@@ -325,6 +325,20 @@
                           </div>
                           {{ Form::close() }}
                       </div>
+                      <div class="col-sm-12 mt-4">
+                        <h6 class="text-primary"><i class="fa fa-ticket mr-2" aria-hidden="true"></i>Tickets vinculados en el movimiento</h6>
+                        <table class="table" id="tbl-tickets">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Número ticket</th>
+                              <th>Valor</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div> 

@@ -13,6 +13,8 @@ use App\Clases\ElectronicWallet\TicketHelperClass;
 use App\Clases\Mail\MainSendMail;
 use Illuminate\Support\Str;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class PaymentClass
 {
@@ -139,6 +141,10 @@ class PaymentClass
             $token_key = Str::random(15);
             $passwordencryt = Crypt::encryptString($token_key);
 
+            # GENERAR QR
+            $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+            $imgqr = base64_encode($qrcode_base64);
+
             $this->wallet_user = WalletUser::create([
                 'identification_document_type_id' => 1,
                 'document_number' => $this->customer->document_number,
@@ -149,9 +155,12 @@ class PaymentClass
                 'email' => $this->customer->email,
                 'phone' => $this->customer->phone,
                 'token' => $passwordencryt,
+                'imgqr' => $imgqr,
                 'user_code_create' => $this->transaction->user_code,
                 'user_created' => auth()->user()->id
             ]);
+
+            MainSendMail::send('send_new_token', ['id' => $this->wallet_user->id ], [$this->wallet_user->email]);
             
         }
 
@@ -159,8 +168,6 @@ class PaymentClass
         if(!$this->wallet_user){
             throw new Exception("Error Processing Request", 1);
         }
-
-        MainSendMail::send('send_new_token', ['id' => $this->wallet_user->id ], [$this->wallet_user->email]);
 
     }
 

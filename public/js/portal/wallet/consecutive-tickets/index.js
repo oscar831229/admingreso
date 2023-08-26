@@ -227,6 +227,7 @@ step = {
             if(response.success){
               step.data = response.data;
               step.loadDataStep();
+              
             }else{
                 Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
             }                

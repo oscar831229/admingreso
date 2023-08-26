@@ -18,10 +18,10 @@ class TicketOfficeReport
         'ESTADO TICKET',
         'NUMERO TICKET',
         'VALOR',
-        'FECHA CREACION',
-        'CUS ESTADO',
-        'USUARIO MOV ESTADO',
-        'FECHA ESTADO' 
+        'FECHA REGISTRO TICKET',
+        'CUS ESTADO (REDIMIDO, ANULADO)',
+        'USUARIO MOV ESTADO (REDIMIDO, ANULADO)',
+        'FECHA ESTADO  (REDIMIDO, ANULADO)' 
     ];
 
 	public static $data;
@@ -59,9 +59,24 @@ class TicketOfficeReport
             ->join('movements AS m', 'm.id', '=', 'wut.movement_id')
             ->join('stores AS s', 's.id', '=', 'm.store_id')
             ->leftJoin('movements AS sm', 'sm.id', '=', 'wut.state_movement_id')
-            ->whereDate('wut.created_at','>=', $this->request->movement_date_from)
-            ->whereDate('wut.created_at','<=', $this->request->movement_date_to)
             ->orderBy('wut.id', 'ASC');
+
+        
+        if($this->request->has('movement_date_from') && !empty($this->request->movement_date_from)){
+            $statement->whereDate('wut.created_at','>=', $this->request->movement_date_from);
+        }
+
+        if($this->request->has('movement_date_to') && !empty($this->request->movement_date_to)){
+            $statement->whereDate('wut.created_at','<=', $this->request->movement_date_to);
+        }
+
+        if($this->request->has('movement_state_from') && !empty($this->request->movement_state_from)){
+            $statement->whereDate('sm.created_at','>=', $this->request->movement_state_from);
+        }
+
+        if($this->request->has('movement_estado_to') && !empty($this->request->movement_estado_to)){
+            $statement->whereDate('sm.created_at','<=', $this->request->movement_estado_to);
+        }
 
         if($this->request->has('wallet_user_id') && !empty($this->request->wallet_user_id)){
             $statement->where(['wut.wallet_user_id'=>$this->request->wallet_user_id]);
@@ -86,6 +101,7 @@ class TicketOfficeReport
     }
 
     public function view(){
+        
         $code = $this->request->input('report');
 
         # Tipos de movimientos.

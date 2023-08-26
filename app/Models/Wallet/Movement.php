@@ -32,7 +32,7 @@ class Movement extends Model
         array( 'db' => "CONCAT(ep.code, ' ', ep.name) ", 'dt' => 1),
         array( 'db' => 'ws.document_number', 'dt' => 2),
         array( 'db' => "CONCAT(ws.first_name, ' ', ws.second_name,  ' ',  ws.first_surname,  ' ', ws.second_surname)", 'dt' => 3),
-        array( 'db' => "CONCAT(mt.code, ' ',mt.name) AS movement_type_name", 'dt' => 4),
+        array( 'db' => "CONCAT(mt.code, ' ',mt.name)", 'dt' => 4),
         array( 'db' => 'm.value', 'dt' => 5),
         array( 'db' => 'm.user_code', 'dt' => 6),
         array( 'db' => 's.name', 'dt' => 7),
@@ -206,6 +206,10 @@ class Movement extends Model
 
     public function tickets(){
         return $this->hasMany('App\Models\Wallet\WalletUserTicket');
+    }
+
+    public function historic_movement_ticket_holder(){
+        return $this->hasMany('App\Models\Wallet\HistoricMovementTicketHolder');
     }
 
     public function statetickets(){

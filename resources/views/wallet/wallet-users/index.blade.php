@@ -133,6 +133,9 @@
         @csrf
 
         <div class="card-body table-responsive p-0">
+
+          
+
           <table class="table table-hover" id="tbl-alert-donor" style="width: 100% !important;">
               <thead>
                   <tr>
@@ -157,7 +160,7 @@
 
 
   <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;" id="md-info-customer">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" style="max-width: 32000px; width: 85% !important;">
       <div class="modal-content">
 
         <div class="modal-header text-white bg-primary">
@@ -213,23 +216,64 @@
                         <center><h2 class="tx-gray-800 headings"><i class="fa fa-table mr-2" aria-hidden="true"></i><span id="pocket_name"></span></h2></center>
                         <h6 class="tx-gray-800"><i class="fa fa-history mr-2" aria-hidden="true"></i>Historico de movimientos</h6>
                         <div class="card-body table-responsive p-0 mb-4">
-                            <table class="table table-hover width60" id="tbl-waller-user-movements">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Cuenta</th>
-                                        <th>Cedula</th>
-                                        <th>Movimiento</th>
-                                        <th>valor</th>
-                                        <th>Usuario</th>
-                                        <th>Comercio</th>
-                                        <th>CUS</th>
-                                        <th>Fecha transaccion</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+
+                          <div class="mb-4 mt-4">
+            
+                            {!! Form::open(['id'=>'form-transaction']) !!}
+                            
+                            <div class="row">
+                              <div class="col-sm-2">
+                                <div class="form-group">
+                                  {!! Form::label('store_id', 'Comercio', ['class' => 'col-md-4 control-label']) !!}
+                                  {!! Form::select('store_id', $stores, null, array('class' => 'form-control form-control-sm','id'=>'store_id', 'style' => 'height: 25px;', 'placeholder' => '[ Todos ]')) !!}
+                                </div>
+                              </div>
+                              <div class="col-sm-2">
+                                <div class="form-group">
+                                  <label for="from_date">Fecha inicial</label>
+                                  {!! Form::date('from_date', date('Y-m-d'), array('class' => 'form-control form-control-sm','id'=>'from_date', 'placeholder' => 'Seleccione..', 'style' => 'height: 25px;', 'required'=>'required', 'data-live-search' => 'true')) !!}
+                                </div>
+                              </div>
+                              <div class="col-sm-2">
+                                <div class="form-group">
+                                  <label for="to_date">Fecha final</label> 
+                                  {!! Form::date('to_date', date('Y-m-d'), array('class' => 'form-control form-control-sm','id'=>'to_date', 'placeholder' => 'Seleccione..', 'style' => 'height: 25px;', 'required'=>'required', 'data-live-search' => 'true')) !!}
+                                </div>
+                              </div>
+                              <div class="col-sm-2">
+                                <div class="form-group">
+                                  {!! Form::label('movement_type_id', 'Movimiento', ['class' => 'col-md-4 control-label']) !!}
+                                  {!! Form::select('movement_type_id', $movement_types, null, array('class' => 'form-control form-control-sm','id'=>'movement_type_id', 'style' => 'height: 25px;', 'placeholder' => '[ Todos ]')) !!}
+                                </div>
+                              </div>
+                              <div class="col-sm-2">
+                                <div class="form-group">
+                                  <label for="">&nbsp;</label> 
+                                  <a href="javascript:void(0)" style="height: 25px;" id="btn-refresh" class="btn btn-block btn-outline-secondary btn-sm"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>refrescar</a>
+                                </div>
+                              </div>
+                            </div>
+                            {!! Form::close() !!}
+                
+                          </div>
+
+                          <table class="table table-hover width60" id="tbl-waller-user-movements">
+                              <thead>
+                                  <tr>
+                                      <th>#</th>
+                                      <th>Cuenta</th>
+                                      <th>Cedula</th>
+                                      <th>Movimiento</th>
+                                      <th>valor</th>
+                                      <th>Usuario</th>
+                                      <th>Comercio</th>
+                                      <th>CUS</th>
+                                      <th>Fecha transaccion</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                              </tbody>
+                          </table>
                         </div>
                     </div>
                 </div>

@@ -149,11 +149,13 @@ class TransactionsController extends Controller
     }
 
     public function show($movement_id){
-        $movement = Movement::getMovementById($movement_id);
+        $movements = Movement::getMovementById($movement_id);
+        $movement = Movement::find($movement_id);
         return response()->json([
             'success' => true,
             'message' => '',
-            'data' => $movement
+            'data' => $movements,
+            'tickets' => $movement->historic_movement_ticket_holder
         ]);
     }
 

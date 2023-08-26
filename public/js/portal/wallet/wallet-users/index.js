@@ -351,9 +351,18 @@ step = {
 
   },
 
+  loadMovementsPocket : function(){
+    var electrical_pocket_wallet_user_id = step.electrical_pocket_wallet_user_id;
+    var name_pocket = step.name_pocket;
+    step.loadMovements(electrical_pocket_wallet_user_id, name_pocket);
+  },
+
   loadMovements(electrical_pocket_wallet_user_id, name_pocket){
 
     $('#pocket_name').html(name_pocket);
+
+    step.electrical_pocket_wallet_user_id = electrical_pocket_wallet_user_id;
+    step.name_pocket = name_pocket;
 
     this.loadEnabledTickets(electrical_pocket_wallet_user_id);
 
@@ -368,6 +377,16 @@ step = {
         $(this).html(title+' <input type="text" class="col-search-input" placeholder="" />');
     });
 
+    var data = $("#form-transaction").serialize().split("&");
+    
+    var obj={};
+    for(var key in data)
+    {
+        obj[data[key].split("=")[0]] = data[key].split("=")[1];
+    }
+
+    obj.electrical_pocket_wallet_user_id = electrical_pocket_wallet_user_id;
+
     tblalertdonor = $('#tbl-waller-user-movements').DataTable({
       language: language_es,
       pagingType: "numbers",
@@ -376,10 +395,7 @@ step = {
       ajax: {
           url: '/wallet/wallet-user-transactions',
           type: "POST",
-          data: {
-            '_token' : $('input[name=_token]').val(),
-            'electrical_pocket_wallet_user_id': electrical_pocket_wallet_user_id,
-          },
+          data: obj,
           "dataSrc": function (json) {
             return json.data;
           },
@@ -694,7 +710,7 @@ step = {
     $('body').on('click', '#btn-save-step', this.saveStep.bind(this, $('#btn-save-step')));
     $('body').on('change', '#change_status', this.changeStatus);
     $('body').on('click', '.btn-register-process', this.registerProcess);
-    $('body').on('click', '#btn-refresh', this.loadSteps);
+    $('body').on('click', '#btn-refresh', this.loadMovementsPocket);
     $('body').on('click', '.view-step', this.loadHistoryMovements);
     $('body').on('click', '.view-tickets', this.loadEnabledTickets);
     

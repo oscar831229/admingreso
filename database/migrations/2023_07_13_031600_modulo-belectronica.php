@@ -51,8 +51,8 @@ class ModuloBelectronica extends Migration
             $table->text('imgqr')->nullable();
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
-            $table->string('user_code_create', 45)->nullable();
-            $table->string('user_code_update', 45)->nullable();
+            $table->string('user_code_create', 100)->nullable();
+            $table->string('user_code_update', 100)->nullable();
             $table->timestamps();
             $table->unique(['document_number']);
         });
@@ -170,7 +170,7 @@ class ModuloBelectronica extends Migration
 
             $table->string('nature_movement', 1);
             $table->decimal('value', 20,2);
-            $table->string('user_code', 25);
+            $table->string('user_code', 100);
 
             $table->unsignedBigInteger('store_id');
             $table->foreign('store_id','fk_stores_movements_id')

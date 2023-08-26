@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Crypt;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Clases\Mail\MainSendMail;
 
+use App\Models\Wallet\Store;
+use App\Models\Wallet\MovementType;
+
+
 class WalletUsersController extends Controller
 {
     /**
@@ -24,7 +28,11 @@ class WalletUsersController extends Controller
      */
     public function index()
     {
-        return view('wallet.wallet-users.index');
+        # Tipos de movimientos.
+        $movement_types = MovementType::all()->pluck('name', 'id');
+        $stores = Store::all()->pluck('name', 'id');
+
+        return view('wallet.wallet-users.index', compact('movement_types', 'stores'));
     }
 
     public function detailsWalletUsers(Request $request){
@@ -135,12 +143,20 @@ class WalletUsersController extends Controller
     public function getTransactions(Request $request){
 
         $electrical_pocket_wallet_user_id = $request->electrical_pocket_wallet_user_id;
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+        $store_id = $request->store_id;
+        $movement_type_id = $request->movement_type_id;
             
         $param = array( 
             'model'=> new WalletUserMovement,
             'method_consulta'=>'getDataTable',
             'method_cantidad'=>'getCountDatatable',
             'extradata' => [
+                'from_date' => $from_date,
+                'to_date' => $to_date,
+                'store_id' => $store_id,
+                'movement_type_id' => $movement_type_id,
                 'electrical_pocket_wallet_user_id' => $electrical_pocket_wallet_user_id
             ]
         );

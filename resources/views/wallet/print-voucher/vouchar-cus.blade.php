@@ -38,17 +38,17 @@ Cajero: {{ $movement->user_code }}
 </center>
 </div>
 <br>
-<table width="250" cellspacing="0" border="0" align="left">
+<table width="250" cellspacing="0" border="0" align="left" style="margin-left: 15px;">
 	<tr>
 		<td>BOLSILLO {{$movement->electrical_pocket->code}} - {{ $movement->electrical_pocket->name }}</td>
 	</tr>
 	<tr>
-		<td>VALOR TRANSACCION: {{ $movement->value }}</td>
+		<td>VALOR TRANSACCION: {{ number_format($movement->value, 2, ',', '.') }}</td>
 	</tr>
 </table>
 <br>
 <br>
-<table width="250" cellspacing="0" border="0" align="left">
+<table width="250" cellspacing="0" border="0" align="left" style="margin-left: 15px;">
 	<tbody>
 		<tr>
 			<th>Ticket</th>
@@ -57,13 +57,16 @@ Cajero: {{ $movement->user_code }}
 		@foreach ($movement->statetickets as $ticket)
 		<tr>
 			<td>{{ $ticket->number_ticket }}</td>
-			<td>{{ $ticket->value }}</td>
+			<td>{{ number_format($ticket->value, 2, ',', '.') }}</td>
 		</tr>	
 		@endforeach
 	</tbody>
 </table>
-<br><br><br>
-<div align="left" style="width:270px">
+<br>
+<br>
+<br>
+<br>
+<div align="left" style="width:270px; margin-top: 15px; margin-left: 15px;">
 Firma:---------------------
 <br>
 {{ $walleteuser->first_name.' '.$walleteuser->second_name.' '.$walleteuser->first_surname.' '.$walleteuser->second_surname }}

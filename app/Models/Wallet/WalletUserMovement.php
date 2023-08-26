@@ -11,14 +11,14 @@ class WalletUserMovement extends Model
     private $columnsdatatable = array(
         array( 'db' => 'm.id', 'dt' => 0 ),
         array( 'db' => "CONCAT(ep.code, ' ', ep.name)",  'dt' => 1 ),
-        array( 'db' => 'ep.name AS electrical_pocket_name', 'dt' => 2),
-        array( 'db' => 'ws.document_number', 'dt' => 3),
-        array( 'db' => "CONCAT(mt.code, ' ', mt.name)", 'dt' => 4),
-        array( 'db' => 'm.value', 'dt' => 5),
-        array( 'db' => 'm.user_code', 'dt' => 6),
-        array( 'db' => 's.name', 'dt' => 7),
-        array( 'db' => 'm.cus', 'dt' => 8),
-        array( 'db' => 'm.movement_date', 'dt' => 9)
+        array( 'db' => 'ws.document_number', 'dt' => 2),
+        array( 'db' => "CONCAT(IFNULL(mt.code,''), ' ', IFNULL(mt.name, ''))", 'dt' => 3),
+        array( 'db' => "m.value", 'dt' => 4),
+        array( 'db' => 'm.user_code', 'dt' => 5),
+        array( 'db' => 's.name', 'dt' => 6),
+        array( 'db' => 'm.cus', 'dt' => 7),
+        array( 'db' => 'm.created_at', 'dt' => 8),
+        array( 'db' => '', 'dt' => 9)
     );
 
     public function getDataTable($param){
@@ -29,7 +29,7 @@ class WalletUserMovement extends Model
                 m.id,
                 CONCAT(ep.code, ' ', ep.name) AS electrical_pocket_code,
                 ws.document_number AS document_number,
-                CONCAT(mt.code, ' ', mt.name) AS movement_type_name,
+                CONCAT(IFNULL(mt.code,''), ' ', IFNULL(mt.name, '')) AS movement_type_name,
                 m.value,
                 m.user_code,
                 s.name AS store_name,
@@ -44,7 +44,17 @@ class WalletUserMovement extends Model
             ->join('wallet_users AS ws', 'ws.id', '=','m.wallet_user_id')
             ->leftJoin('detail_definitions AS tdt', 'tdt.id', '=','m.transaction_document_type_id')
             ->where('wuep.id', '=', $param['extradata']['electrical_pocket_wallet_user_id'])
+            ->whereDate('m.movement_date', '>=', $param['extradata']['from_date'])
+            ->whereDate('m.movement_date', '<=', $param['extradata']['to_date'])
             ->orderBy('m.id', 'desc');
+
+        if(isset($param['extradata']['store_id']) && !empty($param['extradata']['store_id'])){
+            $asset->where(['s.id' => $param['extradata']['store_id']]);
+        }
+
+        if(isset($param['extradata']['movement_type_id']) && !empty($param['extradata']['movement_type_id'])){
+            $asset->where(['mt.id' => $param['extradata']['movement_type_id']]);
+        }
 
         $where = '';
         $bindings = array();
@@ -84,11 +94,9 @@ class WalletUserMovement extends Model
             \DB::table('movements AS m')
             ->selectRaw("
                 m.id,
-                ep.code AS electrical_pocket_code,
-                ep.name AS electrical_pocket_name,
+                CONCAT(ep.code, ' ', ep.name) AS electrical_pocket_code,
                 ws.document_number AS document_number,
-                CONCAT(ws.first_name, ' ', ws.second_name,  ' ',  ws.first_surname,  ' ', ws.second_surname) as name,
-                mt.name AS movement_type_name,
+                CONCAT(IFNULL(mt.code,''), ' ', IFNULL(mt.name, '')) AS movement_type_name,
                 m.value,
                 m.user_code,
                 s.name AS store_name,
@@ -124,11 +132,9 @@ class WalletUserMovement extends Model
             \DB::table('movements AS m')
             ->selectRaw("
                 m.id,
-                ep.code AS electrical_pocket_code,
-                ep.name AS electrical_pocket_name,
+                CONCAT(ep.code, ' ', ep.name) AS electrical_pocket_code,
                 ws.document_number AS document_number,
-                CONCAT(ws.first_name, ' ', ws.second_name,  ' ',  ws.first_surname,  ' ', ws.second_surname) as name,
-                mt.name AS movement_type_name,
+                CONCAT(IFNULL(mt.code,''), ' ', IFNULL(mt.name, '')) AS movement_type_name,
                 m.value,
                 m.user_code,
                 s.name AS store_name,

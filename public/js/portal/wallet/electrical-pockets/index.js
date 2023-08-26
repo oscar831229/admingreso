@@ -226,6 +226,7 @@ step = {
             if(response.success){
               step.data = response.data;
               step.loadDataStep();
+              $('#operation_type').trigger('change');
             }else{
                 Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
             }                

@@ -7,6 +7,8 @@ use App\Models\Wallet\WalletUserTicket;
 
 use Illuminate\Support\Str;
 
+use App\Models\Wallet\HistoricMovementTicketHolder;
+
 
 
 class TicketHelperClass
@@ -31,7 +33,6 @@ class TicketHelperClass
             if($this->movement->transaction->value < $minimum_purchase_value){
                 throw new \Exception("Error la compra minima de tiquetera es de (".number_format($minimum_purchase_value,2).")", 1);
             }
-                
                 
             # VALIDAR VALOR QUE SEAN MULTIPLSO DEL VALOR UNITARIO
             if($this->movement->transaction->value%$this->movement->electronic_pocket->unit_value != 0)
@@ -146,8 +147,6 @@ class TicketHelperClass
 
     public function generateTickets($movement_register){
 
-        
-
         # SI EL PROCESO ES DE ABONO - GENERA CONSECUTIVOS
         if($this->movement->movement_type_code == '01'  && $this->movement->electronic_pocket->operation_type == 'T'){
             
@@ -166,7 +165,7 @@ class TicketHelperClass
                 $number_ticket = $prefix.str_pad($consecutive, $str_length, "0", STR_PAD_LEFT);
                 
                 # GRABAR TICKET
-                WalletUserTicket::create([
+                $walletusertiket = WalletUserTicket::create([
                     'wallet_user_id' => $movement_register->wallet_user_id,
                     'movement_id' => $movement_register->id,
                     'consecutive_ticket_id' => $this->consecutive->id,
@@ -175,6 +174,14 @@ class TicketHelperClass
                     'value' => $this->movement->electronic_pocket->unit_value,
                     'state' => 'P',
                     'user_created' => auth()->user()->id
+                ]);
+
+                # CREAR HISTORICO 
+                HistoricMovementTicketHolder::create([
+                    'movement_id' => $movement_register->id,
+                    'wallet_user_ticket_id' => $walletusertiket->id,
+                    'number_ticket' => $walletusertiket->number_ticket,
+                    'value' => $walletusertiket->value
                 ]);
 
                 # INCREMENTAR CONSECUTIVO
@@ -189,6 +196,15 @@ class TicketHelperClass
         # VALIDACION REVERSOS CONSUMO TIQUETERA ELECTRONICA
         if($this->movement->movement_type_code == '02'  && $this->movement->movement_parent->electrical_pocket_operation_type == 'T'){
             foreach ($this->tickets as $key => $ticket) {
+
+                HistoricMovementTicketHolder::create([
+                    'movement_id' => $movement_register->id,
+                    'wallet_user_ticket_id' => $ticket->id,
+                    'number_ticket' => $ticket->number_ticket,
+                    'value' => $ticket->value,
+                    'state' => 'A'
+                ]);
+
                 $ticket->state = 'A';
                 $ticket->state_movement_id = $movement_register->id;
                 $ticket->update();
@@ -198,6 +214,15 @@ class TicketHelperClass
         # CONSUMOS TIQUETERA
         if($this->movement->movement_type_code == '03'  && $this->movement->electronic_pocket->operation_type == 'T'){
             foreach ($this->tickets as $key => $ticket) {
+
+                HistoricMovementTicketHolder::create([
+                    'movement_id' => $movement_register->id,
+                    'wallet_user_ticket_id' => $ticket->id,
+                    'number_ticket' => $ticket->number_ticket,
+                    'value' => $ticket->value,
+                    'state' => 'R'
+                ]);
+
                 $ticket->state = 'R';
                 $ticket->state_movement_id = $movement_register->id;
                 $ticket->update();
@@ -206,7 +231,17 @@ class TicketHelperClass
 
         # VALIDACION REVERSOS CONSUMO TIQUETERA
         if($this->movement->movement_type_code == '04'  && $this->movement->movement_parent->electrical_pocket_operation_type == 'T'){
+
             foreach ($this->tickets as $key => $ticket) {
+
+                HistoricMovementTicketHolder::create([
+                    'movement_id' => $movement_register->id,
+                    'wallet_user_ticket_id' => $ticket->id,
+                    'number_ticket' => $ticket->number_ticket,
+                    'value' => $ticket->value,
+                    'state' => 'P'
+                ]);
+
                 $ticket->state = 'P';
                 $ticket->state_movement_id = null;
                 $ticket->update();

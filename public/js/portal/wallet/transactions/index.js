@@ -227,7 +227,7 @@ step = {
     });
 
     var data = $("#form-transaction").serialize().split("&");
-    console.log(data);
+    
     var obj={};
     for(var key in data)
     {
@@ -381,6 +381,21 @@ step = {
                   $('#md-view-detail').find('#'+key).val(value);
                 }
               })
+
+              var tr = '';
+              $('#tbl-tickets tbody').empty();
+              if(response.tickets != undefined){
+                var number = 1;
+                $.each(response.tickets, function(key, ticket){
+                  tr += `<tr>
+                    <th scope="row">${number}</th>
+                    <td>${ticket.number_ticket}</td>
+                    <td>${ticket.value}</td>
+                  </tr>`
+                  number++;
+                })
+                $('#tbl-tickets tbody').html(tr);
+              }
               
             }else{
                 Biblioteca.notificaciones(response.message, 'Pasos posibles donantes', 'error');
