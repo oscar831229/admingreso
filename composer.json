@@ -24,6 +24,7 @@
         "maatwebsite/excel": "^3.1",
         "mpdf/mpdf": "^8.1",
         "phpmailer/phpmailer": "^6.1",
+        "picqer/php-barcode-generator": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^3.11",
         "webpatser/laravel-uuid": "^4.0"

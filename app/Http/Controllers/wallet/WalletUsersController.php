@@ -17,6 +17,7 @@ use App\Clases\Mail\MainSendMail;
 
 use App\Models\Wallet\Store;
 use App\Models\Wallet\MovementType;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 
 class WalletUsersController extends Controller
@@ -69,8 +70,15 @@ class WalletUsersController extends Controller
         $token_key = Str::random(15);
         $wallet_user->token = Crypt::encryptString($token_key);
 
-        # Genera QR.
-        $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+        // # Genera QR.
+        // $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+        // $wallet_user->imgqr = base64_encode($qrcode_base64);
+        // $wallet_user->update();
+
+        # Generar código de barras
+        $generador = new BarcodeGeneratorPNG();
+        $tipo = $generador::TYPE_CODE_128;
+        $qrcode_base64 = $generador->getBarcode($token_key, $tipo);
         $wallet_user->imgqr = base64_encode($qrcode_base64);
         $wallet_user->update();
 

@@ -14,6 +14,7 @@ use App\Clases\Mail\MainSendMail;
 use Illuminate\Support\Str;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 
 class PaymentClass
@@ -142,7 +143,13 @@ class PaymentClass
             $passwordencryt = Crypt::encryptString($token_key);
 
             # GENERAR QR
-            $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+            // $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+            // $imgqr = base64_encode($qrcode_base64);
+
+            # Generar código de barras
+            $generador = new BarcodeGeneratorPNG();
+            $tipo = $generador::TYPE_CODE_128;
+            $qrcode_base64 = $generador->getBarcode($token_key, $tipo);
             $imgqr = base64_encode($qrcode_base64);
 
             $this->wallet_user = WalletUser::create([
