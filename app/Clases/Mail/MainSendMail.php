@@ -5,11 +5,12 @@ use App\Models\Admin\PlantillasEmail as Plantilla;
 use App\Clases\PlantillaMail\ObtenerDatosMapa;
 
 use App\Models\Wallet\EmailTraceability;
+use Illuminate\Support\Str;
 
 
 class MainSendMail 
 {
-    public static function send($process_code, $where, Array $destination = [], $attachments = [], $extras = []){
+    public static function send($process_code, $where, Array $destination = [], $attachments = [], $extras = [], $attach_as_pdf = false){
 
         $traceability = [
             'process_code' => $process_code,
@@ -59,6 +60,17 @@ class MainSendMail
                     '.$cuerpo.'
                 </body>
             </html>';
+
+
+        # Adjuntar contenido como PDF
+        if($attach_as_pdf){
+            $document = new \stdClass;
+            $name_file = Str::random(15);
+            $document->file_name = $name_file.'.pdf';
+            $document->content_html = $cuerpo;
+            $path_file = GenerarPdfDocument($document);
+            $attachments[] = $path_file;
+        }
 
         # INICIALIZAR CORREOS
         $correo = new Correo;

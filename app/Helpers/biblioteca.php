@@ -830,6 +830,36 @@ if (!function_exists('GenerarPdfRemovablePayment')) {
     }
 }
 
+if (!function_exists('GenerarPdfDocument')) {
+    function GenerarPdfDocument($document)
+    {
+
+        // Create the mPDF document
+        $mpdf = new PDF( [
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'margin_header' => '3',
+            'margin_top' => '20',
+            'margin_bottom' => '20',
+            'margin_footer' => '2',
+        ]);
+
+        
+        $mpdf->WriteHTML($document->content_html);
+
+        $path_file = storage_path('temp');
+        if(!file_exists($path_file)){
+            File::makeDirectory($path_file, $mode = 0777, true, true);
+        }
+        
+        $path_file = $path_file.'/'.$document->file_name;
+        $mpdf->Output($path_file);
+
+        return $path_file;
+
+    }
+}
+
 # TEXT CONEXION SMTP
 if (!function_exists('testConnectionEmail')) {
     function testConnectionEmail($parameters)

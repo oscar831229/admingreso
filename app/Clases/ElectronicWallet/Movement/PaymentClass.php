@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Clases\ElectronicWallet\Movement;
 
 use Validator;
@@ -77,7 +77,7 @@ class PaymentClass
     }
 
     public function execute(){
-    
+
         # VALIDACIÓN PREVIAS
         $this->Validations();
 
@@ -86,15 +86,15 @@ class PaymentClass
 
         # CARGAR BOLSILLO ELECTRONICO USUARIO TRANSACCION
         $this->getElectronicPocketWalletUser($this->transaction->electrical_pocket);
-        
+
         # Instanciamos el Helper Tiquetera
         $ticekhelper = new TicketHelperClass($this);
         $ticekhelper->runValidation();
 
         # GENERA CODIGO UNICO DE SEGUIMIENTO
         $cus_code = $this->generateCUSCode();
-        
-        # BOLSILLO USUARIO 
+
+        # BOLSILLO USUARIO
         $electrical_pocket_wallet_user= $this->electronic_pocket->pivot;
 
         \DB::beginTransaction();
@@ -126,31 +126,31 @@ class PaymentClass
             dd($e->getMessage());
             return "Error de actulización de datos";
         }
-        
+
         # CREAR MOVIMIENTO
-        
+
 
     }
 
     public function getWalletUser(){
-        
+
         $this->wallet_user = WalletUser::where(['document_number' => $this->customer->document_number] )->first();
 
         if(!$this->wallet_user && $this->create_wallet_user){
 
-            # GENERAR TOKEN 
+            # GENERAR TOKEN
             $token_key = Str::random(15);
             $passwordencryt = Crypt::encryptString($token_key);
 
             # GENERAR QR
-            // $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
-            // $imgqr = base64_encode($qrcode_base64);
+            $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
+            $imgqr = base64_encode($qrcode_base64);
 
             # Generar código de barras
-            $generador = new BarcodeGeneratorPNG();
-            $tipo = $generador::TYPE_CODE_128;
-            $qrcode_base64 = $generador->getBarcode($token_key, $tipo);
-            $imgqr = base64_encode($qrcode_base64);
+            // $generador = new BarcodeGeneratorPNG();
+            // $tipo = $generador::TYPE_CODE_128;
+            // $qrcode_base64 = $generador->getBarcode($token_key, $tipo);
+            // $imgqr = base64_encode($qrcode_base64);
 
             $this->wallet_user = WalletUser::create([
                 'identification_document_type_id' => 1,
@@ -167,8 +167,8 @@ class PaymentClass
                 'user_created' => auth()->user()->id
             ]);
 
-            MainSendMail::send('send_new_token', ['id' => $this->wallet_user->id ], [$this->wallet_user->email]);
-            
+            MainSendMail::send('send_new_token', ['id' => $this->wallet_user->id ], [$this->wallet_user->email], [], [], true);
+
         }
 
         # SI NO EXISTE EL USUARIO DE TIQUETERA ELECTRÓNICA
@@ -189,9 +189,9 @@ class PaymentClass
         $this->electronic_pocket = $this->wallet_user->ElectronicPockets()->where(['code' => $electrical_pocket_code ])->first();
         if(!$this->electronic_pocket  && $this->create_electronic_pocket_ws){
 
-            # CONSULTAR BOLSILLO 
+            # CONSULTAR BOLSILLO
             $electrical_pocket = ElectricalPocket::where(['code' => $electrical_pocket_code ])->first();
-            
+
             # CREAMOS EL BOLSILLO
             $electronic_pocket = $this->wallet_user->ElectronicPockets()->attach($electrical_pocket, [
                 'balance' => 0,
@@ -204,11 +204,11 @@ class PaymentClass
 
         }
 
-        
+
 
         if(!$this->electronic_pocket)
             throw new \Exception("Error no fue posible obtener bolsillo para transacción.", 1);
-            
+
 
     }
 
@@ -228,7 +228,7 @@ class PaymentClass
         # VALOR - CODIGO USUARIO PROCESO.
         $validator = Validator::make($this->request->all(), $this->validation_rules, $this->validation_message);
 
-        if ($validator->fails()) {            
+        if ($validator->fails()) {
             $errors = array_values($validator->errors()->toArray());
             $expection = '';
             foreach ($errors as $key => $error) {
@@ -261,7 +261,7 @@ class PaymentClass
         # VALOR - CODIGO USUARIO PROCESO.
         $validator = Validator::make($this->request->all(), $validation_rules, $this->validation_message);
 
-        if ($validator->fails()) {            
+        if ($validator->fails()) {
             $errors = array_values($validator->errors()->toArray());
             $expection = '';
             foreach ($errors as $key => $error) {
@@ -286,7 +286,7 @@ class PaymentClass
         # VALIDACION TIQUETERA
         $ticekhelper = new TicketHelperClass($this);
         $ticekhelper->runValidation();
-        
+
 
     }
 

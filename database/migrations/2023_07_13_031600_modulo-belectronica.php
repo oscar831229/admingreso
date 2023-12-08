@@ -22,7 +22,7 @@ class ModuloBelectronica extends Migration
             $table->string('phone', '15');
             $table->string('state', '1');
             $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
+            $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
             $table->unique(['code']);
         });
@@ -32,7 +32,7 @@ class ModuloBelectronica extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('store_id');
             $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
+            $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
             $table->unique(['user_id', 'store_id']);
         });
@@ -51,28 +51,11 @@ class ModuloBelectronica extends Migration
             $table->text('imgqr')->nullable();
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
-            $table->string('user_code_create', 100)->nullable();
-            $table->string('user_code_update', 100)->nullable();
+            $table->string('user_code_create', 150)->nullable();
+            $table->string('user_code_update', 150)->nullable();
             $table->timestamps();
             $table->unique(['document_number']);
         });
-
-        Schema::create('history_uuids', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('wallet_user_id');
-
-            $table->foreign('wallet_user_id','fk_wallet_users_historyuuids_id')
-                ->references('id')
-                ->on('wallet_users')
-                ->onDelete('restrict')
-                ->onUpdate('restrict');
-
-            $table->string('uuid', 150);    
-            $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
-            $table->timestamps();
-        });
-
 
         Schema::create('electrical_pockets', function (Blueprint $table) {
             $table->id();
@@ -84,11 +67,11 @@ class ModuloBelectronica extends Migration
             $table->decimal('unit_value', 20,2)->nullable();
             $table->boolean('main')->nullable()->default(0);
             $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
+            $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
             $table->unique(['code']);
         });
-        
+
         Schema::create('electrical_pocket_wallet_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('electrical_pocket_id');
@@ -106,7 +89,7 @@ class ModuloBelectronica extends Migration
                 ->onUpdate('restrict');
             $table->date('last_movement_date');
             $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
+            $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
             $table->unique(['electrical_pocket_id', 'wallet_user_id'], 'unique_walletuserelectronicpockets_epid_wuid');
         });
@@ -119,7 +102,7 @@ class ModuloBelectronica extends Migration
             $table->string('nature_movement', 1);
             $table->string('state', 1);
             $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
+            $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
             $table->unique(['code']);
         });
@@ -139,10 +122,10 @@ class ModuloBelectronica extends Migration
             $table->timestamps();
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';
-            
+
         });
 
-        
+
 
         Schema::create('movements', function (Blueprint $table) {
             $table->id();
@@ -170,7 +153,7 @@ class ModuloBelectronica extends Migration
 
             $table->string('nature_movement', 1);
             $table->decimal('value', 20,2);
-            $table->string('user_code', 100);
+            $table->string('user_code', 150);
 
             $table->unsignedBigInteger('store_id');
             $table->foreign('store_id','fk_stores_movements_id')
@@ -184,7 +167,7 @@ class ModuloBelectronica extends Migration
             $table->date('movement_date');
             $table->unsignedBigInteger('wallet_user_tickets_number')->nullable();
             $table->unsignedBigInteger('user_created');
-            $table->unsignedBigInteger('user_updated')->nullable(); 
+            $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
             $table->unique(['cus']);
         });
@@ -211,7 +194,7 @@ class ModuloBelectronica extends Migration
             $table->decimal('value', 20,2)->nullable();
             $table->string('state', 2)->default('P');
             $table->unsignedBigInteger('state_movement_id')->nullable();
-            
+
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
@@ -233,7 +216,6 @@ class ModuloBelectronica extends Migration
         Schema::dropIfExists('movement_types');
         Schema::dropIfExists('electrical_pocket_wallet_user');
         Schema::dropIfExists('electrical_pockets');
-        Schema::dropIfExists('history_uuids');
         Schema::dropIfExists('wallet_users');
         Schema::dropIfExists('store_user');
         Schema::dropIfExists('stores');

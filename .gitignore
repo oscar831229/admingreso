@@ -8,6 +8,7 @@
 /storage/*.key
 /vendor
 /storage/removable/*.pdf
+/storage/temp/*.pdf
 .env
 .env.backup
 .phpunit.result.cache

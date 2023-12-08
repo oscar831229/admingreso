@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Wallet\WalletUser;
 use App\Models\Wallet\WalletUserMovement;
+use App\Models\Wallet\WalletUserTokenHistory;
+use App\Models\Wallet\WalletUserEmailHistory;
 use App\Clases\DataTable\TableServer;
 
 use Illuminate\Support\Str;
@@ -38,8 +40,8 @@ class WalletUsersController extends Controller
 
     public function detailsWalletUsers(Request $request){
 
-             
-        $param = array( 
+
+        $param = array(
             'model'=> new WalletUser,
             'method_consulta'=>'getDataTable',
             'method_cantidad'=>'getCountDatatable',
@@ -56,34 +58,70 @@ class WalletUsersController extends Controller
 
     public function generateToken($document_number){
 
+
+        $request = request();
+
+        $validator = \Validator::make($request->all(),[
+            'user_code' => 'required',
+            'store' => 'required'
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error en datos requeridos',
+                'data' => []
+            ],406);
+        }
+
+         # PERMISOS CODIGO TIENE USUARIO QUE REGISTRA LA TRANSACCIÓN
+        $store = auth()->user()->stores()->where(['code' => $request->store ])->first();
+        if(!$store){
+            return response()->json([
+                'success' => false,
+                'message' => "Usuario no tiene permisos sobre el comercio.",
+                'data' => []
+            ], 401);
+        }
+
         # Buscar usuario
         $wallet_user = WalletUser::where(['document_number' => $document_number])->first();
-        
+
         if(!$wallet_user)
             return response()->json([
                 'success' => false,
                 'message' => 'No existe el usuario',
                 'data' => []
-            ]);
+            ], 401);
 
-        # GENERAR TOKEN 
+        # GENERAR TOKEN
         $token_key = Str::random(15);
         $wallet_user->token = Crypt::encryptString($token_key);
 
         // # Genera QR.
-        // $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
-        // $wallet_user->imgqr = base64_encode($qrcode_base64);
-        // $wallet_user->update();
-
-        # Generar código de barras
-        $generador = new BarcodeGeneratorPNG();
-        $tipo = $generador::TYPE_CODE_128;
-        $qrcode_base64 = $generador->getBarcode($token_key, $tipo);
+        $qrcode_base64 = QrCode::size(300)->margin(2)->format('png')->generate($token_key);
         $wallet_user->imgqr = base64_encode($qrcode_base64);
         $wallet_user->update();
 
-        # NOTIFICAR 
-        MainSendMail::send('send_new_token', ['id' => $wallet_user->id ], [$wallet_user->email]);
+        $history_tokens = new WalletUserTokenHistory;
+        $history_tokens->wallet_user_id = $wallet_user->id;
+        $history_tokens->email = $wallet_user->email;
+        $history_tokens->user_code = $request->user_code;
+        $history_tokens->store_code = $request->store;
+        $history_tokens->token = $wallet_user->token;
+        $history_tokens->user_created = auth()->user()->id;
+        $history_tokens->save();
+
+        # Generar código de barras
+        // $generador = new BarcodeGeneratorPNG();
+        // $tipo = $generador::TYPE_CODE_128;
+        // $qrcode_base64 = $generador->getBarcode($token_key, $tipo);
+        // $wallet_user->imgqr = base64_encode($qrcode_base64);
+        // $wallet_user->update();
+
+        # NOTIFICAR
+        MainSendMail::send('send_new_token', ['id' => $wallet_user->id ], [$wallet_user->email], [], [], true);
 
         # NOTIFICACION
         return response()->json([
@@ -91,7 +129,7 @@ class WalletUsersController extends Controller
             'message' => '',
             'data' => $token_key
         ]);
-         
+
     }
 
 
@@ -135,7 +173,7 @@ class WalletUsersController extends Controller
                 'last_movement_date' => $electronic_pocket->pivot->last_movement_date,
             ];
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => '',
@@ -155,8 +193,8 @@ class WalletUsersController extends Controller
         $to_date = $request->to_date;
         $store_id = $request->store_id;
         $movement_type_id = $request->movement_type_id;
-            
-        $param = array( 
+
+        $param = array(
             'model'=> new WalletUserMovement,
             'method_consulta'=>'getDataTable',
             'method_cantidad'=>'getCountDatatable',
@@ -175,9 +213,33 @@ class WalletUsersController extends Controller
         return response()->json($datos);
 
     }
-    
+
     public function update(Request $request, $document_number){
-        
+
+        $validator = \Validator::make($request->all(),[
+            'user_code' => 'required',
+            'store' => 'required'
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error en datos requeridos',
+                'data' => []
+            ],406);
+        }
+
+         # PERMISOS CODIGO TIENE USUARIO QUE REGISTRA LA TRANSACCIÓN
+        $store = auth()->user()->stores()->where(['code' => $request->store ])->first();
+        if(!$store){
+            return response()->json([
+                'success' => false,
+                'message' => "Usuario no tiene permisos sobre el comercio.",
+                'data' => []
+            ], 401);
+        }
+
         # BUSCAR USUARIO A ACTUALIZAR
         $walletuser = WalletUser::where(['document_number' => $document_number])->first();
         if(!$walletuser){
@@ -193,6 +255,14 @@ class WalletUsersController extends Controller
             'phone' => $request->phone,
             'user_code_update' => $request->user_code
         ]);
+
+        $history_email = new WalletUserEmailHistory;
+        $history_email->wallet_user_id = $walletuser->id;
+        $history_email->email = $walletuser->email;
+        $history_email->user_code = $request->user_code;
+        $history_email->store_code = $request->store;
+        $history_email->user_created = auth()->user()->id;
+        $history_email->save();
 
         return response()->json([
             'success' => true,
@@ -253,14 +323,14 @@ class WalletUsersController extends Controller
     }
 
     public function findWalletUser(){
-        
+
         $name = request()->input('name');
         $data = findWalletUsers($name);
 
         $arr = array('suggestions'=>array());
 
         foreach($data as $key=>$value){
-            
+
             $arr['suggestions'][]= array(
                 'value'=> trim($value->name),
                 'data'=>array(
