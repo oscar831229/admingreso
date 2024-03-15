@@ -11,7 +11,7 @@
     //Route::get('/Cotizador', 'CotizadorController@index')->name('cotizador');
 
     Route::group(['middleware' => ['auth'],'prefix' => 'Admin', 'namespace' => 'Admin'], function() {
-        
+
         # MENU
         Route::get('menu', 'MenuController@index')->name('menu');
         Route::get('menu/crear', 'MenuController@crear')->name('crear_menu');
@@ -24,7 +24,7 @@
         /*RUTAS MENU_ROL*/
         Route::get('menu-rol', 'MenuRolController@index')->name('menu_rol');
         Route::post('menu-rol', 'MenuRolController@guardar')->name('guardar_menu_rol');
-        
+
         # ROLES
         Route::resource('roles','RoleController');
 
@@ -38,14 +38,8 @@
         Route::resource('emails','EmailController');
         Route::post('emails/testMail','EmailController@testMail');
 
-        # PLANTILLAS 
+        # PLANTILLAS
         Route::resource('plantillas','PlantillasController');
-
-        
-
-        
-        
-        
 
     });
 
@@ -55,12 +49,12 @@
         Route::resource('business','BusinessController');
         Route::get('details-business', 'BusinessController@getDetailBusiness');
 
-        # PERMISOS COMERCIOS 
+        # PERMISOS COMERCIOS
         Route::resource('business-users','BusinessUsersController');
         Route::get('finduser/business-users', 'BusinessUsersController@findUser')->name('find.user');
         Route::get('list-stores/{userid}', 'BusinessUsersController@loadUserPermissions')->name('load.user');
 
-        # TIPO DE TRANSACCION 
+        # TIPO DE TRANSACCION
         Route::resource('movement-types','MovementTypesController');
         Route::get('details-movement-types', 'MovementTypesController@getMovementTypes');
 
@@ -75,7 +69,7 @@
 
         # REPORTES
         Route::resource('wallet-reports','WalletReportController');
-        
+
         # FUNCION BUSCAR USUARIOS TIQUETERA
         Route::get('find-wallet-user', 'WalletUsersController@findWalletUser');
         Route::post('wallet-user-transactions', 'WalletUsersController@getTransactions');
@@ -84,17 +78,49 @@
         Route::resource('electrical-pockets','ElectricalPocketController');
         Route::get('details-electrical-pockets', 'ElectricalPocketController@getDetailElectricalPockets');
         Route::get('wallet-user-tickets/{electrical_pocket_wallet_user_id}', 'ElectricalPocketController@getDetailElectricalPocketTickets');
-        
-        
 
         # CONSECUTIVOS TIQUETERA
         Route::resource('consecutive-tickets','ConsecutiveTicketController');
         Route::get('details-consecutive-tickets', 'ConsecutiveTicketController@getDetailConsecutiveTickets');
 
-        
-        
-        
-                
+    });
+
+    Route::group(['middleware' => ['auth'],'prefix' => 'income', 'namespace' => 'income'], function() {
+
+        Route::resource('parameterization-services','ParameterizationServiceController');
+        Route::post('datatable-parameterization-services', 'ParameterizationServiceController@datatableParameterizationServices');
+        Route::get('environment-menus-items/{environment_id}','ParameterizationServiceController@getEnvironmentMenusItems');
+        Route::get('environment-income-services/{environment_id}','ParameterizationServiceController@getEnvironmentIncomeServices');
 
 
-    }); 
+
+        Route::resource('parameterization-companies','ParameterizationCompanyController');
+        Route::get('find-icm-companies-agreement','ParameterizationCompanyController@findCompaniesAgreement')->name('findCompaniesAgreement');
+        Route::post('datatable-parameterization-companies','ParameterizationCompanyController@datatableParameterizationCompanies');
+
+
+        Route::resource('parameterization-agreements','ParameterizationAgreementController');
+        Route::post('datatable-parameterization-agreements', 'ParameterizationAgreementController@datatableParameterizationAgreements');
+
+        Route::resource('billing-incomes','BillingIncomeController');
+
+        Route::resource('incomes','IncomeController');
+        Route::get('incomes-dowload/{directory}','IncomeController@dowload')->name('downloadFiles');
+
+        Route::resource('income-reports','IncomeReportController');
+
+        Route::resource('users-environments','UsersEnvironmentController');
+        Route::get('find-users-environments','UsersEnvironmentController@findUsersEnvironment')->name('findUsersEnvironment');
+
+
+        Route::resource('environments','EnvironmentController');
+
+
+
+
+
+    });
+
+
+
+

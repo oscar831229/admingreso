@@ -8,7 +8,7 @@
 
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        
+
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- vendor css -->
@@ -37,7 +37,7 @@
         {{--  <link href="{{ asset('Gentelella/vendor/nprogress/nprogress.css') }}" rel="stylesheet">  --}}
         <!-- iCheck -->
         {{--  <link href="{{ asset('Gentelella/vendor/iCheck/skins/flat/green.css') }}" rel="stylesheet">  --}}
-        
+
         <!-- bootstrap-progressbar -->
         {{--  <link href="{{ asset('Gentelella/vendor/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css') }}" rel="stylesheet">  --}}
         <!-- JQVMap -->
@@ -52,19 +52,25 @@
         <link href="{{ asset('theme/lib/datatables/jquery.dataTables.css') }}" rel="stylesheet">
 
         <!-- Custom Theme Style -->
-        <link href="{{ asset('Gentelella/build/css/custom.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('Gentelella/build/css/custom.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('css/portal/style.css') }}">
 
         <!-- Css contenct -->
         @yield('css_custom')
 
-        
+        <style>
+            .bg-primary {
+                background-color: #2a59a5!important;
+            }
+        </style>
+
+
 
     </head>
     <body class="nav-md">
-      
+
         <div class="container body">
-            
+
             <div class="main_container">
 
                 <!-- Procesar petición ajax -->
@@ -77,13 +83,13 @@
                 <!-- Inicio head panel -->
                 @include('layouts.belectronica.head_panel')
                 <!-- Fin head panel -->
-      
+
                 <!-- page content -->
                 <div class="right_col" role="main">
                     @yield('content')
                 </div>
                 <!-- /page content -->
-      
+
                 <!-- footer content -->
                 <footer>
                     <div class="pull-right">
@@ -136,7 +142,7 @@
         <script src="{{ asset('Gentelella/vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>  --}}
 
 
-        <script src="{{ asset('theme/lib/popper.js/popper.js') }}"></script>        
+        <script src="{{ asset('theme/lib/popper.js/popper.js') }}"></script>
 
         <!-- plugins de validacion de campos del formulario  -->
         <script src="{{asset('js/plugins/jquery-validation/jquery.validate.min.js')}}"></script>
@@ -148,12 +154,12 @@
 
         <!-- Custom Theme Scripts -->
         <script src="{{ asset('js/portal/scripts.js') }}"></script>
-        <script src="{{ asset('js/portal/comunes.js') }}"></script>   
+        <script src="{{ asset('js/portal/comunes.js') }}"></script>
         <script src="{{ asset('Gentelella/build/js/custom.min.js') }}"></script>
 
         @yield("scriptsPlugins")
 
         @yield('scripts_content')
-        
+
     </body>
 </html>

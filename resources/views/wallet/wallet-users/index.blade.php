@@ -22,7 +22,7 @@
       }
     }
   </style>
-  
+
   <style>
     .table td {
       padding: 0.25rem !important;
@@ -39,10 +39,10 @@
     }
     .text-u {
       text-transform: uppercase !important;
-    } 
+    }
     .text-l {
       text-transform: lowercase !important;
-    } 
+    }
   </style>
   <link href="{{ asset('js/plugins/bootstrap-select/bootstrap-select.css') }}" rel="stylesheet">
   <link href="{{ asset('js/plugins/bootstrap-fileinput/css/fileinput.min.css') }}" rel="stylesheet">
@@ -52,7 +52,7 @@
       background: #fff;
       position: relative;
     }
-    
+
     .nav-pills-custom .nav-link.active {
         color: #45b649;
         background: #fff;
@@ -137,7 +137,7 @@
 
         <div class="card-body table-responsive p-0">
 
-          
+
 
           <table class="table table-hover" id="tbl-alert-donor" style="width: 100% !important;">
               <thead>
@@ -156,7 +156,7 @@
               </tbody>
           </table>
         </div>
-        
+
       </div><!-- br-section-wrapper -->
     </div><!-- br-pagebody -->
   </div>
@@ -167,7 +167,7 @@
       <div class="modal-content">
 
         <div class="modal-header text-white bg-primary">
-          <h4 class="modal-title" id="myModalLabel"><i class="fa fa-credit-card-alt mr-2" aria-hidden="true"></i>Estado de cuenta</h4>
+          <h4 class="modal-title" id="myModalLabel"><i class="fa fa-arrow-right mr-2" aria-hidden="true"></i>Estado de cuenta</h4>
           <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
           </button>
         </div>
@@ -221,9 +221,9 @@
                         <div class="card-body table-responsive p-0 mb-4">
 
                           <div class="mb-4 mt-4">
-            
+
                             {!! Form::open(['id'=>'form-transaction']) !!}
-                            
+
                             <div class="row">
                               <div class="col-sm-2">
                                 <div class="form-group">
@@ -239,7 +239,7 @@
                               </div>
                               <div class="col-sm-2">
                                 <div class="form-group">
-                                  <label for="to_date">Fecha final</label> 
+                                  <label for="to_date">Fecha final</label>
                                   {!! Form::date('to_date', date('Y-m-d'), array('class' => 'form-control form-control-sm','id'=>'to_date', 'placeholder' => 'Seleccione..', 'style' => 'height: 25px;', 'required'=>'required', 'data-live-search' => 'true')) !!}
                                 </div>
                               </div>
@@ -251,13 +251,13 @@
                               </div>
                               <div class="col-sm-2">
                                 <div class="form-group">
-                                  <label for="">&nbsp;</label> 
+                                  <label for="">&nbsp;</label>
                                   <a href="javascript:void(0)" style="height: 25px;" id="btn-refresh" class="btn btn-block btn-outline-secondary btn-sm"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>refrescar</a>
                                 </div>
                               </div>
                             </div>
                             {!! Form::close() !!}
-                
+
                           </div>
 
                           <table class="table table-hover width60" id="tbl-waller-user-movements">
@@ -310,6 +310,6 @@
     </div>
   </div>
 
-  
+
 
 @endsection

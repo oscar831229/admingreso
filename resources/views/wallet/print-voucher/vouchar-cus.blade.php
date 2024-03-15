@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-  <title>Tiquetera electrónica</title>
+  <title>{{ config('app.name', 'Laravel') }}</title>
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <style type="text/css">
 	td, span, div, th, pre {
@@ -29,12 +29,12 @@ TIQUETERA ELECTRÓNICA CAJASAN
 TRANSACCIÓN CUS No. {{ $movement->cus }}
 <br>
 CONSUMO EN ESTABLECIMIENTO
-<br>	  
+<br>
 {{ $movement->store->name }}
 <br>
 Fecha: {{ $movement->created_at }}
 <br>
-Cajero: {{ $movement->user_code }}  
+Cajero: {{ $movement->user_code }}
 </center>
 </div>
 <br>
@@ -58,7 +58,7 @@ Cajero: {{ $movement->user_code }}
 		<tr>
 			<td>{{ $ticket->number_ticket }}</td>
 			<td>{{ number_format($ticket->value, 2, ',', '.') }}</td>
-		</tr>	
+		</tr>
 		@endforeach
 	</tbody>
 </table>

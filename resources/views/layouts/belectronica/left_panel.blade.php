@@ -3,7 +3,7 @@
   <div class="left_col scroll-view">
 
     <div class="navbar nav_title" style="border: 0;">
-      <a href="index.html" class="site_title" style="font-size: 18px;"><i class="fa fa-credit-card"></i> <span>Tiquetera electrónica</span></a>
+      <a href="#" class="site_title" style="font-size: 18px;"><i class="fa fa-arrow-right"></i> <span>{{ config('app.name', 'Laravel') }}</span></a>
     </div>
 
     <div class="clearfix"></div>
@@ -14,7 +14,7 @@
           <img src="{{ asset(imgperfil()) }}" alt="..." class="img-circle profile_img">
           </div>
           <div class="profile_info">
-          <span>Bienbenido,</span>
+          <span>Bienvenido,</span>
           <h2>{{ auth()->user()->name ?? 'Usuario externo' }}</h2>
           </div>
       </div>
@@ -55,6 +55,6 @@
       </div>
     </div>
     <!-- /sidebar menu -->
-    
+
   </div>
 </div>

@@ -114,6 +114,32 @@ class User extends Authenticatable
 
     }
 
+    public function getUsersEnvironments(){
+
+        $entities_user = $this->select(
+                        'icm_environments.id as icm_entities_id',
+                        'icm_environments.id as icm_entities_code',
+                        'icm_environments.name as icm_entities_name',
+                        'icm_environments.state as icm_entities_state',
+                        'icm_environment_user.id as user_icm_entities_id'
+                    )
+                    ->crossJoin('icm_environments')
+                    ->leftJoin('icm_environment_user', function($query){
+                        $query->on('icm_environment_user.user_id','=','users.id');
+                        $query->on('icm_environment_user.icm_environment_id','=','icm_environments.id');
+                    })
+                    ->where(['users.id' => $this->id])
+                    ->get();
+
+        return $entities_user;
+
+    }
+
+    public function icm_environments(){
+        return $this->belongsToMany('App\Models\Income\IcmEnvironment');
+    }
+
+
 
     public function companies()
     {

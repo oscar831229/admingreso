@@ -10,6 +10,19 @@ use App\Clases\Mail\Correo;
 use App\Clases\Mail\sendMail;
 
 
+use App\Models\Amadeus\Menu;
+use App\Models\Amadeus\MenuItem;
+use App\Models\Amadeus\SalonMenuItem;
+
+use App\Models\Income\IcmMenu;
+use App\Models\Income\IcmMenuItem;
+use App\Models\Income\IcmEnvironmentIcmMenuItem;
+use App\Models\Income\IcmEnvironmentIncomeItem;
+use App\Models\Income\IcmAffiliateCategory;
+use App\Models\Income\IcmEnvironmentIncomeItemDetail;
+use App\Models\Income\IcmEnvironment;
+
+
 use \Mpdf\Mpdf as PDF;
 
 
@@ -43,43 +56,43 @@ if (! function_exists('sanear_string')) {
     function sanear_string($string)
     {
         $string = trim($string);
-    
+
         $string = str_replace(
             array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
             array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
             $string
         );
-    
+
         $string = str_replace(
             array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
             array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'),
             $string
         );
-    
+
         $string = str_replace(
             array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
             array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'),
             $string
         );
-    
+
         $string = str_replace(
             array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
             array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
             $string
         );
-    
+
         $string = str_replace(
             array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
             array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'),
             $string
         );
-    
+
         $string = str_replace(
             array('ñ', 'Ñ', 'ç', 'Ç'),
             array('n', 'N', 'c', 'C',),
             $string
         );
-    
+
         //Esta parte se encarga de eliminar cualquier caracter extraño
         $string = str_replace(
             array("\\", "¨", "º", "-", "~",
@@ -93,7 +106,7 @@ if (! function_exists('sanear_string')) {
             '',
             $string
         );
-    
+
         return $string;
     }
 }
@@ -109,11 +122,11 @@ if (!function_exists('findEntity')) {
 
         $bd = DB::connection('INDIGO019')
             ->table('INENTIDAD');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('NOMENTIDA', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
@@ -128,11 +141,11 @@ if (!function_exists('findUnity')) {
 
         $bd = DB::connection('INDIGO019')
             ->table('INUNIFUNC');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('UFUDESCRI', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
@@ -156,16 +169,15 @@ if (!function_exists('findmunicipality')) {
 
         $bd = DB::connection()
             ->table('pv_municipios');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('nommunicipio', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
 }
-
 
 if (!function_exists('findUser')) {
     function findUser($name)
@@ -175,11 +187,29 @@ if (!function_exists('findUser')) {
 
         $bd = DB::connection()
             ->table('users');
-        
+
         foreach ($names as $index=>$value){
             $bd->whereRaw("name like '%{$value}%'  || login like '%{$value}%'");
         }
-       
+
+        return  $bd->get();
+
+    }
+}
+
+if (!function_exists('findCompanyAgreement')) {
+    function findCompanyAgreement($name)
+    {
+        $names = explode(' ', $name);
+        $where = "";
+
+        $bd = DB::connection()
+            ->table('icm_companies_agreements');
+
+        foreach ($names as $index=>$value){
+            $bd->whereRaw("name like '%{$value}%'  || document_number like '%{$value}%'");
+        }
+
         return  $bd->get();
 
     }
@@ -193,7 +223,7 @@ if (!function_exists('findWalletUsers')) {
 
         $bd = DB::table('wallet_users')
             ->selectRaw("id, CONCAT(IFNULL(first_name, ''), ' ', IFNULL(second_name,''), ' ', IFNULL(first_surname,''), ' ', IFNULL(second_surname,'')) as name");
-        
+
         foreach ($names as $index=>$value){
             $bd->whereRaw("CONCAT(IFNULL(first_name, ''), ' ', IFNULL(second_name,''), ' ', IFNULL(first_surname,''), ' ', IFNULL(second_surname,'')) like '%{$value}%'");
         }
@@ -222,11 +252,11 @@ if (!function_exists('findentidad')) {
 
         $bd = DB::connection()
             ->table('entities');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('name', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
@@ -240,11 +270,11 @@ if (!function_exists('findMedicalUnity')) {
 
         $bd = DB::connection()
             ->table('medical_units');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('name', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
@@ -259,11 +289,11 @@ if (!function_exists('findNationality')) {
 
         $bd = DB::connection()
             ->table('countries');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('name', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
@@ -320,18 +350,18 @@ if (!function_exists('findRiskManagement')) {
 
         $bd = DB::connection()
             ->table('occupational_risk_managers');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('name', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
 }
 
 if (!function_exists('findPensionManagers')) {
-    
+
     function findPensionManagers($name)
     {
         $names = explode(' ', $name);
@@ -339,18 +369,18 @@ if (!function_exists('findPensionManagers')) {
 
         $bd = DB::connection()
             ->table('pension_fund_managers');
-        
+
         foreach ($names as $index=>$value){
             $bd->where('name', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
 }
 
 if (!function_exists('findProcessLeader')) {
-    
+
     function findProcessLeader($name)
     {
         $names = explode(' ', $name);
@@ -361,18 +391,18 @@ if (!function_exists('findProcessLeader')) {
             ->select('people.*')
             ->join('contracts','contracts.person_id','people.id')
             ->where(['contracts.is_boss' => 'S', ]);
-        
+
         foreach ($names as $index=>$value){
             $bd->whereRaw("concat(people.first_name,' ',people.second_name,' ',people.first_surname,' ',people.second_surname) like '%{$value}%'");
         }
-       
+
         return  $bd->get();
 
     }
 }
 
 if (!function_exists('findCostCenter')) {
-    
+
     function findCostCenter($name)
     {
         $names = explode(' ', $name);
@@ -381,11 +411,11 @@ if (!function_exists('findCostCenter')) {
         $bd = DB::connection()
             ->table('cost_centers');
 
-        
+
         foreach ($names as $index=>$value){
             $bd->whereRaw("name like '%{$value}%'");
         }
-       
+
         return  $bd->get();
 
     }
@@ -393,11 +423,11 @@ if (!function_exists('findCostCenter')) {
 
 
 if (!function_exists('findDocumentElectronicState')) {
-    
+
     function findDocumentElectronicState($state)
     {
-        $sql = "SELECT * FROM electronic_document_traceabilities 
-                WHERE 
+        $sql = "SELECT * FROM electronic_document_traceabilities
+                WHERE
                     CASE
                         WHEN cisi_process_number = 0 THEN 'noqpar'
                         WHEN carvajal_legal_status = 'ACCEPTED' THEN 'accept'
@@ -409,7 +439,7 @@ if (!function_exists('findDocumentElectronicState')) {
 }
 
 if (!function_exists('findSupervidorName')) {
-    
+
     function findSupervidorName($name)
     {
         $names = explode(' ', $name);
@@ -418,24 +448,24 @@ if (!function_exists('findSupervidorName')) {
         $bd = DB::connection()
             ->table('supervisors as s')
             ->selectRaw("
-                s.id as supervisor_id, 
+                s.id as supervisor_id,
                 concat(IFNULL(p.first_name,''),' ',IFNULL(p.second_name,''),' ',IFNULL(p.first_surname,''),' ', IFNULL(p.second_surname,'')) as supervidor,
                 p.document_number
             ")
             ->join('people as p', 'p.id', '=', 's.person_id');
-        
+
         foreach ($names as $index=>$value){
             $bd->where(DB::raw("concat(IFNULL(p.first_name,''),' ',IFNULL(p.second_name,''),' ',IFNULL(p.first_surname,''),' ', IFNULL(p.second_surname,''))"), 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
-        
+
     }
 }
 
 
 if (!function_exists('findOfficialNameVie')) {
-    
+
     function findOfficialNameVie($name)
     {
         $names = explode(' ', $name);
@@ -444,23 +474,23 @@ if (!function_exists('findOfficialNameVie')) {
         $bd = DB::connection('SIGH')
             ->table('VIE19.Payroll.Employee AS pe')
             ->selectRaw("
-                pe.Id, 
+                pe.Id,
                 ct.Nit,
-                ct.Name 
+                ct.Name
             ")
             ->join('VIE19.Common.ThirdParty AS ct', 'ct.Id', '=', 'pe.ThirdPartyId');
-        
+
         foreach ($names as $index=>$value){
             $bd->where(DB::raw("ct.Name"), 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
-        
+
     }
 }
 
 if (!function_exists('findPeopleName')) {
-    
+
     function findPeopleName($name)
     {
 
@@ -514,18 +544,18 @@ if (!function_exists('findPeopleName')) {
             ->join('people as p', 'p.id', '=', 'c.person_id')
             ->join('cost_centers AS cc', 'cc.id', '=', 'c.cost_center_id')
             ->where(['c.state' => 'A']);
-        
+
         foreach ($names as $index=>$value){
             $bd->where(DB::raw("concat(IFNULL(p.first_name,''),' ',IFNULL(p.second_name,''),' ',IFNULL(p.first_surname,''),' ', IFNULL(p.second_surname,''))"), 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
-        
+
     }
 }
 
 if (!function_exists('findCodeDane')) {
-    
+
     function findCodeDane($code)
     {
         $codes = explode(' ', $code);
@@ -535,13 +565,13 @@ if (!function_exists('findCodeDane')) {
             ->table('budget.dane_codes as dc')
             ->selectRaw('dc.*, dcp.id as dane_code_id, dcp.code as dane_code, dcp.title as dane_code_title')
             ->leftJoin('budget.dane_codes as dcp', 'dcp.id', '=', 'dc.dane_code_id');
-        
+
         foreach ($codes as $index=>$value){
             $bd->where('dc.code', 'like', '%'.$value.'%');
         }
 
         $bd->orderByRaw('dc.code');
-       
+
         return  $bd->get();
 
     }
@@ -549,8 +579,8 @@ if (!function_exists('findCodeDane')) {
 
 
 if (!function_exists('BuildTree')) {
-    
-    function BuildTree($data, $parent = 0, $k=false) 
+
+    function BuildTree($data, $parent = 0, $k=false)
     {
         static $i = 1;
         if ($data[$parent]) {
@@ -575,11 +605,11 @@ if (!function_exists('BuildTree')) {
 }
 
 
-// 
+//
 
 if (!function_exists('findCodeCategory')) {
-    
-    function findCodeCategory($code, $year) 
+
+    function findCodeCategory($code, $year)
     {
         $codes = explode(' ', $code);
         $where = "";
@@ -599,15 +629,15 @@ if (!function_exists('findCodeCategory')) {
         foreach ($codes as $index=>$value){
             $bd->where('c.Code', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
 }
 
 if (!function_exists('findNameCategory')) {
-    
-    function findNameCategory($name, $year) 
+
+    function findNameCategory($name, $year)
     {
         $codes = explode(' ', $name);
         $where = "";
@@ -627,15 +657,15 @@ if (!function_exists('findNameCategory')) {
         foreach ($codes as $index=>$value){
             $bd->where('c.Name', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
 }
 
 if (!function_exists('findCodeDaneAuto')) {
-    
-    function findCodeDaneAuto($code) 
+
+    function findCodeDaneAuto($code)
     {
         $codes = explode(' ', $code);
         $where = "";
@@ -652,7 +682,7 @@ if (!function_exists('findCodeDaneAuto')) {
         foreach ($codes as $index=>$value){
             $bd->where('dc.code', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
@@ -660,8 +690,8 @@ if (!function_exists('findCodeDaneAuto')) {
 
 
 if (!function_exists('findNameDane')) {
-    
-    function findNameDane($name) 
+
+    function findNameDane($name)
     {
         $codes = explode(' ', $name);
         $where = "";
@@ -678,14 +708,14 @@ if (!function_exists('findNameDane')) {
         foreach ($codes as $index=>$value){
             $bd->where('dc.title', 'like', '%'.$value.'%');
         }
-       
+
         return  $bd->get();
 
     }
 }
 
 if (!function_exists('getUserIpAddr')) {
-    
+
     function getUserIpAddr(){
         $ipaddress = '';
         if (isset($_SERVER['HTTP_CLIENT_IP']))
@@ -701,7 +731,7 @@ if (!function_exists('getUserIpAddr')) {
         else if(isset($_SERVER['REMOTE_ADDR']))
             $ipaddress = $_SERVER['REMOTE_ADDR'];
         else
-            $ipaddress = 'UNKNOWN';    
+            $ipaddress = 'UNKNOWN';
         return $ipaddress;
     }
 }
@@ -711,8 +741,8 @@ if (!function_exists('getUserIpAddr')) {
  * requerida en el modulo de presupuesto
  */
 if (!function_exists('getBudgetaryValidity')) {
-    
-    function getBudgetaryValidity() 
+
+    function getBudgetaryValidity()
     {
         if (request()->session()->exists('budgetary_validity')) {
             return Session::get('budgetary_validity');
@@ -737,8 +767,8 @@ if (!function_exists('getBudgetaryValidity')) {
  * requerida en el modulo de presupuesto
  */
 if (!function_exists('getBudgetaryValidityObligationProcessed')) {
-    
-    function getBudgetaryValidityObligationProcessed() 
+
+    function getBudgetaryValidityObligationProcessed()
     {
 
         if (request()->session()->exists('budgetary_validity_obligation_processed')) {
@@ -760,8 +790,8 @@ if (!function_exists('getBudgetaryValidityObligationProcessed')) {
 }
 
 if (!function_exists('getBudgetaryValidityCommitmentProcessed')) {
-    
-    function getBudgetaryValidityCommitmentProcessed() 
+
+    function getBudgetaryValidityCommitmentProcessed()
     {
 
         if (request()->session()->exists('budgetary_validity_commitment_processed')) {
@@ -783,8 +813,8 @@ if (!function_exists('getBudgetaryValidityCommitmentProcessed')) {
 }
 
 if (!function_exists('getBudgetaryValidityPaymentProcessed')) {
-    
-    function getBudgetaryValidityPaymentProcessed() 
+
+    function getBudgetaryValidityPaymentProcessed()
     {
 
         if (request()->session()->exists('budgetary_validity_payment_processed')) {
@@ -819,7 +849,7 @@ if (!function_exists('GenerarPdfRemovablePayment')) {
             'margin_footer' => '2',
         ]);
 
-        
+
         $mpdf->WriteHTML($document->content_html);
 
         $path_file = storage_path('removable/').$document->file_name;
@@ -844,14 +874,14 @@ if (!function_exists('GenerarPdfDocument')) {
             'margin_footer' => '2',
         ]);
 
-        
+
         $mpdf->WriteHTML($document->content_html);
 
         $path_file = storage_path('temp');
         if(!file_exists($path_file)){
             File::makeDirectory($path_file, $mode = 0777, true, true);
         }
-        
+
         $path_file = $path_file.'/'.$document->file_name;
         $mpdf->Output($path_file);
 
@@ -869,9 +899,9 @@ if (!function_exists('testConnectionEmail')) {
             'success' => true,
             'error' => ''
         ];
-        
 
-        # Cuenta SMTP    
+
+        # Cuenta SMTP
         $cuenta = new Cuenta;
         $cuenta->setServer($parameters->server)
             ->setPuerto($parameters->puerto)
@@ -893,7 +923,7 @@ if (!function_exists('testConnectionEmail')) {
 
         $sendMail->send();
 
-       
+
 
         if(!empty($sendMail->error)){
             $response['success'] = false;
@@ -913,7 +943,7 @@ if (!function_exists('getDateSpanish')) {
 
         $diassemana = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sábado");
         $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
- 
+
         return  $diassemana[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y').' '.strftime("%H:%M") ; exit;
         //Salida: Miercoles 05 de Septiembre del 2016
 
@@ -943,14 +973,91 @@ if (!function_exists('generarPdfHtml')) {
             'margin_bottom' => '20',
             'margin_footer' => '2',
         ]);
-        
+
         $mpdf->WriteHTML($documento->html);
         $path_file = storage_path('app/cotizaciones/').$documento->nombre_archivo;
         $mpdf->Output($path_file);
 
         return $path_file;
-        
+
 
     }
 }
- 
+
+if (!function_exists('synchronizePOSSystem')) {
+    function synchronizePOSSystem()
+    {
+        # Sincronizar menus, menus_itmes, salon_menus_items
+        $menus = Menu::all();
+        foreach ($menus as $key => $menu) {
+            $icmmenu = IcmMenu::find($menu->id);
+            if(!$icmmenu){
+                $icmmenu = new IcmMenu;
+                $icmmenu->id             = $menu->id;
+                $icmmenu->name           = $menu->nombre;
+                $icmmenu->requested_name = $menu->nombre_pedido;
+                $icmmenu->state          = $menu->estado;
+                $icmmenu->user_created  = 1;
+                $icmmenu->save();
+            }else{
+                $icmmenu->update([
+                    'requested_name' => $menu->nombre_pedido,
+                    'state'          => $menu->estado
+                ]);
+            }
+
+        }
+
+        $menusitems = MenuItem::all();
+        foreach ($menusitems as $key => $menusitem) {
+            $icmmenusitem = IcmMenuItem::find($menusitem->id);
+            if(!$icmmenusitem){
+                $icmmenusitem = new IcmMenuItem;
+                $icmmenusitem->id                     = $menusitem->id;
+                $icmmenusitem->icm_menu_id            = $menusitem->menus_id;
+                $icmmenusitem->name                   = $menusitem->nombre;
+                $icmmenusitem->requested_name         = $menusitem->nombre_pedido;
+                $icmmenusitem->barcode                = $menusitem->codigo_barras;
+                $icmmenusitem->value                  = $menusitem->valor;
+                $icmmenusitem->percentage_iva         = $menusitem->porcentaje_iva;
+                $icmmenusitem->percentage_impoconsumo = $menusitem->porcentaje_impoconsumo;
+                $icmmenusitem->state                  = $menusitem->estado;
+                $icmmenusitem->user_created           = 1;
+                $icmmenusitem->save();
+            }else{
+                $icmmenusitem->update([
+                    'requested_name'         => $menusitem->nombre_pedido,
+                    'barcode'                => $menusitem->codigo_barras,
+                    'value'                  => $menusitem->valor,
+                    'percentage_iva'         => $menusitem->porcentaje_iva,
+                    'percentage_impoconsumo' => $menusitem->porcentaje_impoconsumo,
+                    'state'                  => $menusitem->estado
+                ]);
+            }
+
+        }
+
+        # SALON MENUS ITEMS
+        $salonmenuitems = SalonMenuItem::all();
+        foreach ($salonmenuitems as $key => $salonmenuitem) {
+            $icmmenusitem = IcmEnvironmentIcmMenuItem::find($salonmenuitem->id);
+            if(!$icmmenusitem){
+                $icmmenusitem = new IcmEnvironmentIcmMenuItem;
+                $icmmenusitem->id                 = $salonmenuitem->id;
+                $icmmenusitem->icm_environment_id = $salonmenuitem->salon_id;
+                $icmmenusitem->icm_menu_item_id   = $salonmenuitem->menus_items_id;
+                $icmmenusitem->value              = $salonmenuitem->valor;
+                $icmmenusitem->state              = $salonmenuitem->estado;
+                $icmmenusitem->user_created       = 1;
+                $icmmenusitem->save();
+            }else{
+                $icmmenusitem->update([
+                    'value' => $salonmenuitem->valor,
+                    'state' => $salonmenuitem->estado,
+                ]);
+            }
+
+        }
+    }
+}
+

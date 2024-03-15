@@ -21,12 +21,21 @@
 
     <!-- Custom Theme Style -->
     <link href="{{ asset('Gentelella/build/css/custom.min.css') }}" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif !important;
+            margin: 0 !important;
+            background: url({{ asset('img/fondo.jpg') }}) !important;
+            background-size: cover !important;
+            background-attachment: fixed !important;
+        }
+    </style>
 
 </head>
 <body class="login">
-    
+
     @yield('content')
-    
+
     <!-- Scripts generales -->
     <script src="{{ asset('theme/lib/jquery/jquery.js') }}"></script>
     <script src="{{ asset('theme/lib/jquery-ui/jquery-ui.js') }}"></script>
@@ -34,10 +43,10 @@
     <script src="{{ asset('theme/lib/bootstrap/bootstrap.js') }}"></script>
     <script src="{{ asset('theme/lib/moment/moment.js') }}"></script>
 
-    
+
     <script src="{{ asset('theme/lib/jquery-switchbutton/jquery.switchButton.js') }}"></script>
     <script src="{{ asset('theme/lib/peity/jquery.peity.js') }}"></script>
-    
+
     <!-- plugins de validacion de campos del formulario  -->
     <script src="{{asset("js/plugins/jquery-validation/jquery.validate.min.js")}}"></script>
     <script src="{{asset("js/plugins/jquery-validation/localization/messages_es.min.js")}}"></script>
@@ -51,7 +60,7 @@
 
     {{-- JS CUSTOM  --}}
     <script src="{{ asset('js/portal/scripts.js') }}"></script>
-    <script src="{{ asset('js/portal/comunes.js') }}"></script>   
+    <script src="{{ asset('js/portal/comunes.js') }}"></script>
 
     <!-- SCRIPT PAGE -->
     @yield('scripts_content')

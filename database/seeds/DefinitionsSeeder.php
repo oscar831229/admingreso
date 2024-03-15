@@ -15,9 +15,9 @@ class DefinitionsSeeder extends Seeder
      */
     public function run()
     {
-        
+
         $user = User::where(['login' => 'admin'])->first();
-    
+
         $definiciones = [
             [
                 'code' => 'identification_document_types',
@@ -33,12 +33,14 @@ class DefinitionsSeeder extends Seeder
                     ['code' => '9', 'name' => 'No identificado', 'details' => 'No identificado'],
                 ]
             ],[
-                'code' => 'transaction_document_types',
-                'name' => 'Tipos de documentos utilizados en transacciones',
-                'details' => 'Tipos de documentos utilizados en transacciones',
+                'code' => 'types_of_income',
+                'name' => 'Tipos de ingreso a sedes',
+                'details' => 'Tipos de ingresos',
                 'detaildefinitions' => [
-                    ['code' => '1', 'name' => 'Factura', 'details' => 'Factura'],
-                    ['code' => '2', 'name' => 'Recibo de caja', 'details' => 'Recibo de caja'],
+                    ['code' => '1', 'name' => 'AFILIADO'           , 'details' => 'AFILIADO'],
+                    ['code' => '2', 'name' => 'PRESENTADO'         , 'details' => 'PRESENTADO'],
+                    ['code' => '3', 'name' => 'CAJAS SIN FRONTERAS', 'details' => 'CAJAS SIN FRONTERAS'],
+                    ['code' => '4', 'name' => 'PARTICULAR'         , 'details' => 'PARTICULAR']
                 ]
             ]
         ];
@@ -52,7 +54,7 @@ class DefinitionsSeeder extends Seeder
             }
 
             foreach ($definicion['detaildefinitions'] as $key => $detaildefinition) {
-                
+
                 $detailexist = DetailDefinition::where(['code' => $detaildefinition['code'], 'definition_id' => $definition->id])->first();;
 
                 if(!$detailexist){
@@ -60,7 +62,7 @@ class DefinitionsSeeder extends Seeder
                 }
 
             }
-            
+
         }
 
     }

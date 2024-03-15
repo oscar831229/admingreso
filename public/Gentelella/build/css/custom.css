@@ -802,10 +802,10 @@
   content: "\e260"; }
 
 .left_col {
-  background: #2A3F54; }
+  background: #2a59a5 !important; }
 
 .container {
-  width: 100%;
+  width: 100% !important;
   padding: 0;
   max-width: 100%; }
 
@@ -1031,7 +1031,7 @@ body .container.body .right_col {
 .nav_title {
   width: 230px;
   float: left;
-  background: #2A3F54;
+  background: #2a59a5 !important;
   border-radius: 0;
   height: 57px;
   padding: 0px; }
@@ -1152,7 +1152,7 @@ body .container.body .right_col {
 
 body {
   color: #73879C;
-  background: #2A3F54;
+  background: #2a59a5 !important;
   font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -1341,7 +1341,7 @@ a:hover, a:focus {
   padding-left: 36px; }
 
 .nav-md ul.nav.child_menu li:before {
-  background: #425668;
+  background: #2a59a5;
   bottom: auto;
   content: "";
   height: 8px;
@@ -1354,7 +1354,7 @@ a:hover, a:focus {
   border-radius: 50%; }
 
 .nav-md ul.nav.child_menu li:after {
-  border-left: 1px solid #425668;
+  border-left: 1px solid #2a59a5;
   bottom: 0;
   content: "";
   left: 27px;
@@ -1395,8 +1395,8 @@ a:hover, a:focus {
 
 .nav.side-menu > li.active > a {
   text-shadow: rgba(0, 0, 0, 0.25) 0 -1px 0;
-  background: -webkit-gradient(linear, left top, left bottom, from(#334556), to(#2C4257)), #2A3F54;
-  background: linear-gradient(#334556, #2C4257), #2A3F54;
+  background: -webkit-gradient(linear, left top, left bottom, from(#334556), to(#2C4257)), #2a59a5;
+  background: linear-gradient(#334556, #2C4257), #2a59a5;
   -webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 1px 0, inset rgba(255, 255, 255, 0.16) 0 1px 0;
   box-shadow: rgba(0, 0, 0, 0.25) 0 1px 0, inset rgba(255, 255, 255, 0.16) 0 1px 0; }
 
@@ -1422,7 +1422,7 @@ a:hover, a:focus {
 
 .site_title:hover, .site_title:focus {
   text-decoration: none; }
-  
+
 .site_title span:hover{
   background: #fff;
 }
@@ -2248,7 +2248,7 @@ span.right {
   padding: 5px 0 0 0;
   position: fixed;
   width: 230px;
-  background: #2A3F54; }
+  background: #2a59a5; }
 
 .sidebar-footer a {
   padding: 7px 0 3px;
