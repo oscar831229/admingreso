@@ -89,18 +89,34 @@ services = {
 
         const incomeservicesJson = sessionStorage.getItem('envei_income' + this.environment.id);
         const incomeservices = JSON.parse(incomeservicesJson);
+
         tr = '';
         $('#tbl-income-items tbody').empty();
         var number = 1;
-        $.each(incomeservices, function(index, service){
+
+        // head
+        var head = ` <tr>
+                        <th class="text-left">#</th>
+                        <th class="text-left" style="width:70%">SERVICIO INGRESO</th>
+                        <th class="text-center">VENTA</th>`;
+        $.each(incomeservices.rate_types, function(index, rate_type){
+            head += `<th class="text-center" style="width:10%">${rate_type.name}</th>`;
+        });
+        head += `</tr>`
+        $('#tbl-income-items thead').html(head);
+
+
+
+        $.each(incomeservices.incomeservices, function(index, service){
             tr += `
                 <tr>
                     <td>${number}</td>
                     <td>${service.name}</td>
-                    <td class="text-center">${service.income_type}</td>
-                    <td class="text-center"><input placeholder="" data-income_item_id="${service.id}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>
-                </tr>
-            `;
+                    <td class="text-center">${service.income_type}</td>`;
+                    $.each(incomeservices.rate_types, function(index, rate_type){
+                        tr += `<td class="text-center"><input placeholder="" data-rate_type_id="${rate_type.id}" data-income_item_id="${service.id}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>`;
+                    });
+            tr += `</tr>`;
             number++;
         });
 
@@ -303,6 +319,7 @@ services = {
             if($(element).val().trim() != ''){
                 var rate = {}
                 rate.icm_environment_income_item_id = $(element).data('income_item_id');
+                rate.icm_rate_type_id               = $(element).data('rate_type_id');
                 rate.value                          = $(element).val();
                 income_rate.push(rate);
             }
@@ -400,7 +417,7 @@ loadDataForm = function(idform, data){
 
 loadIncomeRates = function(idform, data){
     $.each(data, function(index, value){
-        $(`input[data-income_item_id=${value.icm_environment_income_item_id}]`).val(value.value).trigger('change');
+        $(`input[data-income_item_id=${value.icm_environment_income_item_id}][data-rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
     });
 }
 

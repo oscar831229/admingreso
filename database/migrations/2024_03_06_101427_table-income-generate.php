@@ -138,6 +138,7 @@ class TableIncomeGenerate extends Migration
             $table->unsignedBigInteger('icm_environment_income_item_id');
             $table->unsignedBigInteger('types_of_income_id');
             $table->unsignedBigInteger('icm_affiliate_category_id');
+            $table->unsignedBigInteger('icm_rate_type_id');
             $table->decimal('value', 20, 2);
             $table->string('state', 1  )->default('A');
             $table->unsignedBigInteger('user_created');
@@ -197,6 +198,7 @@ class TableIncomeGenerate extends Migration
                 ->on('icm_environment_income_items')
                 ->onDelete('restrict')
                 ->onUpdate('restrict');
+            $table->unsignedBigInteger('icm_rate_type_id');
             $table->decimal('value', 20, 2);
             $table->string('state', 1  )->default('A');
             $table->unsignedBigInteger('user_created');
@@ -204,12 +206,53 @@ class TableIncomeGenerate extends Migration
             $table->timestamps();
         });
 
+        schema::create('icm_rate_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 150);
+            $table->string('name', 150);
+            $table->string('icon', 150)->nullable();
+            $table->string('state', 1  )->default('A');
+            $table->unsignedBigInteger('user_created');
+            $table->unsignedBigInteger('user_updated')->nullable();
+            $table->timestamps();
+        });
 
+        schema::create('icm_special_rates', function (Blueprint $table) {
+            $table->id();
+            $table->string('year', 4);
+            $table->date('date');
+            $table->string('name', 150);
+            $table->string('description')->nullable();
+            $table->string('state', 1)->default('A');
+            $table->unsignedBigInteger('user_created');
+            $table->unsignedBigInteger('user_updated')->nullable();
+            $table->timestamps();
+            $table->index('year');
+        });
 
+        schema::create('icm_special_rate_logs', function (Blueprint $table) {
+            $table->id();
+            $table->string('year', 4);
+            $table->date('date');
+            $table->string('name', 150);
+            $table->string('description')->nullable();
+            $table->string('state', 1)->default('A');
+            $table->unsignedBigInteger('user_created');
+            $table->unsignedBigInteger('user_updated')->nullable();
+            $table->timestamps();
+            $table->index('year');
+        });
 
-
-
-
+        schema::create('icm_family_compensation_funds', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 10);
+            $table->string('document_number', 15);
+            $table->string('name', 150);
+            $table->string('state', 1)->default('A');
+            $table->unsignedBigInteger('user_created');
+            $table->unsignedBigInteger('user_updated')->nullable();
+            $table->timestamps();
+        });
 
 
     }
@@ -223,6 +266,7 @@ class TableIncomeGenerate extends Migration
     {
         Schema::dropIfExists('icm_environment_user');
         Schema::dropIfExists('icm_environments');
+
 
     }
 }

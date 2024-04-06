@@ -43,48 +43,6 @@
 
     });
 
-    Route::group(['middleware' => ['auth'],'prefix' => 'wallet', 'namespace' => 'wallet'], function() {
-
-        # COMERCIOS
-        Route::resource('business','BusinessController');
-        Route::get('details-business', 'BusinessController@getDetailBusiness');
-
-        # PERMISOS COMERCIOS
-        Route::resource('business-users','BusinessUsersController');
-        Route::get('finduser/business-users', 'BusinessUsersController@findUser')->name('find.user');
-        Route::get('list-stores/{userid}', 'BusinessUsersController@loadUserPermissions')->name('load.user');
-
-        # TIPO DE TRANSACCION
-        Route::resource('movement-types','MovementTypesController');
-        Route::get('details-movement-types', 'MovementTypesController@getMovementTypes');
-
-
-        # USUARIOS TIQUETERA ELECTRONICA
-        Route::resource('wallet-users','WalletUsersController');
-        Route::post('detail-wallet-users','WalletUsersController@detailsWalletUsers');
-
-        # TRANSACCIONES
-        Route::resource('transactions','TransactionsController');
-        Route::post('detail-transactions','TransactionsController@getTransactions');
-
-        # REPORTES
-        Route::resource('wallet-reports','WalletReportController');
-
-        # FUNCION BUSCAR USUARIOS TIQUETERA
-        Route::get('find-wallet-user', 'WalletUsersController@findWalletUser');
-        Route::post('wallet-user-transactions', 'WalletUsersController@getTransactions');
-
-        # BOLSILLO DISPONIBLES
-        Route::resource('electrical-pockets','ElectricalPocketController');
-        Route::get('details-electrical-pockets', 'ElectricalPocketController@getDetailElectricalPockets');
-        Route::get('wallet-user-tickets/{electrical_pocket_wallet_user_id}', 'ElectricalPocketController@getDetailElectricalPocketTickets');
-
-        # CONSECUTIVOS TIQUETERA
-        Route::resource('consecutive-tickets','ConsecutiveTicketController');
-        Route::get('details-consecutive-tickets', 'ConsecutiveTicketController@getDetailConsecutiveTickets');
-
-    });
-
     Route::group(['middleware' => ['auth'],'prefix' => 'income', 'namespace' => 'income'], function() {
 
         Route::resource('parameterization-services','ParameterizationServiceController');
@@ -92,12 +50,9 @@
         Route::get('environment-menus-items/{environment_id}','ParameterizationServiceController@getEnvironmentMenusItems');
         Route::get('environment-income-services/{environment_id}','ParameterizationServiceController@getEnvironmentIncomeServices');
 
-
-
         Route::resource('parameterization-companies','ParameterizationCompanyController');
         Route::get('find-icm-companies-agreement','ParameterizationCompanyController@findCompaniesAgreement')->name('findCompaniesAgreement');
         Route::post('datatable-parameterization-companies','ParameterizationCompanyController@datatableParameterizationCompanies');
-
 
         Route::resource('parameterization-agreements','ParameterizationAgreementController');
         Route::post('datatable-parameterization-agreements', 'ParameterizationAgreementController@datatableParameterizationAgreements');
@@ -112,12 +67,15 @@
         Route::resource('users-environments','UsersEnvironmentController');
         Route::get('find-users-environments','UsersEnvironmentController@findUsersEnvironment')->name('findUsersEnvironment');
 
-
         Route::resource('environments','EnvironmentController');
 
+        Route::resource('rate-types','RateTypeController');
+        Route::post('datatable-type-rates', 'RateTypeController@datatableTypeRates');
 
+        Route::resource('affiliate-categories','AffiliateCategoryController');
+        Route::post('datatable-affiliate-categories', 'AffiliateCategoryController@datatableAffiliateCategories');
 
-
+        Route::resource('special-rates','SpecialRateController');
 
     });
 

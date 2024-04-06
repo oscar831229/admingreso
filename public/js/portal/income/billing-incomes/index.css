@@ -1,0 +1,57 @@
+/*
+Full screen Modal
+*/
+.modal-dialog {
+  max-width: 10000px;
+}
+
+.fullscreen-modal .modal-dialog {
+  margin: 0;
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .fullscreen-modal .modal-dialog {
+	width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .fullscreen-modal .modal-dialog {
+	width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .fullscreen-modal .modal-dialog {
+	width: 1170px;
+  }
+}
+
+#morecsspure-trigger-toggle { cursor: pointer; }
+#morecsspure-element-toggle { display:none; }
+#morecsspure-element-toggle:not(:checked) ~ #morecsspure-toggled-element { display:none; }
+#morecsspure-element-toggle:not(:checked) ~ #morecsspure-trigger-toggle .morecsspure-lesslink { display:none; }
+#morecsspure-element-toggle:checked ~ #morecsspure-abstract { display:none; }
+#morecsspure-element-toggle:checked ~ #morecsspure-trigger-toggle .morecsspure-morelink { display:none; }
+#morecsspure .morecsspure-morelink, #morecsspure .morecsspure-lesslink { display: block; cursor: pointer; color:#2196f3; }
+#morecsspure .morecsspure-morelink:hover, #morecsspure .morecsspure-lesslink:hover { text-decoration:underline; }
+
+.table td {
+  padding: 0.25rem !important;
+}
+.table {
+  font-size: 11px;
+}
+.font-head {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #343a40;
+  letter-spacing: 0.5px;
+}
+.text-u {
+  text-transform: uppercase !important;
+}
+.text-l {
+  text-transform: lowercase !important;
+}

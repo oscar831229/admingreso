@@ -1,0 +1,317 @@
+/*
+Full screen Modal
+*/
+.modal-dialog {
+  max-width: 10000px;
+}
+
+.fullscreen-modal .modal-dialog {
+  margin: 0;
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+}
+@media (min-width: 768px) {
+
+  .fullscreen-modal .modal-dialog {
+	width: 750px;
+  }
+
+  .modal-months .modal-dialog {
+	width: 350px !important;
+  }
+
+  #md-procces-donor .modal-body {
+	overflow-y: auto;
+	height: 604px;
+  }
+
+}
+
+@media (min-width: 992px) {
+
+  .fullscreen-modal .modal-dialog {
+	width: 970px;
+  }
+
+  .modal-months .modal-dialog {
+	width: 600px !important;
+  }
+
+  #md-procces-donor .modal-body {
+	height: 604px;
+	overflow-y: auto;
+  }
+
+}
+@media (min-width: 1200px) {
+
+  .fullscreen-modal .modal-dialog {
+	width: 1170px;
+  }
+
+  .modal-months .modal-dialog {
+	width: 600px !important;
+  }
+
+  #md-procces-donor .modal-body {
+	height: 604px;
+	overflow-y: auto;
+  }
+
+}
+
+
+#morecsspure-trigger-toggle { cursor: pointer; }
+#morecsspure-element-toggle { display:none; }
+#morecsspure-element-toggle:not(:checked) ~ #morecsspure-toggled-element { display:none; }
+#morecsspure-element-toggle:not(:checked) ~ #morecsspure-trigger-toggle .morecsspure-lesslink { display:none; }
+#morecsspure-element-toggle:checked ~ #morecsspure-abstract { display:none; }
+#morecsspure-element-toggle:checked ~ #morecsspure-trigger-toggle .morecsspure-morelink { display:none; }
+#morecsspure .morecsspure-morelink, #morecsspure .morecsspure-lesslink { display: block; cursor: pointer; color:#2196f3; }
+#morecsspure .morecsspure-morelink:hover, #morecsspure .morecsspure-lesslink:hover { text-decoration:underline; }
+
+.table td {
+  padding: 0.25rem !important;
+}
+.table {
+  font-size: 11px;
+}
+.font-head {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #343a40;
+  letter-spacing: 0.5px;
+}
+.text-u {
+  text-transform: uppercase !important;
+}
+.text-l {
+  text-transform: lowercase !important;
+}
+
+    /* CSS REQUIRED */
+.state-icon {
+  left: -5px;
+}
+.list-group-item-primary {
+  color: rgb(255, 255, 255);
+  background-color: rgb(66, 139, 202);
+}
+
+/* DEMO ONLY - REMOVES UNWANTED MARGIN */
+.well .list-group {
+  margin-bottom: 0px;
+}
+
+.nav-pills-custom .nav-link {
+	color: #aaa;
+	background: #fff;
+	position: relative;
+}
+
+.nav-pills-custom .nav-link.active {
+	color: #45b649;
+	background: #fff;
+}
+/* Add indicator arrow for the active tab */
+@media (min-width: 992px) {
+	.nav-pills-custom .nav-link::before {
+		content: '';
+		display: block;
+		border-top: 8px solid transparent;
+		border-left: 10px solid #fff;
+		border-bottom: 8px solid transparent;
+		position: absolute;
+		top: 50%;
+		right: -10px;
+		transform: translateY(-50%);
+		opacity: 0;
+	}
+}
+.nav-pills-custom .nav-link.active::before {
+	opacity: 1;
+}
+.note-editor .note-editable {
+	line-height: 1.2;
+	font-size: 18px;
+}
+#tbl-tracking td p, #tbl-tracking td h6 {
+	font-size: 12px !important;
+}
+* {box-sizing: border-box;}
+ul {list-style-type: none;}
+body {font-family: Verdana, sans-serif;}
+.month {
+	padding: 20px 20px;
+	width: 100%;
+	background: #32a8a2;
+	text-align: center;
+}
+.month ul {
+	margin: 0;
+	padding: 0;
+}
+.month ul li {
+	color: white;
+	font-size: 15px;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+}
+.month .prev {
+	float: left;
+	padding-top: 10px;
+}
+.month .next {
+	float: right;
+	padding-top: 10px;
+}
+.weekdays {
+	margin: 0;
+	padding: 10px 0;
+	background-color: #ddd;
+}
+.weekdays li {
+	display: inline-block;
+	width: 12.6%;
+	color: #666;
+	text-align: center;
+}
+.days {
+	padding: 10px 0;
+	background: #eee;
+	margin: 0;
+}
+.days li {
+	list-style-type: none;
+	display: inline-block;
+	width: 12.6%;
+	text-align: center;
+	margin-bottom: 5px;
+	font-size:12px;
+	color: #000;
+	border-radius: 0.25rem;
+	margin: 1.5px;
+}
+/* Add media queries for smaller screens */
+@media screen and (max-width:720px) {
+	.weekdays li, .days li {width: 13.1%;}
+}
+@media screen and (max-width: 420px) {
+	.weekdays li, .days li {width: 12.5%;}
+	.days li .active {padding: 2px;}
+}
+@media screen and (max-width: 290px) {
+	.weekdays li, .days li {width: 12.2%;}
+}
+.enero {
+	background: #70241f !important;
+}
+.febrero {
+	background: #c33b32 !important;
+}
+.marzo {
+	background: #956816 !important;
+}
+.abril {
+	background: #ddad1e !important;
+}
+.mayo {
+	background: #83ab34 !important;
+}
+.junio {
+	background: #365e08 !important;
+}
+.julio  {
+	background: #673ab7 !important;
+}
+.agosto {
+	background: #e91e63 !important;
+}
+.septiembre {
+	background: #f44336 !important;
+}
+.octubre {
+	background: #4dc217 !important;
+}
+.noviembre {
+	background: #1534e6 !important;
+}
+.diciembre {
+	background: #32a8a2 !important;
+}
+.days li.day-success {
+	padding: 5px;
+	background: #28a745 !important;
+	color: white !important
+}
+.days li .day-warning {
+	padding: 5px;
+	background: #ffc107 !important;
+	color: white !important
+}
+.days li.day-primary {
+	padding: 5px;
+	background: #150c8f !important;
+	color: white !important
+}
+.days li .day-danger {
+	padding: 5px;
+	background: #dc3545 !important;
+	color: white !important
+}
+.br-header {
+	z-index: 500;
+}
+.glyphicon {
+	position: relative;
+	top: 1px;
+	display: inline-block;
+	font-family: 'Glyphicons Halflings';
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.modal-dialog {
+	position: sticky;
+	top: auto;
+	right: auto;
+	left: auto;
+	bottom: 0;
+ }
+
+@font-face {
+    font-family: "Glyphicons Halflings";
+    src: url(../fonts/glyphicons-halflings-regular.eot);
+    src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format("embedded-opentype"), url(../fonts/glyphicons-halflings-regular.woff) format("woff"), url(../fonts/glyphicons-halflings-regular.ttf) format("truetype"),
+    url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format("svg");
+}
+.li-check{
+    cursor: pointer;
+}
+
+
+
+.menu-opciones {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1000;
+}
+.menu-opciones ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.menu-opciones ul li {
+    cursor: pointer;
+}
+.menu-opciones ul li:hover {
+    background-color: #f0f0f0;
+}

@@ -10,6 +10,7 @@ environment = {
     id : null,
 
     viewEnviromentItems : function(){
+
         environment.id = $(this).data('environment_id');
         $("#div-environments").hide(250, function() {
             $("#div-created-services").show();
@@ -173,14 +174,19 @@ services = {
     },
 
     viewFormNewEnvironmentService : function(){
-        document.getElementById('form-environment-income-items').reset();
-        document.getElementById('form-income-item-rate').reset();
-
+        services.resetFormsRates();
         $('#form-environment-income-items').find("[name=id]").val('');
         $('#icm_environment_icm_menu_item_id').selectpicker('refresh');
         $('#md-icm_environment_income_items').modal()
         $('#form-environment-income-items').find('#name').attr('disabled', false);
         $('#form-environment-income-items').find('#code').attr('disabled', false);
+    },
+
+    resetFormsRates : function(){
+        document.getElementById('form-environment-income-items').reset();
+        $('.form-tarifas-available').each(function(index, element){
+            element.reset();
+        });
     },
 
     confirmSavaIncomeItem : function(){
@@ -259,6 +265,7 @@ services = {
     },
 
     getIncomeItemrate : function(){
+
         var income_rate = [];
         $('.rate').each(function(index, element){
             if($(element).val().trim() != ''){
@@ -266,9 +273,11 @@ services = {
                 rate.types_of_income_id        = $(element).data('type');
                 rate.icm_affiliate_category_id = $(element).data('category_id');
                 rate.value                     = $(element).val();
+                rate.icm_rate_type_id          = $(element).data('icm_rate_type_id');
                 income_rate.push(rate);
             }
         });
+
         return income_rate;
     },
 
@@ -362,7 +371,7 @@ loadDataForm = function(idform, data){
 
 loadIncomeRates = function(idform, data){
     $.each(data, function(index, value){
-        $(`input[data-type=${value.types_of_income_id}][data-category_id=${value.icm_affiliate_category_id}]`).val(value.value).trigger('change');
+        $(`input[data-type=${value.types_of_income_id}][data-category_id=${value.icm_affiliate_category_id}][data-icm_rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
     });
 }
 

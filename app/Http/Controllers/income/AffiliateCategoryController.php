@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Income\IcmAffiliateCategory;
-use App\Models\Income\IcmFamilyCompensationFund;
 
-class BillingIncomeController extends Controller
+use App\Clases\DataTable\TableServer;
+use Illuminate\Support\Facades\Validator;
+
+class AffiliateCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,25 +19,21 @@ class BillingIncomeController extends Controller
      */
     public function index()
     {
+        return view('income.affiliate-categories.index');
+    }
 
-        $user = auth()->user();
+    public function datatableAffiliateCategories(Request $request){
 
-        # Ambientes ingreso.
-        $icm_environments = $user->icm_environments()->get();
+        $param = array(
+            'model'=> new IcmAffiliateCategory,
+            'method_consulta'=>'getDataTable',
+            'method_cantidad'=>'getCountDatatable',
+            'extradata' => []
+        );
 
-        # Tipos documento identificación
-        $identification_document_types = getDetailDefinitions('identification_document_types');
-
-        # Tipos de ingreso
-        $types_of_income   = getDetailDefinitions('types_of_income');
-
-        # Cajas de compensación
-        $icm_family_compensation_funds = IcmFamilyCompensationFund::where(['state' => 'A'])->get()->pluck('name', 'id');
-
-        # Categoria
-        $icm_affiliate_categories = IcmAffiliateCategory::where(['state' => 'A'])->get()->pluck('name', 'id');
-
-        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds'));
+        $tableserver = new TableServer($param);
+        $datos = $tableserver->getDatos();
+        return response()->json($datos);
 
     }
 
@@ -57,7 +55,34 @@ class BillingIncomeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => "required",
+            'code' => 'required',
+            'state' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => $validator->messages(),
+                'data' => []
+            ]);
+        }
+
+        $data = $request->all();
+        $user = auth()->user();
+        if(isset($data['id']) && !empty($data['id'])){
+            IcmAffiliateCategory::find($data['id'])->update(array_merge($request->all(), ['user_updated' => $user->id ]));
+        }else{
+            IcmAffiliateCategory::create(array_merge($request->all(), ['user_created' => $user->id ]));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data' => []
+        ]);
+
     }
 
     /**

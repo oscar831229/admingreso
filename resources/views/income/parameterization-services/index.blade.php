@@ -182,14 +182,14 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                     {!! Form::label('name','Nombre producto',[],false) !!}
-                                    {!! Form::text('name', null, array('placeholder' => 'Nombre producto','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    {!! Form::text('name', null, array('placeholder' => 'Nombre producto','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     {!! Form::hidden('id') !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                     {!! Form::label('code','Código producto',[],false) !!}
-                                    {!! Form::text('code', null, array('placeholder' => 'Código producto','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    {!! Form::text('code', null, array('placeholder' => 'Código producto','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
@@ -233,34 +233,36 @@
                                 </div>
                             </div>
 
+                            @foreach ($rate_types as $rate_type)
                             <hr class="mt-4">
-                            <h5><i class="fa fa-money text-primary" aria-hidden="true"></i> Tarifas</h5>
-                            <form id="form-income-item-rate">
-                            <table class="table table-bordered" id="tbl-categories" style="width: 100% !important;">
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2" class="text-center" style="margin: 0px auto;">TIPO DE INGRESO</th>
-                                        <th colspan="4" class="text-center">CATEGORIAS</th>
-                                    </tr>
+                            <h6><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> {{ $rate_type['name'] }}  <i class="{{ $rate_type['icon'] }}" aria-hidden="true"></i></h6>
+                            <form class="form-tarifas-available" data-icm_rate_type_id="{{ $rate_type['id'] }}">
+                                <table class="table table-bordered" id="tbl-categories" style="width: 100% !important;">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center" style="margin: 0px auto;">TIPO DE INGRESO</th>
+                                            <th colspan="4" class="text-center">CATEGORIAS</th>
+                                        </tr>
 
-                                    <tr>
-                                        @foreach ($affiliatecategories as $affiliatecategory)
-                                        <th>{{ $affiliatecategory->name }}</th>
+                                        <tr>
+                                            @foreach ($affiliatecategories as $affiliatecategory)
+                                            <th>{{ $affiliatecategory->name }}</th>
+                                            @endforeach
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($income_rates as $income_rate)
+                                        <tr>
+                                            <th class="text-right">{{ $income_rate['type_income_name'] }}</th>
+                                            @foreach ($income_rate['categories'] as $categorie)
+                                            <td><input placeholder="Tarifa {{ strtoupper($categorie->code ) }}" data-type="{{ $income_rate['type_income_id'] }}" data-category_id = "{{ $categorie->id }}" data-icm_rate_type_id = "{{ $rate_type['id'] }}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>
+                                            @endforeach
+                                        </tr>
                                         @endforeach
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($income_rates as $income_rate)
-                                    <tr>
-                                        <th class="text-right">{{ $income_rate['type_income_name'] }}</th>
-                                        @foreach ($income_rate['categories'] as $categorie)
-                                        <td><input placeholder="Tarifa {{ strtoupper($categorie->code ) }}" data-type="{{ $income_rate['type_income_id'] }}" data-category_id = "{{ $categorie->id }}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>
-                                        @endforeach
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
                             </form>
+                            @endforeach
                         </div><!-- form-layout -->
                     </div>
                 </div>

@@ -7,7 +7,7 @@ CREATE TABLE `countries` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-insert  into `countries`(`id`,`name`) values 
+insert  into `countries`(`id`,`name`) values
 (0,'SIN DEFINIR'),
 (13,'AFGANISTAN'),
 (17,'ALBANIA'),
@@ -263,8 +263,8 @@ DELIMITER $$
 USE `huhmp`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `viem_form_dynamic`(survey_form_id INT, person_id INT )
-BEGIN  
-   
+BEGIN
+
 	SET @sql = NULL;
 
 	SELECT
@@ -275,7 +275,7 @@ BEGIN
 		  ''' then field_value end) ',
 		  field_key
 	      )
-	    ) INTO @sql 
+	    ) INTO @sql
 	FROM(
 		SELECT
 		     sf.id AS survey_form_id,
@@ -292,8 +292,8 @@ BEGIN
 		LEFT JOIN survey_form_detail_values sfdv ON sfdv.id = san.value
 		WHERE sf.state = 'P' AND sf.id = survey_form_id
 	 ) AS relation;
-	  
-	SET @sql = CONCAT('SELECT ',person_id,' as person_id, survey_form_id, ', @sql, ' 
+
+	SET @sql = CONCAT('SELECT ',person_id,' as person_id, survey_form_id, ', @sql, '
 			  FROM (
 				SELECT
 				     sf.id AS survey_form_id,
@@ -310,12 +310,25 @@ BEGIN
 				LEFT JOIN survey_form_detail_values sfdv ON sfdv.id = san.value
 				WHERE sf.state = \'P\' AND sf.id = ', survey_form_id,'
 			  ) as relation GROUP BY survey_form_id');
-			  
-			  
+
+
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
-	
+
 END$$
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER tr_delete_icm_special_rates
+AFTER DELETE ON icm_special_rates
+FOR EACH ROW
+BEGIN
+    INSERT INTO icm_special_rate_log (id, year, date, name, description, state, user_created, user_updated)
+    VALUES (OLD.id, OLD.year, OLD.date, OLD.name, OLD.description, OLD.state, OLD.user_created, OLD.user_updated);
+END //
 
 DELIMITER ;

@@ -224,12 +224,7 @@
                             <form id="form-income-item-rate">
                             <table class="table table-bordered" id="tbl-income-items" style="width: 100% !important;">
                                 <thead>
-                                    <tr>
-                                        <th class="text-left">#</th>
-                                        <th class="text-left" style="width:70%">SERVICIO INGRESO</th>
-                                        <th class="text-center">VENTA</th>
-                                        <th class="text-center" style="width:10%">TARIFA VENTA</th>
-                                    </tr>
+                                   
                                 </thead>
                                 <tbody>
                                 </tbody>

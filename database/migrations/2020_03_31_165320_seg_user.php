@@ -20,6 +20,7 @@ class SegUser extends Migration
             $table->string('name',150);
             $table->string('email',150);
             $table->boolean('active');
+            $table->string('document_number', 45)->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->charset = 'utf8mb4';
@@ -35,7 +36,6 @@ class SegUser extends Migration
      */
     public function down()
     {
-
- 
+        Schema::drop('users');
     }
 }

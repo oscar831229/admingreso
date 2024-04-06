@@ -16,6 +16,7 @@ use App\Models\Income\IcmEnvironmentIncomeItem;
 use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmEnvironmentIncomeItemDetail;
 use App\Models\Income\IcmEnvironment;
+use App\Models\Income\IcmRateType;
 
 use App\Clases\DataTable\TableServer;
 
@@ -37,18 +38,19 @@ class ParameterizationServiceController extends Controller
         $types_of_income   = getDetailDefinitions('types_of_income');
         $affiliatecategories = IcmAffiliateCategory::where(['state' => 'A'])->get();
 
-        $income_rates = [];
+        $income_rates  = [];
         foreach ($types_of_income as $key => $value) {
             $rate['type_income_id']   = $key;
             $rate['type_income_name'] = $value;
+            $rate['categories'] = [];
             foreach ($affiliatecategories as $key => $affiliatecategory) {
                 $rate['categories'][] = $affiliatecategory;
             }
             $income_rates[] = $rate;
             $rate = [];
         }
-
-        return view('income.parameterization-services.index', compact('icm_environments', 'income_rates', 'affiliatecategories'));
+        $rate_types = IcmRateType::where(['state' => 'A'])->get();
+        return view('income.parameterization-services.index', compact('icm_environments', 'income_rates', 'affiliatecategories', 'rate_types'));
 
     }
 
@@ -126,8 +128,9 @@ class ParameterizationServiceController extends Controller
                 $icmrate = IcmEnvironmentIncomeItemDetail::where([
                     'icm_environment_income_item_id' => $incomeitem->id,
                     'types_of_income_id' => $income_rate['types_of_income_id'],
-                    'icm_affiliate_category_id' => $income_rate['icm_affiliate_category_id']]
-                )
+                    'icm_affiliate_category_id' => $income_rate['icm_affiliate_category_id'],
+                    'icm_rate_type_id' => $income_rate['icm_rate_type_id']
+                ])
                 ->first();
 
                 # Valor ingresos
@@ -141,11 +144,11 @@ class ParameterizationServiceController extends Controller
                         'state' => 'A'
                     ]);
                 }else{
-
                     IcmEnvironmentIncomeItemDetail::create([
                         'icm_environment_income_item_id' => $incomeitem->id,
                         'types_of_income_id' => $income_rate['types_of_income_id'],
                         'icm_affiliate_category_id' => $income_rate['icm_affiliate_category_id'],
+                        'icm_rate_type_id' => $income_rate['icm_rate_type_id'],
                         'value' => $income_rate['value'],
                         'user_created' => $user_id
                     ]);
@@ -192,12 +195,17 @@ class ParameterizationServiceController extends Controller
 
     public function getEnvironmentIncomeServices($environment_id){
 
-        $incomeservices = IcmEnvironment::gerIncomeServices($environment_id);
+        $incomeservices = IcmEnvironment::getIncomeServices($environment_id);
+
+        $rate_types = IcmRateType::where(['state' => 'A'])->orderBy('name', 'desc')->get();
 
         return response()->json([
             'success' => true,
             'message' => '',
-            'data' => $incomeservices
+            'data'    => [
+                'incomeservices' => $incomeservices,
+                'rate_types'     => $rate_types
+            ]
         ]);
 
     }

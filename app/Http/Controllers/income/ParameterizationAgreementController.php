@@ -9,6 +9,7 @@ use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmAgreement;
 use App\Models\Income\IcmAgreementDetail;
 use App\Models\Income\IcmCompaniesAgreement;
+use App\Models\Income\IcmRateType;
 
 use App\Clases\DataTable\TableServer;
 
@@ -36,7 +37,9 @@ class ParameterizationAgreementController extends Controller
             $income_rates[] = $rate;
             $rate = [];
         }
+
         return view('income.parameterization-agreements.index', compact('icm_environments', 'affiliatecategories', 'income_rates'));
+
     }
 
     /**
@@ -101,8 +104,9 @@ class ParameterizationAgreementController extends Controller
             foreach ($request->income_rates as $key => $income_rate) {
 
                 $icmrate = IcmAgreementDetail::where([
-                    'icm_agreement_id' => $agreement->id,
+                    'icm_agreement_id'               => $agreement->id,
                     'icm_environment_income_item_id' => $income_rate['icm_environment_income_item_id'],
+                    'icm_rate_type_id'               => $income_rate['icm_rate_type_id']
                 ])
                 ->first();
 
@@ -112,17 +116,18 @@ class ParameterizationAgreementController extends Controller
                 if($icmrate){
                     unset($agreement_details[$icmrate->id]);
                     $icmrate->update([
-                        'value' => $income_rate['value'],
+                        'value'        => $income_rate['value'],
                         'user_updated' => $user_id,
-                        'state' => 'A'
+                        'state'        => 'A'
                     ]);
                 }else{
 
                     IcmAgreementDetail::create([
-                        'icm_agreement_id' => $agreement->id,
+                        'icm_agreement_id'               => $agreement->id,
                         'icm_environment_income_item_id' => $income_rate['icm_environment_income_item_id'],
-                        'value' => $income_rate['value'],
-                        'user_created' => $user_id
+                        'icm_rate_type_id'               => $income_rate['icm_rate_type_id'],
+                        'value'                          => $income_rate['value'],
+                        'user_created'                   => $user_id
                     ]);
                 }
             }

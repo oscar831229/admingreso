@@ -1,0 +1,22 @@
+<?php $holidays[2024] = array(
+    '20240101'=>'Año Nuevo',
+    '20240501'=>'Día del Trabajo',
+    '20240720'=>'Grito de la independencia',
+    '20240807'=>'Batalla de Boyacá',
+    '20241208'=>'Inmaculada Concepción',
+    '20241225'=>'Navidad',
+    '20240108'=>'Epifanía (Reyes Magos)',
+    '20240325'=>'San José',
+    '20240701'=>'San Pedro y San Pablo',
+    '20240819'=>'Asunción de la Virgen',
+    '20241014'=>'Día de la Raza',
+    '20241104'=>'Todos los Santos',
+    '20241111'=>'Independencia de Cartagena',
+    '20240331'=>'Domingo de Pascua',
+    '20240324'=>'Domingo de Ramos',
+    '20240328'=>'Jueves Santo',
+    '20240329'=>'Viernes Santo',
+    '20240513'=>'Ascención de Jesús',
+    '20240603'=>'Corpus Christi',
+    '20240610'=>'Sagrado Corazón'
+);

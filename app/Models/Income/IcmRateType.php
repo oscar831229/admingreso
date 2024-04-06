@@ -5,7 +5,7 @@ namespace App\Models\Income;
 use Illuminate\Database\Eloquent\Model;
 use App\Clases\DataTable\SSP;
 
-class IcmAffiliateCategory extends Model
+class IcmRateType extends Model
 {
 
     protected $fillable = [
@@ -17,26 +17,34 @@ class IcmAffiliateCategory extends Model
     ];
 
     private $columnsdatatable = array(
-        array( 'db' => 'iac.id'    , 'dt' => 0),
-        array( 'db' => 'iac.code'  , 'dt' => 1),
-        array( 'db' => 'iac.name'  , 'dt' => 2),
-        array( 'db' => 'u.name'    , 'dt' => 3),
-        array( 'db' => 'iac.state' , 'dt' => 4),
+        array( 'db' => 'irt.id' , 'dt' => 0),
+        array( 'db' => 'irt.name' , 'dt' => 1),
+        array( 'db' => "CASE
+                    WHEN irt.code = 'V' THEN 'TEMPORADA BAJA'
+                    WHEN irt.code = 'A' THEN 'TEMPORADA ALTA'
+                    WHEN irt.code = 'E' THEN 'TEMPORADA ESPECIAL'
+                END" , 'dt' => 2),
+        array( 'db' => 'u.name' , 'dt' => 3),
+        array( 'db' => 'irt.state' , 'dt' => 4)
     );
 
     public function getDataTable($param){
 
-        $asset = \DB::table('icm_affiliate_categories as iac')
+        $asset = \DB::table('icm_rate_types as irt')
         ->selectRaw("
-            iac.id,
-            iac.code,
-            iac.name,
+            irt.id,
+            irt.name,
+            CASE
+                WHEN irt.code = 'V' THEN 'TEMPORADA BAJA'
+                WHEN irt.code = 'A' THEN 'TEMPORADA ALTA'
+                WHEN irt.code = 'E' THEN 'TEMPODARA ESPECIAL'
+            END AS code_name,
             u.name as user_created,
-            iac.state,
+            irt.state,
             '' as action
         ")
-        ->join('users AS u', 'u.id', '=','iac.user_created')
-        ->orderBy('iac.name', 'ASC');
+        ->join('users AS u', 'u.id', '=','irt.user_created')
+        ->orderBy('irt.name', 'DESC');
 
         $where = '';
         $bindings = array();
@@ -72,17 +80,21 @@ class IcmAffiliateCategory extends Model
 
     public function getCountDatatable($param) {
 
-        $asset = \DB::table('icm_affiliate_categories as iac')
+        $asset = \DB::table('icm_rate_types as irt')
         ->selectRaw("
-            iac.id,
-            iac.code,
-            iac.name,
+            irt.id,
+            irt.name,
+            CASE
+                WHEN irt.code = 'V' THEN 'TARIFA BAJA'
+                WHEN irt.code = 'A' THEN 'TARIFA ALTA'
+                WHEN irt.code = 'E' THEN 'TARIFA ESPECIAL'
+            END AS code_name,
             u.name as user_created,
-            iac.state,
+            irt.state,
             '' as action
         ")
-        ->join('users AS u', 'u.id', '=','iac.user_created')
-        ->orderBy('iac.name', 'DESC');
+        ->join('users AS u', 'u.id', '=','irt.user_created')
+        ->orderBy('irt.name', 'DESC');
 
         $bindings = array();
         $wheretable = SSP::filter( $_POST, $this->columnsdatatable, $bindings );
@@ -99,22 +111,27 @@ class IcmAffiliateCategory extends Model
         $datares['canfiltered'] = $asset->count();
 
         # CANTIDAD TOTAL
-        $asset = \DB::table('icm_affiliate_categories as iac')
+        $asset = \DB::table('icm_rate_types as irt')
         ->selectRaw("
-            iac.id,
-            iac.code,
-            iac.name,
+            irt.id,
+            irt.name,
+            CASE
+                WHEN irt.code = 'V' THEN 'TEMPORADA BAJA'
+                WHEN irt.code = 'A' THEN 'TEMPORADA ALTA'
+                WHEN irt.code = 'E' THEN 'TEMPORADA ESPECIAL'
+            END AS code_name,
             u.name as user_created,
-            iac.state,
+            irt.state,
             '' as action
         ")
-        ->join('users AS u', 'u.id', '=','iac.user_created')
-        ->orderBy('iac.name', 'DESC');
+        ->join('users AS u', 'u.id', '=','irt.user_created')
+        ->orderBy('irt.name', 'DESC');
 
         $datares['cantotal'] = $asset->count();
 
         return $datares;
 
     }
+
 
 }
