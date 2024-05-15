@@ -89,6 +89,16 @@ class ParameterizationAgreementController extends Controller
         $agreement = IcmAgreement::find($id);
         $data = $request->all();
         if(!$agreement){
+
+            $codeexist = IcmAgreement::where(['code' => $data['code']])->first();
+            if($codeexist){
+                return response()->json([
+                    'succes'  => false,
+                    'message' => 'Ya existe convenio con el mismo código ('.$data['code'].')',
+                    'data'    => []
+                ]);
+            }
+
             $data['user_created'] = auth()->user()->id;
             $agreement = IcmAgreement::create($data);
         }else{

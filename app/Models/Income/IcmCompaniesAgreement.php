@@ -127,4 +127,8 @@ class IcmCompaniesAgreement extends Model
 
     }
 
+    public function icm_agreements(){
+        return $this->hasMany(IcmAgreement::class);
+    }
+
 }

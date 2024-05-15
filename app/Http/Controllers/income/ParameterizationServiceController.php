@@ -12,11 +12,13 @@ use App\Models\Amadeus\SalonMenuItem;
 use App\Models\Income\IcmMenu;
 use App\Models\Income\IcmMenuItem;
 use App\Models\Income\IcmEnvironmentIcmMenuItem;
-use App\Models\Income\IcmEnvironmentIncomeItem;
+use App\Models\Income\IcmIncomeItem;
 use App\Models\Income\IcmAffiliateCategory;
-use App\Models\Income\IcmEnvironmentIncomeItemDetail;
+use App\Models\Income\IcmIncomeItemDetail;
 use App\Models\Income\IcmEnvironment;
 use App\Models\Income\IcmRateType;
+use App\Models\Income\IcmTypesIncome;
+use App\Models\Income\IcmEnvirontmentIcmIncomeItem;
 
 use App\Clases\DataTable\TableServer;
 
@@ -30,25 +32,30 @@ class ParameterizationServiceController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $icm_environments = $user->icm_environments()->get();
+        $icm_environments = IcmEnvironment::all();
 
         # Sincronizar sistema POS REST
         // synchronizePOSSystem();
 
-        $types_of_income   = getDetailDefinitions('types_of_income');
-        $affiliatecategories = IcmAffiliateCategory::where(['state' => 'A'])->get();
+        $types_of_income     = IcmTypesIncome::where(['state' => 'A'])->get();
+        $affiliatecategories = IcmAffiliateCategory::where(['state' => 'A'])->orderby('code', 'asc')->get();
 
         $income_rates  = [];
-        foreach ($types_of_income as $key => $value) {
-            $rate['type_income_id']   = $key;
-            $rate['type_income_name'] = $value;
+        foreach ($types_of_income as $key => $type_income) {
+            $rate['type_income_id']   = $type_income->id;
+            $rate['type_income_name'] = $type_income->name;
             $rate['categories'] = [];
             foreach ($affiliatecategories as $key => $affiliatecategory) {
-                $rate['categories'][] = $affiliatecategory;
+                $control = $type_income->icm_affiliate_categories()->where(['icm_affiliate_category_id' => $affiliatecategory->id])->first();
+                $rate['categories'][] = [
+                    'control'           => $control ? true : false,
+                    'affiliatecategory' => $affiliatecategory
+                ];
             }
             $income_rates[] = $rate;
             $rate = [];
         }
+
         $rate_types = IcmRateType::where(['state' => 'A'])->get();
         return view('income.parameterization-services.index', compact('icm_environments', 'income_rates', 'affiliatecategories', 'rate_types'));
 
@@ -56,16 +63,14 @@ class ParameterizationServiceController extends Controller
 
     public function datatableParameterizationServices(Request $request){
 
-        $icm_environment_id = 0;
-        $request = request();
+        $extradata = [];
         if($request->has('icm_environment_id')){
-            $icm_environment_id = $request->icm_environment_id;
+            $icm_environment_id              = $request->icm_environment_id;
+            $extradata['icm_environment_id'] = $icm_environment_id;
         }
 
-        $extradata['icm_environment_id'] = $icm_environment_id;
-
         $param = array(
-            'model'=> new IcmEnvironmentIncomeItem,
+            'model'=> new IcmIncomeItem,
             'method_consulta'=>'getDataTable',
             'method_cantidad'=>'getCountDatatable',
             'extradata' => $extradata
@@ -106,12 +111,12 @@ class ParameterizationServiceController extends Controller
     public function store(Request $request)
     {
         $id = empty($request->id) ? 0 : $request->id;
-        $incomeitem = IcmEnvironmentIncomeItem::find($id);
+        $incomeitem = IcmIncomeItem::find($id);
         $data = $request->all();
         $data['value'] = str_replace(",", "", $data['value']);
         if(!$incomeitem){
             $data['user_created'] = auth()->user()->id;
-            $incomeitem = IcmEnvironmentIncomeItem::create($data);
+            $incomeitem = IcmIncomeItem::create($data);
         }else{
             $data['user_updated'] = auth()->user()->id;
             $incomeitem->update($data);
@@ -119,15 +124,15 @@ class ParameterizationServiceController extends Controller
 
         # REGISTRO DE TARIAS
         $user_id = auth()->user()->id;
-        $income_rate_details = $incomeitem->icm_environment_income_item_details()->get()->pluck('value', 'id')->toArray();
+        $income_rate_details = $incomeitem->icm_income_item_details()->get()->pluck('value', 'id')->toArray();
 
         if($request->has('income_rates')){
 
             foreach ($request->income_rates as $key => $income_rate) {
 
-                $icmrate = IcmEnvironmentIncomeItemDetail::where([
-                    'icm_environment_income_item_id' => $incomeitem->id,
-                    'types_of_income_id' => $income_rate['types_of_income_id'],
+                $icmrate = IcmIncomeItemDetail::where([
+                    'icm_income_item_id' => $incomeitem->id,
+                    'icm_types_income_id' => $income_rate['icm_types_income_id'],
                     'icm_affiliate_category_id' => $income_rate['icm_affiliate_category_id'],
                     'icm_rate_type_id' => $income_rate['icm_rate_type_id']
                 ])
@@ -144,9 +149,9 @@ class ParameterizationServiceController extends Controller
                         'state' => 'A'
                     ]);
                 }else{
-                    IcmEnvironmentIncomeItemDetail::create([
-                        'icm_environment_income_item_id' => $incomeitem->id,
-                        'types_of_income_id' => $income_rate['types_of_income_id'],
+                    IcmIncomeItemDetail::create([
+                        'icm_income_item_id' => $incomeitem->id,
+                        'icm_types_income_id' => $income_rate['icm_types_income_id'],
                         'icm_affiliate_category_id' => $income_rate['icm_affiliate_category_id'],
                         'icm_rate_type_id' => $income_rate['icm_rate_type_id'],
                         'value' => $income_rate['value'],
@@ -159,7 +164,7 @@ class ParameterizationServiceController extends Controller
 
         # Inactivar tarifas por no información
         if(count($income_rate_details) > 0){
-            IcmEnvironmentIncomeItemDetail::whereIn('id', array_keys($income_rate_details))->update([
+            IcmIncomeItemDetail::whereIn('id', array_keys($income_rate_details))->update([
                 'state' => 'I',
                 'value' => 0
             ]);
@@ -182,15 +187,43 @@ class ParameterizationServiceController extends Controller
     public function show($id)
     {
 
-        $incomeitem       = IcmEnvironmentIncomeItem::find($id);
-        $incomeitemdetail = $incomeitem->icm_environment_income_item_details()->where(['state' => 'A'])->get();
+        $incomeitem             = IcmIncomeItem::find($id);
+        $incomeitemdetail       = $incomeitem->icm_income_item_details()->where(['state' => 'A'])->get();
+        $request                = request();
+
+        $environments_enabled   = [];
+        if($request->has('enable_sale')){
+
+            # Ambiente principal para venta
+            $environments_enabled[] = [
+                'maestro'                          => true,
+                'icm_environment_id'               => $incomeitem->icm_environment_id,
+                'icm_environment_name'             => $incomeitem->icm_environment->name,
+                'icm_environment_icm_menu_item_id' => $incomeitem->icm_environment_icm_menu_item_id,
+                'state'                            => 'A'
+            ];
+
+            $icm_environment_incomes = IcmEnvirontmentIcmIncomeItem::where('icm_income_item_id', '=', $incomeitem->id)->get();
+            foreach ($icm_environment_incomes as $key => $icm_environment_income) {
+                $environments_enabled[] = [
+                    'maestro'                          => false,
+                    'icm_environment_id'               => $icm_environment_income->icm_environment_id,
+                    'icm_environment_name'             => $icm_environment_income->icm_environment->name,
+                    'icm_environment_icm_menu_item_id' => $icm_environment_income->icm_environment_icm_menu_item_id,
+                    'state'                            => $icm_environment_income->state
+                ];
+            }
+
+        }
 
         return response()->json([
-            'success' => true,
-            'message' => '',
-            'data'    => $incomeitem,
-            'income_item_detail' => $incomeitemdetail
+            'success'               => true,
+            'message'               => '',
+            'data'                  => $incomeitem,
+            'income_item_detail'    => $incomeitemdetail,
+            'environments_enabled'  => $environments_enabled
         ]);
+
     }
 
     public function getEnvironmentIncomeServices($environment_id){
@@ -230,7 +263,46 @@ class ParameterizationServiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $icm_income_item     = IcmIncomeItem::find($id);
+        $environment_enabled = $request->environment_enabled;
+        $user_id             = auth()->user()->id;
+
+        foreach ($environment_enabled as $key => $environment) {
+
+            if($icm_income_item->icm_environment_id == $environment['environment_id']){
+                continue;
+            }
+
+            $environment_income = IcmEnvirontmentIcmIncomeItem::where([
+                'icm_environment_id' => $environment['environment_id'],
+                'icm_income_item_id' => $icm_income_item->id
+            ])->first();
+
+            if(!$environment_income && !empty($environment['icm_environment_icm_menu_item_id'])){
+                $environment_income = IcmEnvirontmentIcmIncomeItem::create([
+                    'icm_environment_id'               => $environment['environment_id'],
+                    'icm_income_item_id'               => $icm_income_item->id,
+                    'icm_environment_icm_menu_item_id' => $environment['icm_environment_icm_menu_item_id'],
+                    'user_created'                     => $user_id
+                ]);
+            }else if($environment_income){
+                $state = $environment['enabled'] == 'true' ? 'A' : 'I';
+                $environment_income->state        = $state;
+                $environment_income->user_updated = $user_id;
+                $environment_income->update();
+            }
+
+
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data'    => []
+        ]);
+
+
     }
 
     /**

@@ -1,8 +1,8 @@
 /**
  * Resize function without multiple trigger
- * 
+ *
  * Usage:
- * $(window).smartresize(function(){  
+ * $(window).smartresize(function(){
  *     // code here
  * });
  */
@@ -16,8 +16,8 @@
             var obj = this, args = arguments;
             function delayed () {
                 if (!execAsap)
-                    func.apply(obj, args); 
-                timeout = null; 
+                    func.apply(obj, args);
+                timeout = null;
             }
 
             if (timeout)
@@ -25,11 +25,11 @@
             else if (execAsap)
                 func.apply(obj, args);
 
-            timeout = setTimeout(delayed, threshold || 100); 
+            timeout = setTimeout(delayed, threshold || 100);
         };
     };
 
-    // smartresize 
+    // smartresize
     jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
 
 })(jQuery,'smartresize');
@@ -202,16 +202,16 @@ $(document).ready(function () {
 // /Switchery
 
 // iCheck
-$(document).ready(function () {
-    if ($("input.flat")[0]) {
-        $(document).ready(function () {
-            $('input.flat').iCheck({
-                checkboxClass: 'icheckbox_flat-green',
-                radioClass: 'iradio_flat-green'
-            });
-        });
-    }
-});
+// $(document).ready(function () {
+//     if ($("input.flat")[0]) {
+//         $(document).ready(function () {
+//             $('input.flat').iCheck({
+//                 checkboxClass: 'icheckbox_flat-green',
+//                 radioClass: 'iradio_flat-green'
+//             });
+//         });
+//     }
+// });
 // /iCheck
 
 // Table
@@ -611,7 +611,7 @@ function init_starrr() {
 
 function init_JQVmap() {
 
-    //console.log('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );	
+    //console.log('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );
 
     if (typeof (jQuery.fn.vectorMap) === 'undefined') { return; }
 
@@ -5036,4 +5036,4 @@ $(document).ready(function () {
     init_autosize();
     init_autocomplete();
 
-});	
+});

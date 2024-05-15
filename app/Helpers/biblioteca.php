@@ -20,6 +20,8 @@ use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmEnvironmentIncomeItemDetail;
 use App\Models\Income\IcmEnvironment;
 
+use Carbon\Carbon;
+
 
 use \Mpdf\Mpdf as PDF;
 
@@ -222,6 +224,14 @@ if (!function_exists('getDetailDefinitions')) {
     {
         $defintion = new Definition;
         return $defintion->getDetailDefinitions($code);
+    }
+}
+
+if (!function_exists('getDetailHomologationDefinitions')) {
+    function getDetailHomologationDefinitions($code)
+    {
+        $defintion = new Definition;
+        return $defintion->getDetailHomologationDefinitions($code);
     }
 }
 
@@ -516,6 +526,69 @@ if (!function_exists('getHighSeasonDays')) {
         return $alldays;
 
 
+    }
+}
+
+
+if (!function_exists('date_system')) {
+    function date_system()
+    {
+        return date('Ymd');
+    }
+}
+
+if (!function_exists('getHolidays')) {
+    function getHolidays($year)
+    {
+        $holidays[$year] = [];
+        $appStoragePath = storage_path('holidays/'.$year.'.php');
+        if(file_exists($appStoragePath)){
+            require $appStoragePath;
+        }
+        return $holidays[$year];
+    }
+}
+
+if (!function_exists('homologacionDatosAfiliado')) {
+    function homologacionDatosAfiliado($grupo_data, $dato_original)
+    {
+        $homologacion = [
+            'genero'  => [
+                'F'       => 'F',
+                'M'       => 'M',
+                'default' => 'M'
+            ],
+            'tipo_dcto_beneficiario' => [
+                'CC'      => 'CC',
+                'RC'      => 'RC',
+                'default' => 'CC'
+            ]
+        ];
+
+        $control = isset($homologacion[$grupo_data][$dato_original]);
+        if($control){
+            $response = $homologacion[$grupo_data][$dato_original];
+        }else{
+            $response = $homologacion[$grupo_data]['default'];
+        }
+        return  $response;
+    }
+}
+
+if (!function_exists('calcularEdad')) {
+    function calcularEdad($fechaNacimiento)
+    {
+        $fechaNacimiento = Carbon::parse($fechaNacimiento);
+    $edad = $fechaNacimiento->age;
+
+    return $edad;
+    }
+}
+
+if (!function_exists('getSystemDate')) {
+    function getSystemDate()
+    {
+        return '20240424';
     }
 }
 

@@ -96,7 +96,7 @@ class TableIncomeGenerate extends Migration
             $table->timestamps();
         });
 
-        Schema::create('icm_environment_income_items', function (Blueprint $table) {
+        Schema::create('icm_income_items', function (Blueprint $table) {
             $table->id();
             $table->string('name', 150);
             $table->string('code', 15);
@@ -117,10 +117,12 @@ class TableIncomeGenerate extends Migration
                 ->on('icm_environment_icm_menu_items')
                 ->onDelete('restrict')
                 ->onUpdate('restrict');
+
             $table->string('state', 2);
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
+
         });
 
         schema::create('icm_affiliate_categories', function (Blueprint $table) {
@@ -133,10 +135,10 @@ class TableIncomeGenerate extends Migration
             $table->timestamps();
         });
 
-        schema::create('icm_environment_income_item_details', function (Blueprint $table) {
+        schema::create('icm_income_item_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('icm_environment_income_item_id');
-            $table->unsignedBigInteger('types_of_income_id');
+            $table->unsignedBigInteger('icm_income_item_id');
+            $table->unsignedBigInteger('icm_types_income_id');
             $table->unsignedBigInteger('icm_affiliate_category_id');
             $table->unsignedBigInteger('icm_rate_type_id');
             $table->decimal('value', 20, 2);
@@ -163,12 +165,8 @@ class TableIncomeGenerate extends Migration
 
         schema::create('icm_agreements', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('icm_environment_id');
-            $table->foreign('icm_environment_id','fk_icmenvironments_icmagreements')
-                ->references('id')
-                ->on('icm_environments')
-                ->onDelete('restrict')
-                ->onUpdate('restrict');
+            $table->string('name');
+            $table->string('code', 50)->unique();
             $table->unsignedBigInteger('icm_companies_agreement_id');
             $table->foreign('icm_companies_agreement_id','fk_icmcompaniesagreement_icmagreements')
                 ->references('id')
@@ -195,7 +193,7 @@ class TableIncomeGenerate extends Migration
             $table->unsignedBigInteger('icm_environment_income_item_id');
             $table->foreign('icm_environment_income_item_id','fk_icmenvironmentincomeitem_icmagreementdetails')
                 ->references('id')
-                ->on('icm_environment_income_items')
+                ->on('icm_income_items')
                 ->onDelete('restrict')
                 ->onUpdate('restrict');
             $table->unsignedBigInteger('icm_rate_type_id');
@@ -248,6 +246,18 @@ class TableIncomeGenerate extends Migration
             $table->string('code', 10);
             $table->string('document_number', 15);
             $table->string('name', 150);
+            $table->string('state', 1)->default('A');
+            $table->unsignedBigInteger('user_created');
+            $table->unsignedBigInteger('user_updated')->nullable();
+            $table->timestamps();
+        });
+
+        # Relaciona los ambientes que pueden vender el producto de ingreso
+        schema::create('icm_environtment_icm_income_items', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('icm_environment_id')->comments('Ambiente que puede vender');
+            $table->unsignedBigInteger('icm_income_item_id')->comments('Item a la venta por el ambiente');
+            $table->unsignedBigInteger('icm_environment_icm_menu_item_id')->comments('Servicio con el cual se liquida el servicio');
             $table->string('state', 1)->default('A');
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();

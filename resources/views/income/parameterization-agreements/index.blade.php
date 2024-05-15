@@ -141,8 +141,9 @@
                     <thead>
                         <tr>
                             <th class="search-disabled">#</th>
-                            <th>N. documento</th>
-                            <th>Nombre</th>
+                            <th>Empresa</th>
+                            <th>Código</th>
+                            <th>Nombre convenio</th>
                             <th>Fecha inicia</th>
                             <th>Fecha finaliza</th>
                             <th>U. creacion</th>
@@ -165,7 +166,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header text-white bg-primary">
-                <h6 class="modal-title" id="exampleModalLabel"><i class="fa fa-file mr-2" aria-hidden="true"></i><span id="label-type">Convenios empresariales</span></h6>
+                <h6 class="modal-title" id="exampleModalLabel"><i class="fa fa-file mr-2" aria-hidden="true"></i><span id="label-type">CONVENIOS EMPRESARIALES</span></h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -190,16 +191,28 @@
                                         {!! Form::hidden('id') !!}
                                     </div>
                                 </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                    {!! Form::label('code','Código convenio',[],false) !!}
+                                    {!! Form::text('code', null, array('placeholder' => 'Código convenio','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'code','required' => 'required')) !!}
+                                    </div>
+                                </div>
                                 <div class="col-sm-4">
+                                    <div class="form-group">
+                                    {!! Form::label('name','Nombre convenio',[],false) !!}
+                                    {!! Form::text('name', null, array('placeholder' => 'Nombre convenio','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'name','required' => 'required')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                     {!! Form::label('date_from','Fecha inicio',[],false) !!}
                                     {!! Form::date('date_from', null, array('placeholder' => 'Código producto','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                     {!! Form::label('date_to','Fecha finaliza',[],false) !!}
-                                    {!! Form::date('date_to', null, array('placeholder' => 'Número cupos','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    {!! Form::date('date_to', null, array('placeholder' => 'Número de cupos por servicio','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
@@ -224,7 +237,6 @@
                             <form id="form-income-item-rate">
                             <table class="table table-bordered" id="tbl-income-items" style="width: 100% !important;">
                                 <thead>
-                                   
                                 </thead>
                                 <tbody>
                                 </tbody>

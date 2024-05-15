@@ -96,9 +96,8 @@ services = {
 
         // head
         var head = ` <tr>
-                        <th class="text-left">#</th>
-                        <th class="text-left" style="width:70%">SERVICIO INGRESO</th>
-                        <th class="text-center">VENTA</th>`;
+            <th class="text-left">#</th>
+            <th class="text-left" style="width:70%">SERVICIO INGRESO</th>`;
         $.each(incomeservices.rate_types, function(index, rate_type){
             head += `<th class="text-center" style="width:10%">${rate_type.name}</th>`;
         });
@@ -111,8 +110,7 @@ services = {
             tr += `
                 <tr>
                     <td>${number}</td>
-                    <td>${service.name}</td>
-                    <td class="text-center">${service.income_type}</td>`;
+                    <td>${service.name}</td>`;
                     $.each(incomeservices.rate_types, function(index, rate_type){
                         tr += `<td class="text-center"><input placeholder="" data-rate_type_id="${rate_type.id}" data-income_item_id="${service.id}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>`;
                     });
@@ -200,7 +198,7 @@ services = {
             columnDefs: [{
                 targets: "_all",
                 orderable: false,
-            },{ "width": "200px", "targets": 2 }],
+            },{ "width": "150px", "targets": 1 }],
 
             initComplete: function () {
             },
@@ -210,9 +208,9 @@ services = {
                     + '<i class="fa fa-edit text-success"></i>'
                     + '</a>';
 
-                $('td', row).eq(6).html(getLableState(data[6])).addClass('dt-center');
-                $('td', row).eq(7).html(btnedit).addClass('dt-center');
-                $('td', row).eq(0).html(data[8]).addClass('dt-center');
+                $('td', row).eq(7).html(getLableState(data[7])).addClass('dt-center');
+                $('td', row).eq(8).html(btnedit).addClass('dt-center');
+                $('td', row).eq(0).html(data[9]).addClass('dt-center');
             }
         });
 

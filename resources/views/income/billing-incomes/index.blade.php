@@ -3,10 +3,20 @@
 @section('css_custom')
     <link href="{{ asset('css/portal/style-datetable.css') }}" rel="stylesheet">
     <link href="{{ asset('js/portal/income/billing-incomes/index.css') }}" rel="stylesheet">
+    <link href="{{ asset('js/plugins/jquery.autocomplete/css/autocomplete.css') }}" rel="stylesheet">
+    <link href="{{ asset('js/plugins/bootstrap-select/bootstrap-select.css') }}" rel="stylesheet">
+    <style>
+        [aria-expanded=true] .fa-chevron-right {
+            transition: .3s transform ease-in-out;
+            transform: rotate(90deg);
+        }
+    </style>
 @endsection
 
 @section('scripts_content')
-  <script src="{{ asset('js/portal/income/billing-incomes/index.js') }}"></script>
+    <script src= "{{ asset('js/plugins/jquery.autocomplete/js/jquery.autocomplete.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('js/portal/income/billing-incomes/index.js') }}"></script>
 @endsection
 
 
@@ -26,7 +36,8 @@
         <div class="clearfix"></div>
       </div>
       <div class="x_content">
-        <table width='100%' style="margin-bottom: 20px;">
+
+        <table width='100%' style="margin-bottom: 20px;" id="title-application">
           <tr>
               <td width='50' align="center" valign="top" class="pr-4">
                   <h1 class="text-primary"><i class="fa fa-money" aria-hidden="true"></i></h1>
@@ -54,14 +65,17 @@
         <div id="div-content-enveiroment" style="display: none;">
             <div class="row row-sm mb-4 text-center">
                 <div class="col-sm-6 text-left">
-                    <h4><i class="fa fa-arrow-right text-primary" aria-hidden="true"></i> RESTAURANTE GUARIGUA</h4>
+                    <h4><i class="fa fa-money text-primary mr-2" aria-hidden="true"></i> <span id="name-environtment"></span></h4>
+                </div>
+                <div class="col-sm-6 text-left">
+                    <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> LIQUIDACIÓN: <span id="number-liquidation"></span></h4>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <label for="icm_environment_income_item_id">SERVICIOS DE INGRESO</label>
-                        <select id="icm_environment_income_item_id" class="form-control form-control-sm" required="required" style="height: 25px;" data-live-search="true" name="icm_environment_income_item_id"></select>
+                        <label for="icm_income_item_id">SERVICIOS DE INGRESO</label>
+                        <select id="icm_income_item_id" class="form-control form-control-sm" required="required" style="height: 25px;" data-live-search="true" name="icm_income_item_id"></select>
                     </div>
                 </div>
                 <div class="col-sm-2">
@@ -78,126 +92,119 @@
                 </div>
                 <div class="col-sm-12">
 
-                    <h6 style="color:black;" class="mt-4">Información personales</h6>
+                    <h6 style="color:black;" class="mt-4"><i class="fa fa-user mr-2 text-primary" aria-hidden="true"></i>Información personales</h6>
                     <hr style="color: blue; margin-top: 0rem !important;">
                     <div class="form-layout form-layout-5 bd-info">
                         {{ Form::open(array(
-                            'id'=>'form-products',
+                            'id'=>'form-billing-incomes',
                             'autocomplete'=>'off',
                             'onsubmit' => 'return false;'
                         )) }}
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('document_type','Tipo de documento',[],false) !!}
-                                {!! Form::select('document_type', $identification_document_types, null, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('document_number','Número documento',[],false) !!}
+                                {!! Form::label('document_number','Número documento <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
                                 {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                    {!! Form::label('document_number','&nbsp',[],false) !!}
-                                    <button class="btn btn-warning btn-sm  btn-block" id="btn-save" style="height: 25px"><i class="fa fa-credit-card-alt mg-r-10"></i> Lector de cedula  </button>
+                                {!! Form::label('document_type','Tipo de documento <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::select('document_type', $identification_document_types, null, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    {!! Form::label('bnt-save','&nbsp',[],false) !!}
+                                    <button class="btn btn-warning btn-sm  btn-block" style="height: 25px"><i class="fa fa-credit-card-alt mg-r-10"></i> Lector de cedula  </button>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('first_name','Primer nombre',[],false) !!}
+                                {!! Form::label('first_name','Primer nombre <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
                                 {!! Form::text('first_name', null, array('id' => 'first_name','placeholder' => 'Primer nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="form-group">
                                 {!! Form::label('second_name','Segundo nombre',[],false) !!}
-                                {!! Form::text('second_name', null, array('id' => 'second_name','placeholder' => 'Segundo nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                {!! Form::text('second_name', null, array('id' => 'second_name','placeholder' => 'Segundo nombre','class' => 'form-control form-control-sm uppercase', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('first_surname','Primer apellido',[],false) !!}
+                                {!! Form::label('first_surname','Primer apellido <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
                                 {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Primer apellido','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="form-group">
                                 {!! Form::label('second_surname','Segundo apellido',[],false) !!}
-                                {!! Form::text('second_surname', null, array('id' => 'second_surname','placeholder' => 'Segundo apellido','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                {!! Form::text('second_surname', null, array('id' => 'second_surname','placeholder' => 'Segundo apellido','class' => 'form-control form-control-sm uppercase', 'style' => 'height: 25px;')) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                {!! Form::label('birth_date','Fecha nacimiento <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::date('birth_date', null, array('id' => 'birth_date','placeholder' => 'Primer nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                {!! Form::label('gender','Genero <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::select('gender', $genders, null, array('id' => 'gender','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
                         </div>
-                        {{ Form::close() }}
-                        <h6 style="color:black;" class="mt-4">Información ingreso general</h6>
-                        <hr style="color: blue; margin-top: 0rem !important;">
-                        {{ Form::open(array(
-                            'id'=>'form-products',
-                            'autocomplete'=>'off',
-                            'onsubmit' => 'return false;'
-                        )) }}
                         <div class="row">
-
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('types_of_income','Tipo de ingreso:',[],false) !!}
-                                {!! Form::select('types_of_income', $types_of_income, null, array('id' => 'types_of_income','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                            <div class="col-sm-6">
+                                <div id="div-general-income-type">
+                                    <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> Información ingreso general</h6>
+                                    <hr style="color: blue; margin-top: 0rem !important;">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                            {!! Form::label('icm_types_income_id','Tipo de ingreso <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                            {!! Form::select('icm_types_income_id', $types_of_income, null, array('id' => 'icm_types_income_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                            {!! Form::label('icm_affiliate_category_id','Categoria <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                            {!! Form::select('icm_affiliate_category_id', $icm_affiliate_categories, null, array('id' => 'icm_affiliate_category_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 div-family-compensation-fund">
+                                            <div class="form-group">
+                                            {!! Form::label('icm_family_compensation_fund_id','Caja sin fronteras:',[],false) !!}
+                                            {!! Form::select('icm_family_compensation_fund_id', $icm_family_compensation_funds, null, array('id' => 'icm_family_compensation_fund_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('icm_affiliate_category_id','Categoria:',[],false) !!}
-                                {!! Form::select('icm_affiliate_category_id', $icm_affiliate_categories, null, array('id' => 'types_of_income','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('icm_family_compensation_fund_id','Caja sin fronteras:',[],false) !!}
-                                {!! Form::select('icm_family_compensation_fund_id', $icm_family_compensation_funds, null, array('id' => 'icm_family_compensation_fund_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('first_surname','Nit empresa afiliado',[],false) !!}
-                                {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Nit empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('first_surname','Nombre empresa afiliado',[],false) !!}
-                                {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Nombre empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                        </div>
-                        {{ Form::close() }}
-                        <h6 style="color:black;" class="mt-4">Información ingreso por convenio</h6>
-                        <hr style="color: blue; margin-top: 0rem !important;">
-                        {{ Form::open(array(
-                            'id'=>'form-products',
-                            'autocomplete'=>'off',
-                            'onsubmit' => 'return false;'
-                        )) }}
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('first_surname','Nit empresa convenio',[],false) !!}
-                                {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Nit empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('first_surname','Nombre empresa convenio',[],false) !!}
-                                {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Nombre empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                {!! Form::label('document_number','Convenios activos:',[],false) !!}
-                                {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Tipo ingreso','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                            <div class="col-sm-6">
+                                <div id="div-apply-to-agreement">
+                                    <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> Aplicación de convenio</h6>
+                                    <hr style="color: blue; margin-top: 0rem !important;">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                            {!! Form::label('name_company_agreement','Empresa convenio',[],false) !!}
+                                            {!! Form::text('icm_companies_agreement_name', null, array('placeholder' => 'Empresa','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'icm_companies_agreement_name')) !!}
+                                            <input class="form-control" type="text" id="icm_companies_agreement_name-x" disabled="disabled" style="color: #CCC; position: absolute; background: transparent; z-index: 1; display:none"/>
+                                            <input type="hidden" name="icm_companies_agreement_id" id="icm_companies_agreement_id">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                            {!! Form::label('icm_agreement_id', 'Convenio: <a href="javaScript:void(0)" id="edit-agreement" title="Consultar información convenio"><i class="fa fa-question-circle" aria-hidden="true"></i></a>',[],false) !!}
+                                            {!! Form::select('icm_agreement_id', [], null, array('id' => 'icm_agreement_id', 'class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -211,59 +218,43 @@
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    <button class="btn btn-primary btn-sm  btn-block" id="btn-save"><i class="fa fa-money mg-r-10"></i> Pagar  </button>
+                                    <button class="btn btn-primary btn-sm  btn-block" id="pay-settlement"><i class="fa fa-money mg-r-10"></i> Pagar  </button>
                                 </div>
                             </div>
                         </div>
                         <br>
-                        <h6>Personas coberturas</h6>
-                        <table class="table table-hover" id="tbl-categories" style="width: 100% !important;">
+                        <h6><i class="fa fa-server text-primary" aria-hidden="true"></i> SERVICIO LIQUIDADOS</h6>
+                        <table class="table table-hover" id="tbl-details" style="width: 100% !important;">
                             <thead>
                                 <tr>
-                                    <th class="search-disabled" style="width: 2%">#</th>
-                                    <th>Tipo documento</th>
-                                    <th>Número documento</th>
-                                    <th>Nombre</th>
-                                    <th>Documento empresa</th>
-                                    <th>Nombre empresa</th>
-                                    <th>Tipo ingreso</th>
-                                    <th>Categoria</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                        <br>
-                        <h5>Servicios liquidados</h5>
-                        <table class="table table-hover" id="tbl-categories" style="width: 100% !important;">
-                            <thead>
-                                <tr>
-                                    <th class="search-disabled" style="width: 2%">#</th>
+                                    <th class="search-disabled" style="width: 5%">#</th>
                                     <th>Nombre servicio</th>
+                                    <th>Código Tar. Apli.</th>
                                     <th>Valor</th>
                                     <th>Iva</th>
                                     <th>Impoconsumo</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
+                            <tbody></tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="5" class="text-right">Subtotal</th>
-                                    <th>$0.00</th>
+                                    <th colspan="6" class="text-right">Subtotal</th>
+                                    <th id="subtotal">$0.00</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="5" class="text-right">Iva</th>
-                                    <th>$0.00</th>
+                                    <th colspan="6" class="text-right">Iva</th>
+                                    <th id="iva">$0.00</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="5" class="text-right">Impoconsumo</th>
-                                    <th>$0.00</th>
+                                    <th colspan="6" class="text-right">Impoconsumo</th>
+                                    <th id="impoconsumo">$0.00</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="5" class="text-right">Total</th>
-                                    <th>$0.00</th>
+                                    <th colspan="6" class="text-right">Total</th>
+                                    <th id="total">$0.00</th>
                                 </tr>
                             </tfoot>
-                            <tbody></tbody>
                         </table>
                     </div><!-- form-layout -->
                 </div>
@@ -273,6 +264,161 @@
       </div>
     </div>
   </div>
+</div>
+
+
+{{--  Modal nuevo o actualización producto --}}
+<div class="modal fullscreen-modal fade" id="md-grupo-afiliado" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="width: 1000px;">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-primary">
+                <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Registro grupo afiliados masivo</span></h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="table-responsive">
+                        <table class="table table-striped jambo_table bulk_action" id="tbl-grupo-afiliado">
+                          <thead>
+                            <tr class="headings">
+                              <th>
+                                <input type="checkbox" id="check-all" class="flat">
+                              </th>
+                              <th class="column-title">Documento</th>
+                              <th class="column-title">Nombre</th>
+                              <th class="column-title">Categoria</th>
+                              <th class="column-title">Sexo</th>
+                              <th class="column-title">Fecha nacimiento</th>
+                              <th class="column-title">Edad</th>
+                              <th class="column-title">Empresa afilia</th>
+                              <th class="bulk-actions" colspan="7">
+                                <a class="antoo" style="color:#fff; font-weight:500;">Personas seleccionadas ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive">
+                        <div class="col-sm-12">
+                            <div id="div-apply-to-agreement-affiliate">
+                                <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> Aplicación de convenio</h6>
+                                <hr style="color: blue; margin-top: 0rem !important;">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                        {!! Form::label('name_company_agreement_affiliate','Empresa convenio',[],false) !!}
+                                        {!! Form::text('icm_companies_agreement_name_affiliate', null, array('placeholder' => 'Empresa','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'icm_companies_agreement_name_affiliate')) !!}
+                                        <input class="form-control" type="text" id="icm_companies_agreement_name_affiliate-x" disabled="disabled" style="color: #CCC; position: absolute; background: transparent; z-index: 1; display:none"/>
+                                        <input type="hidden" name="icm_companies_agreement_affiliate_id" id="icm_companies_agreement_affiliate_id">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                        {!! Form::label('icm_agreement_id', 'Convenio: <a href="javaScript:void(0)" id="edit-agreement" title="Consultar información convenio"><i class="fa fa-question-circle" aria-hidden="true"></i></a>',[],false) !!}
+                                        {!! Form::select('icm_agreement_affiliate_id', [], null, array('id' => 'icm_agreement_affiliate_id', 'class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-mass-affiliate">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{--  Fin modal nuevo o actualización producto  --}}
+
+
+<div class="modal fullscreen-modal fade" id="md-icm_environment_income_items" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-primary">
+                <h6 class="modal-title" id="exampleModalLabel"><i class="fa fa-file mr-2" aria-hidden="true"></i><span id="label-type">CONVENIOS EMPRESARIALES</span></h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-xl-12 mg-t-20 mg-xl-t-0">
+                        <div class="form-layout form-layout-5 bd-info">
+                            <h6 class="mt-2"><i class="fa fa-universal-access text-primary" aria-hidden="true"></i> CONVENIO</h6>
+                            {{ Form::open(array(
+                                'id'=>'form-agreement',
+                                'autocomplete'=>'off',
+                                'onsubmit' => 'return false;'
+                            )) }}
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        {!! Form::label('code','Empresa',[],false) !!}
+                                        {!! Form::text('icm_companies_agreement_name', null, array('placeholder' => 'Empresa','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'icm_companies_agreement_name')) !!}
+                                        <input class="form-control" type="text" id="icm_companies_agreement_name-x" disabled="disabled" style="color: #CCC; position: absolute; background: transparent; z-index: 1; display:none"/>
+                                        <input type="hidden" name="icm_companies_agreement_id" id="icm_companies_agreement_id" required="required">
+                                        {!! Form::hidden('id') !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                    {!! Form::label('code','Código convenio',[],false) !!}
+                                    {!! Form::text('code', null, array('placeholder' => 'Código convenio','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'code','required' => 'required')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                    {!! Form::label('name','Nombre convenio',[],false) !!}
+                                    {!! Form::text('name', null, array('placeholder' => 'Nombre convenio','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'name','required' => 'required')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                    {!! Form::label('date_from','Fecha inicio',[],false) !!}
+                                    {!! Form::date('date_from', null, array('placeholder' => '','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                    {!! Form::label('date_to','Fecha finaliza',[],false) !!}
+                                    {!! Form::date('date_to', null, array('placeholder' => '','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        {!! Form::label('observations','Observaciones', [], false) !!}
+                                        {!! Form::textarea('observations', null, ['class'=>'form-control','rows' => '2']) !!}
+                                    </div>
+                                </div>
+                            </div>
+                            {{ Form::close() }}
+                            <hr class="mt-4">
+                            <h6><i class="fa fa-money text-primary" aria-hidden="true"></i> SERVICIOS Y TARIFAS CONVENIOS</h6>
+                            <form id="form-income-item-rate">
+                            <table class="table table-bordered" id="tbl-income-items" style="width: 100% !important;">
+                                <thead>
+
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            </form>
+                        </div><!-- form-layout -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
 </div>
 
 @endsection

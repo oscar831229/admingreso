@@ -21,5 +21,9 @@ class IcmEnvironmentIcmMenuItem extends Model
 
     }
 
+    public function icm_menu_item(){
+        return $this->belongsTo('App\Models\Income\IcmMenuItem');
+    }
+
 
 }

@@ -8,6 +8,8 @@ use App\Clases\DataTable\SSP;
 class IcmAgreement extends Model
 {
     protected $fillable = [
+        'code',
+        'name',
         'icm_environment_id',
         'icm_companies_agreement_id',
         'date_from',
@@ -19,11 +21,12 @@ class IcmAgreement extends Model
     ];
 
     private $columnsdatatable = array(
-        array( 'db' => 'ic.id' , 'dt' => 0),
-        array( 'db' => 'icie.lot_number' , 'dt' => 1),
-        array( 'db' => 'icie.invima_registration' , 'dt' => 2),
-        array( 'db' => 'icie.box_number' , 'dt' => 3),
-        array( 'db' => 'icie.expiration_date' , 'dt' => 4),
+        array( 'db' => 'ig.id' , 'dt' => 0),
+        array( 'db' => "CONCAT(IFNULL(ica.document_number,'') , ' ', IFNULL(ica.name, ''))" , 'dt' => 1),
+        array( 'db' => 'ig.code' , 'dt' => 2),
+        array( 'db' => 'ig.name' , 'dt' => 3),
+        array( 'db' => 'ig.date_from' , 'dt' => 4),
+        array( 'db' => 'ig.date_to' , 'dt' => 5),
     );
 
     public function getDataTable($param){
@@ -31,8 +34,9 @@ class IcmAgreement extends Model
         $asset = \DB::table('icm_agreements AS ig')
         ->selectRaw("
             ig.id,
-            ica.document_number,
-            ica.name as icm_companies_agreement_name,
+            CONCAT(IFNULL(ica.document_number,'') , ' ', IFNULL(ica.name, '')) AS icm_companies_agreement_name,
+            ig.code,
+            ig.name as icm_agreement_name,
             ig.date_from,
             ig.date_to,
             u.name as user_created,

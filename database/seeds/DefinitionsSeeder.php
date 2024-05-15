@@ -9,6 +9,7 @@ use App\User;
 use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmRateType;
 use App\Models\Income\IcmFamilyCompensationFund;
+use App\Models\Income\IcmTypesIncome;
 
 class DefinitionsSeeder extends Seeder
 {
@@ -28,25 +29,22 @@ class DefinitionsSeeder extends Seeder
                 'name' => 'Tipos de documento de identificación',
                 'details' => 'Tipos de documento de identificación',
                 'detaildefinitions' => [
-                    ['code' => '1', 'name' => 'Cédula de Ciudadanía', 'details' => 'Cédula de Ciudadanía '],
-                    ['code' => '2', 'name' => 'Cédula de Extranjería ', 'details' => 'Cédula de Ciudadanía '],
-                    ['code' => '5', 'name' => 'Pasaporte', 'details' => 'Cédula de Ciudadanía'],
-                    ['code' => '6', 'name' => 'Nit', 'details' => 'Nit'],
-                    ['code' => '7', 'name' => 'Tarjeta de identidad', 'details' => 'Tarjeta de identidad'],
-                    ['code' => '8', 'name' => 'Registro civil', 'details' => 'Registro civil'],
-                    ['code' => '9', 'name' => 'No identificado', 'details' => 'No identificado'],
+                    ['code' => 'CC', 'name' => 'Cédula de Ciudadanía', 'details' => 'Cédula de Ciudadanía '],
+                    ['code' => 'CE', 'name' => 'Cédula de Extranjería ', 'details' => 'Cédula de Ciudadanía '],
+                    ['code' => 'PA', 'name' => 'Pasaporte', 'details' => 'Cédula de Ciudadanía'],
+                    ['code' => 'NI', 'name' => 'Nit', 'details' => 'Nit'],
+                    ['code' => 'TI', 'name' => 'Tarjeta de identidad', 'details' => 'Tarjeta de identidad'],
+                    ['code' => 'TC', 'name' => 'Registro civil', 'details' => 'Registro civil']
                 ]
-            ],[
-                'code' => 'types_of_income',
-                'name' => 'Tipos de ingreso a sedes',
-                'details' => 'Tipos de ingresos',
-                'detaildefinitions' => [
-                    ['code' => '1', 'name' => 'AFILIADO'           , 'details' => 'AFILIADO'],
-                    ['code' => '2', 'name' => 'PRESENTADO'         , 'details' => 'PRESENTADO'],
-                    ['code' => '3', 'name' => 'CAJAS SIN FRONTERAS', 'details' => 'CAJAS SIN FRONTERAS'],
-                    ['code' => '4', 'name' => 'PARTICULAR'         , 'details' => 'PARTICULAR']
+                ], [
+                    'code' => 'gender',
+                    'name' => 'Definiciones de generos',
+                    'details' => 'Definicion de generos',
+                    'detaildefinitions' => [
+                        ['code' => 'F', 'name' => 'Femenino', 'details' => 'Femenino'],
+                        ['code' => 'M', 'name' => 'Masculino', 'details' => 'Masculino']
+                    ]
                 ]
-            ]
         ];
 
         foreach ($definiciones as $key => $definicion) {
@@ -246,6 +244,68 @@ class DefinitionsSeeder extends Seeder
                 IcmFamilyCompensationFund::create($compensation);
             }
         }
+
+
+        # Tipos de ingreso a sedes
+        $types_incomes = [[
+                'code'  => 'AFI',
+                'name'  => 'AFILIADO',
+                'order' => '1',
+                'icm_affiliate_categories' => [
+                    ['code' => 'A', 'name' => 'CATEGORIA A'],
+                    ['code' => 'B', 'name' => 'CATEGORIA B'],
+                    ['code' => 'C', 'name' => 'CATEGORIA C'],
+                ]
+            ], [
+                'code'  => 'PRE',
+                'name'  => 'PRESENTADO',
+                'order' => '2',
+                'icm_affiliate_categories' => [
+                    ['code' => 'A', 'name' => 'CATEGORIA A'],
+                    ['code' => 'B', 'name' => 'CATEGORIA B'],
+                    ['code' => 'C', 'name' => 'CATEGORIA C'],
+                ]
+            ], [
+                'code'  => 'CAJ',
+                'name'  => 'CAJAS SIN FRONTERAS',
+                'order' => '3',
+                'icm_affiliate_categories' => [
+                    ['code' => 'A', 'name' => 'CATEGORIA A'],
+                    ['code' => 'B', 'name' => 'CATEGORIA B'],
+                    ['code' => 'C', 'name' => 'CATEGORIA C'],
+                ]
+            ], [
+                'code'  => 'PAR',
+                'name'  => 'PARTICULAR',
+                'order' => '4',
+                'icm_affiliate_categories' => [
+                    ['code' => 'D', 'name' => 'CATEGORIA D']
+                ]
+            ]];
+
+        foreach ($types_incomes as $key => $types_income) {
+
+            $income = IcmTypesIncome::where(['code' => $types_income['code']])->first();
+            if(!$income){
+                $income = IcmTypesIncome::create([
+                    'code'         => $types_income['code'],
+                    'name'         => $types_income['name'],
+                    'order'        => $types_income['order'],
+                    'state'        => 'A',
+                    'user_created' => 1
+                ]);
+            }
+
+            foreach ( $types_income['icm_affiliate_categories'] as $key => $category) {
+                $icm_category = IcmAffiliateCategory::where(['code' => $category['code']])->first();
+                $categories = $income->icm_affiliate_categories()->where(['icm_affiliate_category_id' => $icm_category->id])->first();
+                if(!$categories){
+                    $income->icm_affiliate_categories()->attach($icm_category, ['user_created' => 1]);
+                }
+            }
+
+        }
+
 
     }
 }

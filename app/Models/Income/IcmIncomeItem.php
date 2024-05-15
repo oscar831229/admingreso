@@ -5,9 +5,8 @@ namespace App\Models\Income;
 use Illuminate\Database\Eloquent\Model;
 use App\Clases\DataTable\SSP;
 
-class IcmEnvironmentIncomeItem extends Model
+class IcmIncomeItem extends Model
 {
-
     protected $fillable = [
         'name',
         'code',
@@ -42,7 +41,7 @@ class IcmEnvironmentIncomeItem extends Model
 
     public function getDataTable($param){
 
-        $asset = \DB::table('icm_environment_income_items AS ieii')
+        $asset = \DB::table('icm_income_items AS ieii')
         ->selectRaw("
             ieii.id,
             ieii.code,
@@ -95,7 +94,7 @@ class IcmEnvironmentIncomeItem extends Model
 
     public function getCountDatatable($param) {
 
-        $asset = \DB::table('icm_environment_income_items AS ieii')
+        $asset = \DB::table('icm_income_items AS ieii')
         ->selectRaw("
             ieii.code,
             ieii.name,
@@ -127,7 +126,7 @@ class IcmEnvironmentIncomeItem extends Model
         $datares['canfiltered'] = $asset->count();
 
         # CANTIDAD TOTAL
-        $asset = \DB::table('icm_environment_income_items AS ieii')
+        $asset = \DB::table('icm_income_items AS ieii')
         ->selectRaw("
             ieii.code,
             ieii.name,
@@ -150,12 +149,15 @@ class IcmEnvironmentIncomeItem extends Model
 
     }
 
-    public function icm_environment_income_item_details(){
-        return $this->hasMany('App\Models\Income\IcmEnvironmentIncomeItemDetail');
+    public function icm_income_item_details(){
+        return $this->hasMany('App\Models\Income\IcmIncomeItemDetail');
     }
 
     public function icm_environment_icm_menu_item(){
         return $this->belongsTo('App\Models\Income\IcmEnvironmentIcmMenuItem');
     }
 
+    public function icm_environment(){
+        return $this->belongsTo('App\Models\Income\IcmEnvironment');
+    }
 }

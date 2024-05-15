@@ -4,10 +4,10 @@ namespace App\Models\Income;
 
 use Illuminate\Database\Eloquent\Model;
 
-class IcmEnvironmentIncomeItemDetail extends Model
+class IcmIncomeItemDetail extends Model
 {
     protected $fillable = [
-        'icm_environment_income_item_id',
+        'icm_income_item_id',
         'icm_types_income_id',
         'icm_affiliate_category_id',
         'icm_rate_type_id',
@@ -28,10 +28,5 @@ class IcmEnvironmentIncomeItemDetail extends Model
     public function icm_rate_type(){
         return $this->belongsTo('App\Models\Income\IcmRateType');
     }
-
-
-
-
-
 
 }

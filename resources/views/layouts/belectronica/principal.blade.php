@@ -36,7 +36,7 @@
         <!-- NProgress -->
         {{--  <link href="{{ asset('Gentelella/vendor/nprogress/nprogress.css') }}" rel="stylesheet">  --}}
         <!-- iCheck -->
-        {{--  <link href="{{ asset('Gentelella/vendor/iCheck/skins/flat/green.css') }}" rel="stylesheet">  --}}
+        <link href="{{ asset('Gentelella/vendor/iCheck/skins/flat/green.css') }}" rel="stylesheet">
 
         <!-- bootstrap-progressbar -->
         {{--  <link href="{{ asset('Gentelella/vendor/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css') }}" rel="stylesheet">  --}}
@@ -108,6 +108,8 @@
         <!-- Bootstrap -->
         <script src="{{ asset('Gentelella/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
         <!-- FastClick -->
+        <script src="{{ asset('theme/lib/popper.js/popper.js') }}"></script>
+        <script src="{{ asset('theme/lib/bootstrap/bootstrap.js') }}"></script>
         {{--  <script src="{{ asset('Gentelella/vendor/fastclick/lib/fastclick.js') }}"></script>  --}}
         <!-- NProgress -->
         {{--  <script src="{{ asset('Gentelella/vendor/nprogress/nprogress.js') }}"></script>  --}}
@@ -118,7 +120,7 @@
         <!-- bootstrap-progressbar -->
         {{--  <script src="{{ asset('Gentelella/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js') }}"></script>  --}}
         <!-- iCheck -->
-        {{--  <script src="{{ asset('Gentelella/vendor/iCheck/icheck.min.js') }}"></script>  --}}
+        <script src="{{ asset('Gentelella/vendor/iCheck/icheck.js') }}"></script>
         <!-- Skycons -->
         {{--  <script src="{{ asset('Gentelella/vendor/skycons/skycons.js') }}"></script>  --}}
         <!-- Flot -->

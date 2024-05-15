@@ -58,6 +58,13 @@
         Route::post('datatable-parameterization-agreements', 'ParameterizationAgreementController@datatableParameterizationAgreements');
 
         Route::resource('billing-incomes','BillingIncomeController');
+        Route::get('search-client-document/{document_number}','BillingIncomeController@searchClientDocument');
+        Route::get('billing-incomes-category/{icm_types_income_id}','BillingIncomeController@billingIncomesCategory');
+        Route::get('billing-company-agreement/{icm_companies_agreement_id}','BillingIncomeController@billingCompanyAgreement');
+        Route::get('billing-incomes-details/{icm_liquidation_id}','BillingIncomeController@billingIncomesDetails');
+        Route::get('billing-people-services/{icm_liquidation_id}', 'BillingIncomeController@getBillingPeopleServices');
+        Route::get('view-liquidation-totals/{icm_liquidation_id}', 'BillingIncomeController@viewLiquidationTotals');
+
 
         Route::resource('incomes','IncomeController');
         Route::get('incomes-dowload/{directory}','IncomeController@dowload')->name('downloadFiles');
