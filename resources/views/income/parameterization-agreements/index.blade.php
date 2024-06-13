@@ -110,7 +110,7 @@
           </tr>
         </table>
 
-        <div class="row" id="div-environments">
+        <!-- <div class="row" id="div-environments">
             @foreach ($icm_environments as $icm_environment)
             <div class="col-sm-3">
                 <div class="card" style="width: 18rem;">
@@ -121,17 +121,17 @@
                 </div>
             </div>
             @endforeach
-        </div>
+        </div>-->
 
-        <div class="row" id="div-created-services" style="display:none;">
+        <div class="row" id="div-created-services">
             <div class="col-sm-12">
 
                 <div class="row row-sm mb-4 text-center">
-                    <div class="col-sm-6 text-left">
+                    <!-- <div class="col-sm-6 text-left">
                         <h4><i class="fa fa-arrow-right text-primary" aria-hidden="true"></i> RESTAURANTE GUARIGUA</h4>
-                    </div>
-                    <div class="col-sm-6 text-left">
-                      <button id="btn-new-environment-service" class="btn btn-primary btn-sm" style="margin-bottom: 1px;">
+                    </div> -->
+                    <div class="col-sm-12 text-left">
+                      <button id="btn-new-environment-service" class="btn btn-primary btn-sm btn-block" style="margin-bottom: 1px;">
                           <i class="fa fa-plus-square-o mr-2"></i>NUEVO CONVENIO
                       </button>
                     </div>
@@ -184,7 +184,7 @@
                             <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        {!! Form::label('code','Empresa',[],false) !!}
+                                        {!! Form::label('code','Empresa <span class="text-danger">*</span>',[],false) !!}
                                         {!! Form::text('icm_companies_agreement_name', null, array('placeholder' => 'Empresa','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'icm_companies_agreement_name')) !!}
                                         <input class="form-control" type="text" id="icm_companies_agreement_name-x" disabled="disabled" style="color: #CCC; position: absolute; background: transparent; z-index: 1; display:none"/>
                                         <input type="hidden" name="icm_companies_agreement_id" id="icm_companies_agreement_id" required="required">
@@ -193,25 +193,25 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                    {!! Form::label('code','Código convenio',[],false) !!}
+                                    {!! Form::label('code','Código convenio <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('code', null, array('placeholder' => 'Código convenio','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'code','required' => 'required')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('name','Nombre convenio',[],false) !!}
+                                    {!! Form::label('name','Nombre convenio <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('name', null, array('placeholder' => 'Nombre convenio','class' => 'form-control  form-control-sm', 'style' => 'height: 25px;', 'id' => 'name','required' => 'required')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                    {!! Form::label('date_from','Fecha inicio',[],false) !!}
+                                    {!! Form::label('date_from','Fecha inicio <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::date('date_from', null, array('placeholder' => 'Código producto','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                    {!! Form::label('date_to','Fecha finaliza',[],false) !!}
+                                    {!! Form::label('date_to','Fecha finaliza <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::date('date_to', null, array('placeholder' => 'Número de cupos por servicio','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>

@@ -174,9 +174,9 @@ class ParameterizationAgreementController extends Controller
         $agreementdetail = $agreement->icm_agreement_details()->where(['state' => 'A'])->get();
 
         return response()->json([
-            'success' => true,
-            'message' => '',
-            'data'    => $agreement->toArray(),
+            'success'            => true,
+            'message'            => '',
+            'data'               => $agreement->toArray(),
             'income_item_detail' => $agreementdetail
         ]);
     }

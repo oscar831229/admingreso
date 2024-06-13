@@ -17,9 +17,10 @@ class Compute
 
         # Tarifa general
         $service_value[] = [
-            'value' => $income_items->value,
-            'class' => 'default',
-            'code'  => 'GENERAL'
+            'value'   => $income_items->value,
+            'class'   => 'default',
+            'code'    => 'GENERAL',
+            'alterno' => 'GEN'
         ];
 
         $objdate = Carbon::createFromFormat('Ymd', $date);
@@ -39,7 +40,7 @@ class Compute
 
         # TARIFA POR PARAMETRIZACIÓN DE VALORES
         $items_details = $income_items->icm_income_item_details()->where([
-            'icm_types_income_id'        => $client->icm_types_income_id,
+            'icm_types_income_id'       => $client->icm_types_income_id,
             'icm_affiliate_category_id' => $client->icm_affiliate_category_id,
             'icm_rate_type_id'          => $temporada->id
         ])->first();
@@ -51,23 +52,36 @@ class Compute
             $code        = $income_type.'_'.$category.'_'.$tempodada_alta;
 
             $service_value[] = [
-                'value' => $items_details->value,
-                'class' => 'parametrizacion',
-                'code'  => $code
+                'value'   => $items_details->value,
+                'class'   => 'parametrizacion',
+                'code'    => $code,
+                'alterno' => $income_type
             ];
         }
 
         # TARIFA POR CONVENIO
         if(isset($client->icm_agreement_id) && !empty($client->icm_agreement_id)){
+
+            # Convenio enviado
             $icm_agreement = IcmAgreement::find($client->icm_agreement_id);
-            $detail        = $icm_agreement->icm_agreement_details()->where(['icm_rate_type_id' => $temporada->id])->first();
-            if($detail){
+
+            # Consulta servicio de ingreso en la temporada
+            $detail        = $icm_agreement->icm_agreement_details()
+                ->where([
+                    'icm_rate_type_id'               => $temporada->id,
+                    'icm_environment_income_item_id' => $income_items->id
+                ])
+                ->first();
+
+            if($detail && $detail->state == 'A'){
                 $service_value[] = [
-                    'value' =>  $detail->value,
-                    'class' => 'convenio',
-                    'code'  => 'CONVENIO_'.$icm_agreement->code
+                    'value'   =>  $detail->value,
+                    'class'   => 'convenio',
+                    'code'    => 'CONVENIO_'.$icm_agreement->code,
+                    'alterno' => 'CONV'
                 ];
             }
+
         }
 
         array_multisort(array_column($service_value, 'value'), SORT_ASC, $service_value);
@@ -82,13 +96,13 @@ class Compute
         $response->iva         = 0;
         $response->impoconsumo = 0;
 
-        if($icm_menu_items->porcentage_iva > 0 && $icm_menu_items->porcentage_impoconsumo > 0){
+        if($icm_menu_items->percentage_iva > 0 && $icm_menu_items->porcentage_impoconsumo > 0){
             throw new \Exception("Error producto con parametros de iva e impoconsumo {$icm_menu_items->name}", 1);
         }
 
         # Grabado con iva
-        if($icm_menu_items->porcentage_iva > 0){
-            $porcentaje     = $icm_menu_items->porcentage_iva / 100;
+        if($icm_menu_items->percentage_iva > 0){
+            $porcentaje     = $icm_menu_items->percentage_iva / 100;
             $response->base = round(($total_value / (1 + $porcentaje)), 2);
             $response->iva  = $total_value - $response->base;
         }

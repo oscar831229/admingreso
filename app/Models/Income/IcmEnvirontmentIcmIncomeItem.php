@@ -11,4 +11,8 @@ class IcmEnvirontmentIcmIncomeItem extends Model
     public function icm_environment(){
         return $this->belongsTo('App\Models\Income\IcmEnvironment');
     }
+
+    public function icm_income_item(){
+        return $this->belongsTo('App\Models\Income\IcmIncomeItem');
+    }
 }

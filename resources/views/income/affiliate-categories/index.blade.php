@@ -132,16 +132,16 @@
                                     'onsubmit' => 'return false;'
                                 )) }}
                                     <div class="form-group">
-                                        {!! Form::label('code','Código', [], false) !!}
+                                        {!! Form::label('code','Código <span class="text-danger">*</span>', [], false) !!}
                                         {!! Form::text('code', null, array('placeholder' => 'Código categoria','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                         {!! Form::hidden('id') !!}
                                     </div>
                                     <div class="form-group">
-                                        {!! Form::label('name','Nombre', [], false) !!}
+                                        {!! Form::label('name','Nombre <span class="text-danger">*</span>', [], false) !!}
                                         {!! Form::text('name', null, array('placeholder' => 'Nombre categoria','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                     <div class="form-group">
-                                        {!! Form::label('state','Estado', [], false) !!}
+                                        {!! Form::label('state','Estado <span class="text-danger">*</span>', [], false) !!}
                                         {!! Form::select('state',['A'=>'Activa', 'I' => 'Inactiva'],null, array('id' => 'state','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 {{ Form::close() }}

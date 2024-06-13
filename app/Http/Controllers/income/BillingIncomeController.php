@@ -10,16 +10,24 @@ use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmFamilyCompensationFund;
 use App\Models\Income\IcmCompaniesAgreement;
 use App\Models\Income\IcmIncomeItem;
+use App\Models\Income\IcmEnvirontmentIcmIncomeItem;
+use App\Models\Income\IcmEnvironmentIcmMenuItem;
+use App\Models\Income\IcmLiquidationPayment;
+
+
 use App\Models\Income\IcmLiquidationService;
 use App\Models\Income\IcmLiquidationDetail;
 
 use App\Models\Income\IcmCustomer;
 use App\Models\Income\IcmTypesIncome;
 use App\Models\Income\IcmLiquidation;
+use App\Models\Income\IcmPaymentMethod;
+use App\Models\Income\CommonCity;
 
 use App\Clases\Cajasan\Afiliacion;
 use App\Clases\Cajasan\Compute;
 
+use Illuminate\Support\Facades\DB;
 
 
 class BillingIncomeController extends Controller
@@ -34,14 +42,37 @@ class BillingIncomeController extends Controller
 
         $user = auth()->user();
 
-        # Ambientes ingreso.
-        $icm_environments = $user->icm_environments()->get();
+        # Ambiente usuario default - Facturacion ingresos
+        $icm_environment                        = $user->icm_environments()->first();
+        $icm_environments[$icm_environment->id] = $icm_environment;
+
+        # Facturación de ingresos otras sedes habilitado
+        $other_services = IcmEnvirontmentIcmIncomeItem::where(['icm_environment_id' => $icm_environment->id, 'state' => 'A'])->get();
+        foreach ($other_services as $key => $other_services) {
+            $icm_income_item = $other_services->icm_income_item;
+            if(!isset($icm_environments[$icm_income_item->icm_environment_id])){
+                $icm_environments[$icm_income_item->icm_environment_id] = $icm_income_item->icm_environment;
+            }
+        }
 
         # Tipos documento identificación
         $identification_document_types = getDetailDefinitions('identification_document_types');
 
+        # Tipos persona
+        $types_person = ['N' => 'Natural', 'J' => 'Jurídica'];
+
+        # Regiment fiscal
+        $tax_regime   = ['49' => 'No responsables del IVA', '48' => 'Impuestos sobre la venta del IVA'];
+
         # Generos
         $genders = getDetailDefinitions('gender');
+
+        # Ciudades DIAN.
+        $common_cities = CommonCity::orderBy('city_name')->get()->pluck('city_name', 'id');
+
+        # Formas de pago
+        $icmpaymentmethod = IcmPaymentMethod::where(['state' => 'A'])->orderBY('type_payment_method')->orderBY('name')->get();
+        $icmpaymentmethod = preparedMethoPayment($icmpaymentmethod);
 
         # Tipos de ingreso
         $types_of_income = IcmTypesIncome::where(['state' => 'A'])->pluck('name', 'id');
@@ -52,7 +83,7 @@ class BillingIncomeController extends Controller
         # Categoria
         $icm_affiliate_categories = IcmAffiliateCategory::where(['state' => 'A'])->get()->pluck('name', 'id');
 
-        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds', 'genders'));
+        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds', 'genders', 'types_person', 'tax_regime', 'icmpaymentmethod', 'common_cities'));
 
     }
 
@@ -60,15 +91,29 @@ class BillingIncomeController extends Controller
 
         # Consultar cliente
         $customer = IcmCustomer::where(['document_number' => $document_number])->first();
-        $client   = $customer ? $customer->toArray() : [];
-        $grupo_afiliado = null;
+        $client   = $customer ? $customer->toArray() : false;
 
-        # Consultar cliente CAJASAN;
+        $request         = request();
+        $grupo_afiliado  = null;
+        $affiliate_group = [];
+
+        $response_master = [
+            'success' => true,
+            'message' => '',
+            'client'  => $client
+        ];
+
+        if($request->has('notcategory')){
+            return response()->json($response_master);
+        }
+
+        # Consultar afiliados CAJASAN
         $afiliacion = new Afiliacion();
         $response   = $afiliacion->consultarCategoria($document_number);
 
         $affiliate_group = [];
         if($response['success'] && $response['data']['CODIGO'] == 1){
+
             $grupo_afiliado = $response['data']['DATOS'];
 
             $trabajador = [];
@@ -111,7 +156,7 @@ class BillingIncomeController extends Controller
                     'second_name'                     => isset($afiliado['segundo_nombre']) ? $afiliado['segundo_nombre'] : '',
                     'first_surname'                   => $afiliado['primer_apellido'],
                     'second_surname'                  => $afiliado['segundo_apellido'],
-                    'birth_date'                      => $afiliado['fecha_nacimiento'],
+                    'birthday_date'                   => $afiliado['fecha_nacimiento'],
                     'gender'                          => $genders[$gender_code],
                     'gender_code'                     => $afiliado['genero'],
                     'affiliated_document'             => $trabajador['dcto_beneficiario'],
@@ -128,15 +173,12 @@ class BillingIncomeController extends Controller
             }
         };
 
-        return response()->json([
-            'success'         => true,
-            'message'         => '',
-            'client'          => $client,
-            'grupo_afilaido'  => $affiliate_group,
-            'document_number' => $document_number,
-            'control_service' => $response['success'],
-            'error_service'   => !$response['success'] ? $response['message'] : ''
-        ]);
+        $response_master['grupo_afilaido']   = $affiliate_group;
+        $response_master['document_number']  = $document_number;
+        $response_master['control_service' ] = $response['success'];
+        $response_master['error_service']    = !$response['success'] ? $response['message'] : '';
+
+        return response()->json($response_master);
 
     }
 
@@ -156,6 +198,8 @@ class BillingIncomeController extends Controller
         return response()->json($icm_agreements);
     }
 
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -174,6 +218,7 @@ class BillingIncomeController extends Controller
      */
     public function store(Request $request)
     {
+
         # Validar infomración
         $validator = Validator::make(
             $request->all(),
@@ -186,6 +231,7 @@ class BillingIncomeController extends Controller
                 'clients'                     => 'Clientes requeridos'
             ]
         );
+
 
         if ($validator->fails()) {
             $errors = array_values($validator->errors()->toArray());
@@ -200,35 +246,70 @@ class BillingIncomeController extends Controller
         # Procesar solicitud
         $icm_liquidation_id = $request->icm_liquidation_id;
         $icm_income_item_id = $request->icm_income_item_id;
-        $clients = $request->clients;
-        $user_id = auth()->user()->id;
+        $clients            = $request->clients;
+        $user               = auth()->user();
+        $icm_environment    = $user->icm_environments()->first();
+        $user_id            = $user->id;
 
+        $income_item    = IcmIncomeItem::find($icm_income_item_id);
         $icmliquidation = IcmLiquidation::find($icm_liquidation_id);
         if(empty($icmliquidation)){
             $client_liquidation = $clients[0];
             $icmliquidation = IcmLiquidation::create([
-                'document_type'   => $client_liquidation['document_number'],
-                'document_number' => $client_liquidation['document_type'],
-                'first_name'      => $client_liquidation['first_name'],
-                'second_name'     => $client_liquidation['second_name'],
-                'first_surname'   => $client_liquidation['first_surname'],
-                'second_surname'  => $client_liquidation['second_surname'],
-                'birthday_date'   => $client_liquidation['birth_date'],
-                'gender'          => $client_liquidation['gender'],
-                'total'           => 0,
-                'state'           => 'P',
-                'user_created'    => $user_id
+                'sales_icm_environment_id' => $icm_environment->id,
+                'icm_environment_id'       => $income_item->icm_environment_id,
+                'document_type'            => $client_liquidation['document_type'],
+                'document_number'          => $client_liquidation['document_number'],
+                'first_name'               => $client_liquidation['first_name'],
+                'second_name'              => $client_liquidation['second_name'],
+                'first_surname'            => $client_liquidation['first_surname'],
+                'second_surname'           => $client_liquidation['second_surname'],
+                'birthday_date'            => $client_liquidation['birthday_date'],
+                'gender'                   => $client_liquidation['gender'],
+                'total'                    => 0,
+                'state'                    => 'P',
+                'user_created'             => $user_id
             ]);
         }
 
         # Registrar servicios
-        $income_item = IcmIncomeItem::find($icm_income_item_id);
+        $icm_affiliate_category_d = IcmAffiliateCategory::where(['code' => 'D'])->first();
         foreach ($clients as $key => $client) {
+
+            $customer = IcmCustomer::where(['document_number' => $client['document_number']])->first();
+
+            if(!$customer){
+
+                # Tipo ingreso
+                $icm_types_income       = IcmTypesIncome::find($client['icm_types_income_id']);
+
+                # Asignar categoria si el ingreso es de afiliado
+                $icm_affiliate_category_id = $icm_types_income->code == 'AFI' ? $client['icm_affiliate_category_id'] : $icm_affiliate_category_d->id;
+
+                IcmCustomer::create([
+                    'document_type'             => $client['document_type'],
+                    'document_number'           => $client['document_number'],
+                    'first_name'                => $client['first_name'],
+                    'second_name'               => $client['second_name'],
+                    'first_surname'             => $client['first_surname'],
+                    'second_surname'            => $client['second_surname'],
+                    'birthday_date'             => $client['birthday_date'],
+                    'gender'                    => $client['gender'],
+                    'icm_affiliate_category_id' => $client['icm_affiliate_category_id'],
+                    'user_created'              => $user_id
+                ]);
+            } else {
+                $customer->update([
+                    'birthday_date' => $client['birthday_date'],
+                    'gender'        => $client['gender'],
+                    'user_updated'  => $user_id
+                ]);
+            }
 
             # Servicio liquidado para ingreso de varias persona
             $cantidad_disponible = 0;
             $liquidationservices = IcmLiquidationService::where([
-                'icm_liquidation_id'             => $icmliquidation->id,
+                'icm_liquidation_id' => $icmliquidation->id,
                 'icm_income_item_id' => $income_item->id
             ])->get();
 
@@ -248,17 +329,34 @@ class BillingIncomeController extends Controller
                 $system_date   = getSystemDate();
                 $valorservicio = Compute::calcularValorServicio($income_item, (object) $client, $system_date);
 
+                # Servicios autorizados para venta desde otros ambientes
+                $icm_environtment_icm_income_item = IcmEnvirontmentIcmIncomeItem::where(['icm_income_item_id' => $income_item->id, 'icm_environment_id' => $icm_environment->id])->first();
 
+                # Obtener servicio con el cual se liquida depende del ambiente de venta
+                $icm_environment_icm_menu_item_id = $income_item->icm_environment_id != $icm_environment->id
+                    ?
+                    $icm_environtment_icm_income_item->icm_environment_icm_menu_item_id :
+                    $income_item->icm_environment_icm_menu_item_id;
+
+                # Menus items
+                $icm_environment_icm_menu_item = IcmEnvironmentIcmMenuItem::find($icm_environment_icm_menu_item_id);
+                $icm_menu_items                = $icm_environment_icm_menu_item->icm_menu_item;
 
                 # Calcular impuesto producto
-                $icm_menu_items = $income_item->icm_environment_icm_menu_item->icm_menu_item;
-                $discriminated_value = Compute::calculateTaxes($icm_menu_items, $valorservicio[0]['value']);
+                $discriminated_value           = Compute::calculateTaxes($icm_menu_items, $valorservicio[0]['value']);
+
+                # Identificar descuento - tipo de descuento
+                $discount = $income_item->value - $valorservicio[0]['value'];
+
+                # Identificar si el servicio aplica subsidio
+                $icm_types_income    = IcmTypesIncome::find($client['icm_types_income_id']);
+                $icm_type_subsidy_id = $valorservicio[0]['alterno'] == 'AFI' && $discount > 0 ? 1 : 0;
 
                 $liquidationservice  = IcmLiquidationService::create([
                     'icm_liquidation_id'               => $icmliquidation->id,
-                    'icm_income_item_id'   => $income_item->id,
-                    'icm_environment_id'               => 1,  // PENDIENTE
-                    'icm_environment_icm_menu_item_id' => $income_item->icm_environment_icm_menu_item_id,
+                    'icm_income_item_id'               => $income_item->id,
+                    'icm_environment_id'               => $income_item->icm_environment_id,  // PENDIENTE
+                    'icm_environment_icm_menu_item_id' => $icm_environment_icm_menu_item_id,
                     'number_places'                    => $income_item->number_places,
                     'applied_rate_code'                => $valorservicio[0]['code'],
                     'base'                             => $discriminated_value->base,
@@ -268,7 +366,9 @@ class BillingIncomeController extends Controller
                     'impoconsumo'                      => $discriminated_value->impoconsumo,
                     'total'                            => $valorservicio[0]['value'],
                     'user_created'                     => $user_id,
-                    'general_price'                    => $income_item->value
+                    'general_price'                    => $income_item->value,
+                    'discount'                         => $discount,
+                    'icm_type_subsidy_id'              => $icm_type_subsidy_id
                 ]);
 
             }
@@ -303,16 +403,27 @@ class BillingIncomeController extends Controller
         # Actualizar totales liquidacion
         $querySQL = "UPDATE icm_liquidations
         INNER JOIN (
-            SELECT il.id, SUM(ils.base) AS base, SUM(ils.iva) AS iva, SUM(ils.impoconsumo) AS impoconsumo, SUM(ils.total) AS total  FROM `icm_liquidations` AS il
+            SELECT
+                il.id,
+                SUM(ils.base) AS base,
+                SUM(ils.iva) AS iva,
+                SUM(ils.impoconsumo) AS impoconsumo,
+                SUM(ils.total) AS total,
+                SUM(CASE
+                    WHEN IFNULL(icm_type_subsidy_id, 0) = 1 THEN discount
+                    ELSE 0
+                END) AS total_subsidy
+            FROM `icm_liquidations` AS il
             INNER JOIN `icm_liquidation_services` AS ils ON ils.icm_liquidation_id = il.id
             WHERE il.id = ?
             GROUP BY il.id
         ) AS subconsulta ON subconsulta.id = icm_liquidations.id
         SET
-            icm_liquidations.base        = subconsulta.base,
-            icm_liquidations.iva         = subconsulta.iva,
-            icm_liquidations.impoconsumo = subconsulta.impoconsumo,
-            icm_liquidations.total       = subconsulta.total ";
+            icm_liquidations.base          = subconsulta.base,
+            icm_liquidations.iva           = subconsulta.iva,
+            icm_liquidations.impoconsumo   = subconsulta.impoconsumo,
+            icm_liquidations.total         = subconsulta.total,
+            icm_liquidations.total_subsidy = subconsulta.total_subsidy";
 
         \DB::select($querySQL, [$icmliquidation->id]);
 
@@ -320,6 +431,63 @@ class BillingIncomeController extends Controller
             'success' => true,
             'message' => '',
             'data'    => $icmliquidation
+        ]);
+
+
+    }
+
+    public function payBillingIncomes(Request $request){
+
+        DB::beginTransaction();
+
+        try {
+
+            $user_id            = auth()->user()->id;
+            $icm_resolution_id  = $request->icm_resolution_id;
+            $icm_liquidation_id = $request->icm_liquidation_id;
+            $payment_methods    = $request->payment_methods;
+
+            # Liquidacion
+            $icm_liquidation = IcmLiquidation::where(['id' => $icm_liquidation_id])->first();
+
+            if(!$icm_liquidation){
+                throw new Exception("No existe la liquidación a facturar.", 1);
+            }
+
+            # Marcar los pagos como anulados
+            DB::table('icm_liquidation_payments')->where(['icm_liquidation_id' => $icm_liquidation_id])->update(['state' => 'B']);
+
+            foreach ($payment_methods as $key => $payment_method) {
+                IcmLiquidationPayment::create([
+                    'icm_liquidation_id'    => $icm_liquidation_id,
+                    'icm_payment_method_id' => $payment_method['payment_method'],
+                    'approval_date'         => $payment_method['approval_date'],
+                    'approval_number'       => $payment_method['approval_number'],
+                    'value'                 => $payment_method['value'],
+                    'user_created'          => $user_id
+                ]);
+            }
+
+            $icm_liquidation->update(['state' => 'F']);
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return response()->json([
+                'success' =>  false,
+                'message' => $e->getMessage(),
+                'data'    => []
+            ]);
+
+        }
+
+        return response()->json([
+            'success' =>  true,
+            'message' => '',
+            'data'    => []
         ]);
 
     }
@@ -350,6 +518,21 @@ class BillingIncomeController extends Controller
             'message' => '',
             'data' => $icm_liquidation
         ]);
+
+    }
+
+    public function viewLiquidationPayment($icm_liquidation_id){
+
+        $icm_liquidation = IcmLiquidation::find($icm_liquidation_id);
+        $customer        = IcmCustomer::where(['document_number' => $icm_liquidation->document_number])->first();
+
+        return response()->json([
+            'success'         => true,
+            'message'         => '',
+            'icm_liquidation' => $icm_liquidation,
+            'customer'        => $customer
+        ]);
+
     }
 
     public function billingIncomesDetails($icm_liquidation_id){
@@ -392,7 +575,56 @@ class BillingIncomeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        # Consultamos cliente
+        $document_number = $request->document_number;
+        $customer = IcmCustomer::where(['document_number' => $document_number])->first();
+        $user_id  = auth()->user()->id;
+        if(!$customer){
+            $customer = IcmCustomer::create([
+                'document_number'     => $request->document_number,
+                'document_type'       => $request->document_type,
+                'first_name'          => $request->first_name,
+                'second_name'         => $request->second_name,
+                'first_surname'       => $request->first_surname,
+                'second_surname'      => $request->second_surname,
+                'phone'               => $request->phone,
+                'email'               => $request->email,
+                'icm_municipality_id' => $request->icm_municipality_id,
+                'address'             => $request->address,
+                'type_regime_id'      => $request->type_regime_id,
+                'user_created'        => $user_id
+            ]);
+        }else{
+            $customer->update([
+                'phone'               => $request->phone,
+                'email'               => $request->email,
+                'icm_municipality_id' => $request->icm_municipality_id,
+                'address'             => $request->address,
+                'type_regime_id'      => $request->type_regime_id,
+                'user_update'         => $user_id
+            ]);
+        }
+
+        $icm_liquidation = IcmLiquidation::find($id);
+        $icm_liquidation->update([
+            'document_type'       => $customer->document_type,
+            'document_number'     => $customer->document_number,
+            'first_name'          => $customer->first_name,
+            'second_name'         => $customer->second_name,
+            'first_surname'       => $customer->first_surname,
+            'second_surname'      => $customer->second_surname,
+            'icm_municipality_id' => $customer->icm_municipality_id,
+            'address'             => $customer->address,
+            'phone'               => $customer->phone,
+            'type_regime_id'      => $customer->type_regime_id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data'    => []
+        ]);
+
     }
 
     /**
@@ -405,4 +637,5 @@ class BillingIncomeController extends Controller
     {
         //
     }
+
 }

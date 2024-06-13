@@ -68,14 +68,10 @@ class UsersEnvironmentController extends Controller
         try {
 
             $user = User::findOrFail($request->post('user_id'));
-            $entity_user = $user->icm_environments()->where(['icm_environment_id' => $request->post('icm_environment_id')])->first();
+            $user->icm_environments()->detach();
 
-            if(!$entity_user){
-                $icmentity = IcmEnvironment::findOrFail($request->post('icm_environment_id'));
-                $user->icm_environments()->attach($icmentity, ['user_created' => $request->user()->id]);
-            }else{
-                $user->icm_environments()->detach($request->post('icm_environment_id'));
-            }
+            $icmentity = IcmEnvironment::findOrFail($request->post('icm_environment_id'));
+            $user->icm_environments()->attach($icmentity, ['user_created' => $request->user()->id]);
 
             return response()->json([
                 'success' => true,

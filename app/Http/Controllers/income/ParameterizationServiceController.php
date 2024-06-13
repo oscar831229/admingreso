@@ -19,6 +19,7 @@ use App\Models\Income\IcmEnvironment;
 use App\Models\Income\IcmRateType;
 use App\Models\Income\IcmTypesIncome;
 use App\Models\Income\IcmEnvirontmentIcmIncomeItem;
+use App\Models\Income\IcmResolution;
 
 use App\Clases\DataTable\TableServer;
 
@@ -35,7 +36,7 @@ class ParameterizationServiceController extends Controller
         $icm_environments = IcmEnvironment::all();
 
         # Sincronizar sistema POS REST
-        // synchronizePOSSystem();
+        synchronizePOSSystem();
 
         $types_of_income     = IcmTypesIncome::where(['state' => 'A'])->get();
         $affiliatecategories = IcmAffiliateCategory::where(['state' => 'A'])->orderby('code', 'asc')->get();
@@ -228,16 +229,32 @@ class ParameterizationServiceController extends Controller
 
     public function getEnvironmentIncomeServices($environment_id){
 
-        $incomeservices = IcmEnvironment::getIncomeServices($environment_id);
+        # Controlar servicios de ambiente o venta de otros ambientes
+        /**
+         * A all - todos los servicios disponibles por el ambiente
+         * P allowed(Permitidos) los permitidos para venta de otros ambientes
+         */
+        $user = auth()->user();
 
+        # Ambiente autorizado
+        $icm_environment = $user->icm_environments()->first();
+
+        # Servicios disponibles
+        $incomeservices  = IcmEnvironment::getIncomeServices($environment_id, $icm_environment);
+
+        # Temporada
         $rate_types = IcmRateType::where(['state' => 'A'])->orderBy('name', 'desc')->get();
+
+        # Resolociones autorizadas.
+        $resolutions = IcmResolution::where(['icm_environment_id' => $icm_environment->id, 'state' => 'A'])->get();
 
         return response()->json([
             'success' => true,
             'message' => '',
             'data'    => [
-                'incomeservices' => $incomeservices,
-                'rate_types'     => $rate_types
+                'incomeservices'           => $incomeservices,
+                'rate_types'               => $rate_types,
+                'resolutions_environtment' => $resolutions
             ]
         ]);
 

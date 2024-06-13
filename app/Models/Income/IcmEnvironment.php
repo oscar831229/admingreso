@@ -8,15 +8,54 @@ class IcmEnvironment extends Model
 {
     protected $fillable = ['name', 'state', 'user_created', 'user_updated'];
 
-    public static function getIncomeServices($environment_id){
-        return \DB::table('icm_environments AS ie')
-            ->selectRaw("
-                ieii.*,
-                'ADULTOS' AS income_type
-            ")
-            ->join('icm_income_items AS ieii', 'ieii.icm_environment_id', '=', 'ie.id')
-            ->where(['icm_environment_id' => $environment_id])
-            ->get();
+    public static function getIncomeServices($environment_id, $icm_environment){
+
+        /**
+         * $environment_id == 0 -> Proviene la consuta de paramtrización de convenios
+         */
+        $control = $icm_environment->id == $environment_id || $environment_id == 0? 'A' : 'P';
+
+        if($control == 'A'){
+
+            $statement =  \DB::table('icm_environments AS ie')
+                ->selectRaw("
+                    ieii.*,
+                    ie.name AS icm_environment_name,
+                    'ADULTOS' AS income_type
+                ")
+                ->join('icm_income_items AS ieii', 'ieii.icm_environment_id', '=', 'ie.id')
+                ->where(['ieii.state' => 'A'])
+                ->orderBy('ie.id', 'asc')
+                ->orderBy('ieii.name', 'asc');
+
+            if(!empty($environment_id)){
+                $statement->where(['ie.id' => $environment_id]);
+            }
+
+        } else {
+
+            $statement =  \DB::table('icm_environments AS ie')
+                ->selectRaw("
+                    ieii.*,
+                    ie.name AS icm_environment_name,
+                    'ADULTOS' AS income_type
+                ")
+                ->join('icm_income_items AS ieii', 'ieii.icm_environment_id', '=', 'ie.id')
+                ->join('icm_environtment_icm_income_items AS ieiii', 'ieiii.icm_income_item_id', '=', 'ieii.id')
+                ->where(['ieii.state' => 'A'])
+                ->orderBy('ie.id', 'asc')
+                ->orderBy('ieii.name', 'asc');
+
+            if(!empty($environment_id)){
+                $statement->where(['ie.id' => $environment_id]);
+            }
+
+            $statement->where(['ieiii.icm_environment_id' => $icm_environment->id]);
+
+        }
+
+        return $statement->get();
+
     }
 
 

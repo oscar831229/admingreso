@@ -10,7 +10,6 @@ class IcmAgreement extends Model
     protected $fillable = [
         'code',
         'name',
-        'icm_environment_id',
         'icm_companies_agreement_id',
         'date_from',
         'date_to',
@@ -44,15 +43,15 @@ class IcmAgreement extends Model
             '' as action
         ")
         ->join('users AS u', 'u.id', '=','ig.user_created')
-        ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
+        // ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
         ->join('icm_companies_agreements AS ica', 'ica.id', '=','ig.icm_companies_agreement_id')
         ->orderBy('ica.name', 'ASC')
         ->orderBy('ig.date_from', 'ASC');
 
         # Estado del consumible
-        if(isset($param['extradata']['icm_environment_id'])) {
-            $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
-        }
+        // if(isset($param['extradata']['icm_environment_id'])) {
+        //     $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
+        // }
 
         $where = '';
         $bindings = array();
@@ -98,13 +97,13 @@ class IcmAgreement extends Model
             '' as action
         ")
         ->join('users AS u', 'u.id', '=','ig.user_created')
-        ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
+        // ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
         ->join('icm_companies_agreements AS ica', 'ica.id', '=','ig.icm_companies_agreement_id');
 
         # Estado del consumible
-        if(isset($param['extradata']['icm_environment_id'])) {
-            $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
-        }
+        // if(isset($param['extradata']['icm_environment_id'])) {
+        //     $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
+        // }
 
 
         $bindings = array();
@@ -133,13 +132,13 @@ class IcmAgreement extends Model
             '' as action
         ")
         ->join('users AS u', 'u.id', '=','ig.user_created')
-        ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
+        // ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
         ->join('icm_companies_agreements AS ica', 'ica.id', '=','ig.icm_companies_agreement_id');
 
         # Estado del consumible
-        if(isset($param['extradata']['icm_environment_id'])) {
-            $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
-        }
+        // if(isset($param['extradata']['icm_environment_id'])) {
+        //     $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
+        // }
 
         $datares['cantotal'] = $asset->count();
 

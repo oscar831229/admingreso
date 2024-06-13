@@ -81,7 +81,7 @@
                     </tr>
                 </table>
 
-                <button class="btn btn-warning btn-sm btn-block mg-b-10" id="btn-new-typerates"><i class="fa fa-plus-square-o mg-r-10"></i> NUEVO TIPO TARIFA</button>
+                <button class="btn btn-warning btn-sm btn-block mg-b-10" id="btn-new-typerates" style="display:none;"><i class="fa fa-plus-square-o mg-r-10"></i> NUEVO TIPO TARIFA</button>
 
                 <div class="row text-center mt-2">
                     <div class="col-sm-12">

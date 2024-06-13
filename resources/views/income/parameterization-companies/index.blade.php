@@ -153,37 +153,37 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                     <input type="hidden" name="id" id="id">
-                                    {!! Form::label('document_type','Tipo documento',[],false) !!}
+                                    {!! Form::label('document_type','Tipo documento <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::select('document_type', $identification_document_types, null, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('document_number','Número documento',[],false) !!}
+                                    {!! Form::label('document_number','Número documento <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('name','Nombre empresa',[],false) !!}
+                                    {!! Form::label('name','Nombre empresa <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('name', null, array('id' => 'name','placeholder' => 'Nombre empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('phone','Teléfono',[],false) !!}
+                                    {!! Form::label('phone','Teléfono <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('phone', null, array('id' => 'phone','placeholder' => 'Teléfono','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('address','Dirección',[],false) !!}
+                                    {!! Form::label('address','Dirección <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('address', null, array('id' => 'address','placeholder' => 'Dirección','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('email','Email',[],false) !!}
+                                    {!! Form::label('email','Email <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('email', null, array('id' => 'email','placeholder' => 'Email','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>

@@ -1,6 +1,8 @@
+var wizard = null;
 $(document).ready(function () {
     environment.init();
     invoice.init();
+    payment.init();
 });
 
 environment = {
@@ -13,7 +15,7 @@ environment = {
         $('#title-application').hide();
         $('#name-environtment').html($(this).html());
 
-        $("#div-environments").hide(250, function() {
+        $("#div-environments").hide(350, function() {
             $("#div-content-enveiroment").show();
         });
 
@@ -71,6 +73,7 @@ invoice = {
                     const income_services = JSON.stringify(response.data);
                     sessionStorage.setItem('envei_income' + invoice.environment.id, income_services);
                     invoice.constructIncomeServices();
+                    invoice.constructResolutionPayment();
                 }
             },
             timeout: 30000,
@@ -89,6 +92,22 @@ invoice = {
             option += `<option value="${service.id}">${service.name}</option>`;
         });
         $('#icm_income_item_id').html(option);
+    },
+
+    constructResolutionPayment : function(){
+        const incomeservicesJson = sessionStorage.getItem('envei_income' + invoice.environment.id);
+        const incomeservices = JSON.parse(incomeservicesJson);
+        // options
+
+        var invoice_type = '';
+        var name         = '';
+        var option       = `<option value="">Seleccione..</option>`;
+        $.each(incomeservices.resolutions_environtment, function(index, resolution){
+            invoice_type = resolution.invoice_type == 'P' ? 'FACTURA POS' : 'FACTURA ELECTRÓNICA';
+            name = resolution.prefix + ' - ' + invoice_type;
+            option += `<option value="${resolution.id}">${name}</option>`;
+        });
+        $('#icm_resolution_id').html(option);
     },
 
     setIncomeServices : function(){
@@ -120,7 +139,7 @@ invoice = {
     },
 
     searchForClient : function(){
-
+        invoice.disableFields(false);
         let document_number = $('#document_number').val();
         if(document_number.trim() != ''){
             $("#loading").css("display", "block");
@@ -146,23 +165,44 @@ invoice = {
                 ifModified: false,
                 processData:true,
                 success: function(response){
+
                     $('#icm_types_income_id option:contains("AFILIADO")').hide()
+
                     if(response.success){
+
                         if(response.grupo_afilaido.length > 0){
                             invoice.family_group = response.grupo_afilaido;
                             invoice.seeFamilyGroup(response.grupo_afilaido, document_number);
+                        }else if(response.client){
+                            loadDataForm('form-billing-incomes', response.client);
+                            $('#form-billing-incomes').validate().resetForm();
+                            invoice.disableFields();
                         }
+
+                        if(response.grupo_afilaido.length == 0){
+                            $("#icm_types_income_id option:contains('PARTICULAR')").prop('selected', true).trigger('change');
+                        }
+
                         if(!response.control_service){
                             Biblioteca.notificaciones('Problema con servicio de categorias', 'Ingresos a sede', 'warning');
                             Biblioteca.notificaciones(response.error_service, 'Ingresos a sede', 'warning');
                             $('#icm_types_income_id option:contains("AFILIADO")').show()
                         }
+
                     }
                 },
                 timeout: 30000,
                 type: 'GET'
             });
-        }1
+        }
+    },
+
+    disableFields : function(disabled = true, parent = 'body'){
+        $(parent).find('#document_type').attr('disabled', disabled);
+        $(parent).find('#first_name').attr('disabled', disabled);
+        $(parent).find('#second_name').attr('disabled', disabled);
+        $(parent).find('#first_surname').attr('disabled', disabled);
+        $(parent).find('#second_surname').attr('disabled', disabled);
     },
 
     seeFamilyGroup : function(family_group, document_number){
@@ -222,6 +262,7 @@ invoice = {
     },
 
     ediAgreement : function(){
+
         const icm_agreement_id = $('#icm_agreement_id').val();
 
         if(icm_agreement_id.trim() == '')
@@ -277,6 +318,11 @@ invoice = {
             return false;
         }
 
+        if($('#icm_income_item_id').val() == ''){
+            Biblioteca.notificaciones('No ha seleccionado el servicio a utilizar', 'Ingreso sedes', 'warning');
+            return false;
+        }
+
         const element = $(this);
         service = {};
         service.icm_income_item_id = $('#icm_income_item_id').val();
@@ -284,6 +330,7 @@ invoice = {
         service._token = $('input[name=_token]').val();
         service.clients = [];
 
+        invoice.disableFields(false);
         var client = $('#form-billing-incomes').serializeArray()
             .reduce(function(a, z) {
                 a[z.name] = z.value;
@@ -333,15 +380,17 @@ invoice = {
                         success: function(response){
                             btn.reset(element);
                             if(response.success){
-                                Biblioteca.notificaciones('Proceso exitoso.', 'Comercios aliados', 'success');
+                                Biblioteca.notificaciones('Proceso exitoso.', 'Ingreso a sedes', 'success');
                                 invoice.icm_liquidation_id = response.data.id;
                                 let numeroCompleto = completarConCeros(invoice.icm_liquidation_id, 10);
                                 $('#number-liquidation').html(numeroCompleto);
                                 invoice.loadLiquidationDetail();
                                 document.getElementById('form-billing-incomes').reset();
+                                $('#icm_types_income_id').trigger('change');
                                 $('#document_number').focus();
+                                invoice.disableFields(false);
                             }else{
-                                Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
+                                Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
                             }
                         },
                         timeout: 30000,
@@ -385,14 +434,21 @@ invoice = {
                     var number = 1;
                     $.each(response.data, function(key, value){
 
+                        var base        = formatearNumero(value.base);
+                        var iva         = formatearNumero(value.iva);
+                        var impoconsumo = formatearNumero(value.impoconsumo);
+                        var total       = formatearNumero(value.total);
+                        var subsidio    = formatearNumero(value.icm_type_subsidy_id == 1 ? value.discount : 0);
+
                         tr += `<tr>
                             <td><h6 class="offset-md-3 let collapsed" data-toggle="collapse" href="#${value.id}" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-chevron-right mr-2" aria-hidden="true"></i>${number}<div></h6></td>
                             <td>${value.icm_environment_income_item_name}</td>
                             <td>${value.applied_rate_code}</td>
-                            <td>${value.base}</td>
-                            <td>${value.iva}</td>
-                            <td>${value.impoconsumo}</td>
-                            <td>${value.total}</td>
+                            <td>${subsidio}</td>
+                            <td>${base}</td>
+                            <td>${iva}</td>
+                            <td>${impoconsumo}</td>
+                            <td>${total}</td>
                         </tr>`;
 
                         // Personas vinculadas a liquidación del servicio de entrada
@@ -499,36 +555,17 @@ invoice = {
             success: function(response){
                 if(response.success){
 
-                    const base = response.data.base;
-                    const iva = response.data.iva;
-                    const impoconsumo = response.data.impoconsumo;
-                    const total = response.data.total;
+                    var subtotal      = formatearNumero(response.data.base);
+                    var iva           = formatearNumero(response.data.iva);
+                    var impoconsumo   = formatearNumero(response.data.impoconsumo);
+                    var total         = formatearNumero(response.data.total);
+                    var total_subsidy = formatearNumero(response.data.total_subsidy)
 
-                    // Formatear la cantidad a pesos colombianos
-                    const baseFormateada = new Intl.NumberFormat('es-CO', {
-                        style: 'currency',
-                        currency: 'COP'
-                    }).format(base);
-
-                    const ivaFormateada = new Intl.NumberFormat('es-CO', {
-                        style: 'currency',
-                        currency: 'COP'
-                    }).format(iva);
-
-                    const impoconsumoFormateada = new Intl.NumberFormat('es-CO', {
-                        style: 'currency',
-                        currency: 'COP'
-                    }).format(impoconsumo);
-
-                    const totalFormateada = new Intl.NumberFormat('es-CO', {
-                        style: 'currency',
-                        currency: 'COP'
-                    }).format(total);
-
-                    $('#subtotal').html(baseFormateada);
-                    $('#iva').html(ivaFormateada);
-                    $('#impoconsumo').html(impoconsumoFormateada);
-                    $('#total').html(totalFormateada);
+                    $('#subtotal').html(subtotal);
+                    $('#iva').html(iva);
+                    $('#impoconsumo').html(impoconsumo);
+                    $('#total').html(total);
+                    $('#total_subsidy').html(total_subsidy);
 
                 }
             },
@@ -561,8 +598,9 @@ invoice = {
                     <i class="fa fa-eye"></i>
                 </a>`;
 
-                btnedit = '';
+                btnedit   = '';
                 btnupload = '';
+                btnview   = '';
 
                 // if(contract.state != 'I'){
                 //     btnedit = `<a href="javascript:void(0);" class="btn-accion-tabla edit-support tooltipsC" title="Editar información documentos soporte" data-index_contract="${index_contract}" data-index="${index}" data-hrm_academic_training_people_id="${detail.hrm_academic_training_people_id}">
@@ -662,14 +700,14 @@ invoice = {
                         success: function(response){
                             btn.reset(element);
                             if(response.success){
-                                Biblioteca.notificaciones('Proceso exitoso.', 'Comercios aliados', 'success');
+                                Biblioteca.notificaciones('Proceso exitoso.', 'Ingreso a sedes', 'success');
                                 invoice.icm_liquidation_id = response.data.id;
                                 document.getElementById('form-billing-incomes').reset();
                                 $('#document_number').focus();
                                 $('#md-grupo-afiliado').modal('hide');
                                 invoice.loadLiquidationDetail();
                             }else{
-                                Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
+                                Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
                             }
                         },
                         timeout: 30000,
@@ -682,12 +720,24 @@ invoice = {
     },
 
     confirmExecutePay : function(){
-        alert('Ejecutando pago');
+
+        var element = $(this);
+
+        // Asignar número de liquidación a pagar en la componente
+        var icm_liquidation_id     = invoice.icm_liquidation_id;
+        payment.icm_liquidation_id = invoice.icm_liquidation_id;
+        payment.startPaymentProcess(element);
+
     },
+
+    control_init_step : false,
+
+
 
     init : function(){
 
         Biblioteca.validacionGeneral('form-billing-incomes');
+
         $('body').on('change', '#icm_income_item_id', this.setIncomeServices);
         $('body').on('click', '#btn-change-income-service', this.changeIncomeServices);
         $('body').on('blur', '#document_number', this.searchForClient);
@@ -733,6 +783,557 @@ invoice = {
 
 }
 
+payment = {
+
+    document_number : null,
+
+    icm_liquidation_id : 0,
+
+    data : null,
+
+    total_payment_recorded : 0,
+
+    total_balance : 0,
+
+    resetForm : function(){
+        $('#form-billing-customer').find(':input').not('[name="document_number"], [name="_token"]').val('');
+    },
+
+    viewInfoLiquidation : function(){
+        $('#step-2').find('#subtotal').html(formatearNumero(payment.data.base));
+        $('#step-2').find('#iva').html(formatearNumero(payment.data.iva));
+        $('#step-2').find('#impoconsumo').html(formatearNumero(payment.data.impoconsumo));
+        $('#step-2').find('#total_subsidy').html(formatearNumero(payment.data.total_subsidy));
+        $('#step-2').find('#total').html(formatearNumero(payment.data.total));
+    },
+
+    startPaymentProcess : function(element){
+
+        btn.loading(element);
+
+        setTimeout(function(){
+
+            $.ajax({
+                url: '/income/view-liquidation-payment/' + payment.icm_liquidation_id,
+                async: true,
+                data: {},
+                beforeSend: function(objeto){
+
+                },
+                complete: function(objeto, exito){
+                    if(exito != "success"){
+                        alert("No se completo el proceso!");
+                    }
+                    btn.reset(element);
+                },
+                contentType: "application/x-www-form-urlencoded",
+                dataType: "json",
+                error: function(objeto, quepaso, otroobj){
+                    alert("Ocurrio el siguiente error: "+quepaso);
+                },
+                global: true,
+                ifModified: false,
+                processData:true,
+                success: function(response){
+                    if(response.success){
+                        payment.data = response.icm_liquidation;
+                        payment.reapplyPayments();
+                        payment.viewInfoLiquidation();
+                        loadDataForm('form-billing-customer', response.customer);
+                        invoice.disableFields(true, '#form-billing-customer');
+                        payment.document_number = response.customer.document_number;
+                        $('#md-payment').modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        })
+                    }
+                },
+                timeout: 30000,
+                type: 'GET'
+            });
+
+        },100)
+
+    },
+
+    reapplyPayments : function(){
+
+        var payment_methods = sessionStorage.getItem(payment.icm_liquidation_id);
+        payment_methods     = payment_methods ? JSON.parse(payment_methods) : [];
+
+        var balance             = payment.data.total;
+        var new_payment_methods = [];
+
+        $.each(payment_methods, function(key, payment_method){
+
+
+            var value_received = payment_method.value_received;
+            var value          = value_received > balance ? balance : value_received;
+            var leftover_value = value_received > balance ? value_received - balance : 0;
+            balance            = balance - value;
+
+            new_payment_methods.push({
+                payment_method      : payment_method.payment_method,
+                payment_method_text : payment_method.payment_method_text,
+                approval_date       : payment_method.approval_date,
+                approval_number     : payment_method.approval_number,
+                value_received      : value_received,
+                value               : value,
+                leftover_value      : leftover_value
+            })
+
+        });
+
+
+        var payment_methodsJSON = JSON.stringify(new_payment_methods);
+
+        // Guardar la cadena JSON en sessionStorage
+        sessionStorage.setItem(payment.icm_liquidation_id, payment_methodsJSON);
+
+    },
+
+    searchForClient : function(){
+
+        invoice.disableFields(false);
+        let document_number = $(this).val();
+
+        if(document_number.trim() != '' && payment.document_number != document_number){
+
+            $.ajax({
+                url: `/income/search-client-document/${document_number}?notcategory=true`,
+                async: true,
+                data: {},
+                beforeSend: function(objeto){
+
+                },
+                complete: function(objeto, exito){
+                    if(exito != "success"){
+                        alert("No se completo el proceso!");
+                    }
+                },
+                contentType: "application/x-www-form-urlencoded",
+                dataType: "json",
+                error: function(objeto, quepaso, otroobj){
+                    alert("Ocurrio el siguiente error: "+quepaso);
+                },
+                global: true,
+                ifModified: false,
+                processData:true,
+                success: function(response){
+                    if(response.success){
+                        payment.document_number = document_number;
+                        invoice.disableFields(false, '#form-billing-customer');
+                        payment.resetForm();
+                        if(response.client){
+                            loadDataForm('form-billing-customer', response.client);
+                            $('#form-billing-customer').validate().resetForm();
+                            invoice.disableFields(true, '#form-billing-customer');
+                            $('#form-billing-customer').find('#document_type').trigger('change');
+                        }else{
+                            $('#form-billing-customer [name=document_type]').focus();
+                        }
+                    }
+                },
+                timeout: 30000,
+                type: 'GET'
+            });
+
+        }
+
+    },
+
+    init_SmartWizard : function () {
+
+        wizard = $('#wizard').smartWizard({
+            selected: 0,
+            keyNavigation: false,
+            labelNext :  'Siguiente',
+            labelPrevious : 'Anterior',
+            labelFinish : 'Generar factura',
+            buttonOrder: ['prev', 'next'],
+            hideButtonsOnDisabled: true,
+            showFinishButtonAlways: false,
+            onFinish: function(){
+                // Mostrar el botón de finalización solo en el último paso
+                // $('#smartwizard').smartWizard('showFinish');
+                alert('Oprimio el botono finsh');
+            },
+            onLeaveStep: function(obj, context){
+
+                var stepIndex     = context.fromStep; // Índice del paso actual
+                var nextStepIndex = context.toStep; // Índice del siguiente paso
+
+
+                if(nextStepIndex > stepIndex && stepIndex == 1 ){
+
+                    if(!$('#form-billing-customer').valid()){
+                        Biblioteca.notificaciones('Existe información requerida sin diligenciar.', 'Pago ingreso a sedes', 'warning');
+                        return false;
+                    }
+
+                    // Actualizar datos clientes
+                    request = $('#form-billing-customer').serialize();
+                    invoice.disableFields(true, '#form-billing-customer');
+                    var element = $('.buttonNext');
+                    btn.loading(element);
+                    setTimeout(function(){
+                        $.ajax({
+                            url: `/income/billing-incomes/${payment.icm_liquidation_id}`,
+                            async: false,
+                            data: request,
+                            beforeSend: function(objeto){
+
+                            },
+                            complete: function(objeto, exito){
+                                btn.reset(element);
+                                if(exito != "success"){
+                                    alert("No se completo el proceso!");
+                                }
+                            },
+                            contentType: "application/x-www-form-urlencoded",
+                            dataType: "json",
+                            error: function(objeto, quepaso, otroobj){
+                                alert("Ocurrio el siguiente error: "+quepaso);
+                                btn.reset(element);
+                            },
+                            global: true,
+                            ifModified: false,
+                            processData:true,
+                            success: function(response){
+                                btn.reset(element);
+                                if(response.success){
+                                }else{
+                                    Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
+                                }
+                            },
+                            timeout: 30000,
+                            type: 'PUT'
+                        });
+                    },60)
+
+                }
+
+                // Cargar pagos realizados
+                payment.uploadInvoicePayments();
+
+                return true;
+
+            }
+        });
+
+        $('.buttonNext').addClass('btn btn-primary');
+        $('.buttonPrevious').addClass('btn btn-default');
+        $('.buttonFinish').addClass('btn btn-default');
+
+    },
+
+    changeDocumentType : function(){
+
+        var selected_option = $(this).children("option:selected").text().toUpperCase();
+
+        // Emepresa
+        if(selected_option == 'NIT'){
+            $('#label-type-person').html('Razon social');
+            $('.div-only-for-person').hide();
+            $('.div-first-name').removeClass('col-lg-3');
+            $('.div-first-name').addClass('col-lg-12');
+            $('#form-billing-customer').find('#first_surname').attr('required', false);
+            $('#form-billing-customer').find('#first_name').attr('placeholder', 'Razon social');
+        }else{
+            // Persona
+            $('#label-type-person').html('Primer nombre');
+            $('.div-only-for-person').show();
+            $('.div-first-name').addClass('col-lg-3');
+            $('.div-first-name').removeClass('col-lg-12');
+            $('#form-billing-customer').find('#first_surname').attr('required', true);
+            $('#form-billing-customer').find('#first_name').attr('placeholder', 'Primer nombre');
+        }
+        $('#form-billing-customer').find('#first_name').focus();
+    },
+
+    changePaymentMethod : function(){
+
+        var type_payment = $(this).find("option:selected").data('type-payment');
+        $("#form-payments input:not([name='input3'])").val('');
+        $("#form-payments input[name='approval_date'], #form-payments input[name='approval_number']").prop('disabled', true);
+        $('.required-info-payment').hide();
+        $('#approval_date, #approval_number').attr('required', false);
+        if(type_payment == 'T'){
+            $("#form-payments input[name='approval_date'], #form-payments input[name='approval_number']").prop('disabled', false);
+            $('.required-info-payment').hide();
+            $('#approval_date, #approval_number').attr('required', true);
+            $('.required-info-payment').show();
+        }else{
+            $("#form-payments input[name='value']").focus()
+            $('.required-info-payment').hide();
+        }
+
+        var balance = payment.data.total - payment.total_payment_recorded;
+        if($("#form-payments input[name='value']").val() == ''){
+            $("#form-payments input[name='value']").val(balance).trigger('change');
+        }
+
+    },
+
+    registerPaymentMethod : function(){
+
+        // Validar formulario de pago
+        if(!$('#form-payments').valid()){
+            Biblioteca.notificaciones('Existe información sin diligenciar.', 'Metodos de pago', 'warning');
+            return false;
+        }
+
+        var payment_methods = sessionStorage.getItem(payment.icm_liquidation_id);
+        payment_methods     = payment_methods ? JSON.parse(payment_methods) : [];
+
+        var payment_method       = $('#form-payments').find('#payment-method').val();
+        var payment_method_text  = $('#form-payments').find('#payment-method option:selected').text();
+        var approval_date        = $('#form-payments').find('#approval_date').val();
+        var approval_number      = $('#form-payments').find('#approval_number').val();
+        var value                = $('#form-payments').find('#value').val();
+
+        // Eliminar comas de la cadena
+        var valuesincomas = value.replace(',', '');
+
+        // Convertir la cadena a un número flotante
+        var valuefloat      = parseFloat(valuesincomas);
+        var value           = valuefloat > payment.total_balance ? payment.total_balance : valuefloat;
+        var leftover_value  = valuefloat > payment.total_balance ? valuefloat - payment.total_balance : 0;
+
+        payment_methods.push({
+            payment_method      : payment_method,
+            payment_method_text : payment_method_text,
+            approval_date       : approval_date,
+            approval_number     : approval_number,
+            value_received      : valuefloat,
+            value               : value,
+            leftover_value      : leftover_value
+        })
+
+        var payment_methodsJSON = JSON.stringify(payment_methods);
+
+        // Guardar la cadena JSON en sessionStorage
+        sessionStorage.setItem(payment.icm_liquidation_id, payment_methodsJSON);
+
+        // Guardar información del metodo en session
+        payment.uploadInvoicePayments();
+
+        // Genera saldos nuevos
+        Biblioteca.notificaciones('registrado de forma exitosa.', 'Metodos de pago', 'success');
+        document.getElementById('form-payments').reset();
+
+    },
+
+    uploadInvoicePayments : function(){
+
+        var payment_methods = sessionStorage.getItem(payment.icm_liquidation_id);
+        payment_methods     = payment_methods ? JSON.parse(payment_methods) : [];
+        var tr  = '';
+        var total_payments       = 0;
+        var total_value_returned = 0;
+        $('#tbl-income-payments tbody').empty();
+        var number = 1;
+
+
+        $.each(payment_methods, function(key, value){
+
+            var btndelete = `<a href="javascript:void(0)" data-index="${key}" class="tooltipsC btn-delete-method-payment" title="Borrar forma de pago"><i class="fa fa-trash-o text-danger" aria-hidden="true"></i></a>`;
+
+            tr += `<tr>
+                <td>${number} ${btndelete}</td>
+                <td>${value.payment_method_text}</td>
+                <td>${value.approval_date}</td>
+                <td>${value.approval_number}</td>
+                <td>${formatearNumero(value.value_received)}</td>
+                <td>${formatearNumero(value.value)}</td>
+                <td>${formatearNumero(value.leftover_value)}</td>
+            </tr>`
+
+            total_payments       = total_payments + value.value;
+            total_value_returned = total_value_returned + value.leftover_value
+            number++;
+
+        });
+
+        $('#tbl-income-payments tbody').html(tr);
+        $('#total_payment').html(formatearNumero(total_payments));
+        $('#total_value_returned').html(formatearNumero(total_value_returned));
+
+        payment.total_balance = payment.data.total - total_payments;
+        $('#total_balance').html(formatearNumero(payment.total_balance));
+
+        $('#btn-execute-payment').attr('disabled', true);
+        if(payment.total_balance == 0){
+            $('#btn-execute-payment').attr('disabled', false);
+        }
+
+        payment.total_payment_recorded = total_payments;
+
+    },
+
+    deleteMethodPayment : function(){
+
+        var index = $(this).data('index');
+
+        swal({
+            title: 'Eliminar forma de pago',
+            text: "¿Esta seguro de continuar con el proceso.?",
+            icon: 'warning',
+            showConfirmButton:false,
+            buttons: {
+                Aceptar: {
+                    text: "Aceptar",
+                    value: 'Aceptar',
+                    visible: true
+                },
+                cancel: true
+            },
+        }).then((value) => {
+            if (value) {
+
+                var payment_methods = sessionStorage.getItem(payment.icm_liquidation_id);
+                payment_methods     = payment_methods ? JSON.parse(payment_methods) : [];
+                payment_methods.splice(index, 1);
+
+                var payment_methodsJSON = JSON.stringify(payment_methods);
+                sessionStorage.setItem(payment.icm_liquidation_id, payment_methodsJSON);
+                payment.reapplyPayments();
+                payment.uploadInvoicePayments();
+
+            }
+        });
+
+    },
+
+    executePayment : function(){
+        $('#md-resolutions').modal();
+    },
+
+    acceptPayment : function(){
+
+        var icm_resolution_id = $('#icm_resolution_id').val();
+        element               = $(this);
+
+        swal({
+            title: 'Genera comprobante',
+            text: "¿Esta seguro de continuar con el proceso.?",
+            icon: 'warning',
+            showConfirmButton:false,
+            buttons: {
+                Aceptar: {
+                    text: "Aceptar",
+                    value: 'Aceptar',
+                    visible: true
+                },
+                cancel: true
+            },
+        }).then((value) => {
+            if (value) {
+
+                var payment_methods = sessionStorage.getItem(payment.icm_liquidation_id);
+                payment_methods     = payment_methods ? JSON.parse(payment_methods) : [];
+                btn.loading(element);
+
+                setTimeout(function(){
+                    $.ajax({
+                        url: '/income/pay-billing-incomes',
+                        async: true,
+                        data: {
+                            icm_liquidation_id : payment.icm_liquidation_id,
+                            icm_resolution_id  : icm_resolution_id,
+                            payment_methods    : payment_methods,
+                            _token             : $('[name=_token]').val()
+                        },
+                        beforeSend: function(objeto){
+
+                        },
+                        complete: function(objeto, exito){
+                            btn.reset(element);
+                            if(exito != "success"){
+                                alert("No se completo el proceso!");
+                            }
+                        },
+                        contentType: "application/x-www-form-urlencoded",
+                        dataType: "json",
+                        error: function(objeto, quepaso, otroobj){
+                            alert("Ocurrio el siguiente error: "+quepaso);
+                            btn.reset(element);
+                        },
+                        global: true,
+                        ifModified: false,
+                        processData:true,
+                        success: function(response){
+                            btn.reset(element);
+                            if(response.success){
+                                Biblioteca.notificaciones('Proceso exitoso.', 'Ingreso a sedes', 'success');
+                                invoice.icm_liquidation_id = response.data.id;
+                                let numeroCompleto = completarConCeros(invoice.icm_liquidation_id, 10);
+                                $('#number-liquidation').html(numeroCompleto);
+                                invoice.loadLiquidationDetail();
+                                document.getElementById('form-billing-incomes').reset();
+                                $('#icm_types_income_id').trigger('change');
+                                $('#document_number').focus();
+                                invoice.disableFields(false);
+                            }else{
+                                Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
+                            }
+                        },
+                        timeout: 30000,
+                        type: 'POST'
+                    });
+                },60)
+
+            }
+        });
+    },
+
+    init : function(){
+
+        Biblioteca.validacionGeneral('form-billing-customer');
+        Biblioteca.validacionGeneral('form-payments');
+
+        $('#form-billing-customer').on('blur', '#document_number', this.searchForClient);
+        $('#form-billing-customer').on('change', '#document_type', this.changeDocumentType);
+
+        $('#form-payments').on('change', '#payment-method', this.changePaymentMethod);
+        $('#form-payments').on('click', '.btn-save-method-payment', this.registerPaymentMethod);
+        $('#tbl-income-payments').on('click', '.btn-delete-method-payment', this.deleteMethodPayment);
+
+        $('body').on('click', '#btn-execute-payment', this.executePayment);
+        $('#md-resolutions').on('click', '#btn-accept-payment', this.acceptPayment);
+
+
+        $("#form-payments").on('keypress',"input[name='value']", function(event){
+            if(event.which === 13){
+                event.preventDefault();
+                payment.registerPaymentMethod();
+            }
+        });
+
+        $(".monto").on('change click keyup input paste',(function (event) {
+            $(this).val(function (index, value) {
+                return value.replace(/(?!\.)\D/g, "").replace(/(?<=\..*)\./g, "").replace(/(?<=\.\d\d).*/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            });
+        }));
+
+        $('#md-payment').on('shown.bs.modal', function () {
+
+            if(!invoice.control_init_step){
+                payment.init_SmartWizard();
+                invoice.control_init_step = true;
+            }else{
+                wizard.smartWizard('goToStep', 1)
+                setTimeout(() => {
+                    wizard.smartWizard('disableStep', 2)
+                    wizard.smartWizard('disableStep', 3)
+                }, 360);
+            }
+
+        });
+
+    }
+}
+
 services = {
 
     environment : null,
@@ -745,8 +1346,8 @@ services = {
     loadIncomeServices : function(){
 
         $.ajax({
-            url: '/income/environment-income-services/' + this.environment.id,
-            async: true,
+            url: '/income/environment-income-services/0',
+            async: false,
             data: {},
             beforeSend: function(objeto){
 
@@ -766,9 +1367,9 @@ services = {
             processData:true,
             success: function(response){
                 if(response.success){
-                    const income_services = JSON.stringify(response.data);
-                    sessionStorage.setItem('envei_income' + services.environment.id, income_services);
-                    services.constructIncomeServices();
+                    // const income_services = JSON.stringify(response.data);
+                    // sessionStorage.setItem('envei_income' + services.environment.id, income_services);
+                    services.constructIncomeServices(response.data);
                 }
             },
             timeout: 30000,
@@ -778,10 +1379,10 @@ services = {
 
     },
 
-    constructIncomeServices : function(){
+    constructIncomeServices : function(incomeservices){
 
-        const incomeservicesJson = sessionStorage.getItem('envei_income' + this.environment.id);
-        const incomeservices = JSON.parse(incomeservicesJson);
+        // const incomeservicesJson = sessionStorage.getItem('envei_income' + this.environment.id);
+        // const incomeservices = JSON.parse(incomeservicesJson);
 
         tr = '';
         $('#tbl-income-items tbody').empty();
@@ -789,23 +1390,21 @@ services = {
 
         // head
         var head = ` <tr>
-                        <th class="text-left">#</th>
-                        <th class="text-left" style="width:70%">SERVICIO INGRESO</th>
-                        <th class="text-center">VENTA</th>`;
+            <th class="text-left" style="width:5%">#</th>
+            <th class="text-left" style="width:15%">SUCURSAL O SEDE</th>
+            <th class="text-left" style="width:50%">SERVICIO INGRESO</th>`;
         $.each(incomeservices.rate_types, function(index, rate_type){
             head += `<th class="text-center" style="width:10%">${rate_type.name}</th>`;
         });
         head += `</tr>`
         $('#tbl-income-items thead').html(head);
 
-
-
         $.each(incomeservices.incomeservices, function(index, service){
             tr += `
                 <tr>
                     <td>${number}</td>
-                    <td>${service.name}</td>
-                    <td class="text-center">${service.income_type}</td>`;
+                    <td>${service.icm_environment_name}</td>
+                    <td>${service.name}</td>`;
                     $.each(incomeservices.rate_types, function(index, rate_type){
                         tr += `<td class="text-center"><input placeholder="" data-rate_type_id="${rate_type.id}" data-income_item_id="${service.id}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>`;
                     });
@@ -831,7 +1430,7 @@ services = {
 
 loadIncomeRates = function(idform, data){
     $.each(data, function(index, value){
-        $(`input[data-income_item_id=${value.icm_income_item_id}][data-rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
+        $(`input[data-income_item_id=${value.icm_environment_income_item_id}][data-rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
     });
 }
 
@@ -842,6 +1441,19 @@ loadDataForm = function(idform, data){
         }
     });
 }
+
+
+formatearNumero = function(numero){
+
+    const totalFormateada = new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP'
+    }).format(numero);
+
+    return totalFormateada;
+
+}
+
 
 btn = {
 
@@ -863,9 +1475,11 @@ btn = {
 
 
 function completarConCeros(numero, longitud) {
-    let numeroString = numero.toString(); // Convertir el número a cadena de texto
+    let numeroString = numero.toString();
     while (numeroString.length < longitud) {
-        numeroString = '0' + numeroString; // Agregar ceros a la izquierda
+        numeroString = '0' + numeroString;
     }
     return numeroString;
 }
+
+

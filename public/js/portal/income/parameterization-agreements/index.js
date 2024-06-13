@@ -46,14 +46,14 @@ services = {
     initServices : function(environment){
         services.environment = environment;
         this.loadTableServices();
-        this.loadIncomeServices();
+
     },
 
     loadIncomeServices : function(){
 
         $.ajax({
-            url: '/income/environment-income-services/' + this.environment.id,
-            async: true,
+            url: '/income/environment-income-services/0',
+            async: false,
             data: {},
             beforeSend: function(objeto){
 
@@ -73,9 +73,9 @@ services = {
             processData:true,
             success: function(response){
                 if(response.success){
-                    const income_services = JSON.stringify(response.data);
-                    sessionStorage.setItem('envei_income' + services.environment.id, income_services);
-                    services.constructIncomeServices();
+                    // const income_services = JSON.stringify(response.data);
+                    // sessionStorage.setItem('envei_income' + services.environment.id, income_services);
+                    services.constructIncomeServices(response.data);
                 }
             },
             timeout: 30000,
@@ -85,10 +85,10 @@ services = {
 
     },
 
-    constructIncomeServices : function(){
+    constructIncomeServices : function(incomeservices){
 
-        const incomeservicesJson = sessionStorage.getItem('envei_income' + this.environment.id);
-        const incomeservices = JSON.parse(incomeservicesJson);
+        // const incomeservicesJson = sessionStorage.getItem('envei_income' + this.environment.id);
+        // const incomeservices = JSON.parse(incomeservicesJson);
 
         tr = '';
         $('#tbl-income-items tbody').empty();
@@ -97,6 +97,7 @@ services = {
         // head
         var head = ` <tr>
             <th class="text-left">#</th>
+            <th class="text-left" style="width:40%">SUCURSAL O SEDE</th>
             <th class="text-left" style="width:70%">SERVICIO INGRESO</th>`;
         $.each(incomeservices.rate_types, function(index, rate_type){
             head += `<th class="text-center" style="width:10%">${rate_type.name}</th>`;
@@ -110,6 +111,7 @@ services = {
             tr += `
                 <tr>
                     <td>${number}</td>
+                    <td>${service.icm_environment_name}</td>
                     <td>${service.name}</td>`;
                     $.each(incomeservices.rate_types, function(index, rate_type){
                         tr += `<td class="text-center"><input placeholder="" data-rate_type_id="${rate_type.id}" data-income_item_id="${service.id}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>`;
@@ -145,14 +147,11 @@ services = {
             ifModified: false,
             processData:true,
             success: function(response){
-
-
                 if(response.success){
                     const income_services = JSON.stringify(response.data);
                     sessionStorage.setItem('envei_income' + services.environment.id, income_services);
                     services.constructIncomeServices();
                 }
-
             },
             timeout: 30000,
             type: 'GET'
@@ -162,8 +161,6 @@ services = {
     },
 
     loadTableServices : function(){
-
-        let icm_environment_id = this.environment.id;
 
         tblenvironmentservices= $('#tbl-agreements').DataTable();
         tblenvironmentservices.destroy();
@@ -187,8 +184,7 @@ services = {
                 url: '/income/datatable-parameterization-agreements',
                 type: "POST",
                 data: {
-                    '_token' : $('input[name=_token]').val(),
-                    'icm_environment_id' : icm_environment_id
+                    '_token' : $('input[name=_token]').val()
                 },
                 "dataSrc": function (json) {
                     return json.data;
@@ -226,6 +222,8 @@ services = {
     },
 
     viewFormNewEnvironmentService : function(){
+
+        services.loadIncomeServices();
         document.getElementById('form-agreement').reset();
         document.getElementById('form-income-item-rate').reset();
 
@@ -234,6 +232,7 @@ services = {
         $('#md-icm_environment_income_items').modal()
         $('#form-agreement').find('#name').attr('disabled', false);
         $('#form-agreement').find('#code').attr('disabled', false);
+
     },
 
     confirmSaveAgreement : function(){
@@ -250,7 +249,6 @@ services = {
                 return a;
             }, {});
 
-        jsonData.icm_environment_id = services.environment.id;
         var income_item_rate = services.getIncomeItemRate();
         jsonData.income_rates = income_item_rate;
 
@@ -383,6 +381,8 @@ services = {
         $('body').on('click', '#btn-new-environment-service', this.viewFormNewEnvironmentService);
         $('body').on('click', '.edit-agreement', this.ediAgreement);
         $('body').on('click', '#btn-save-agreement', this.confirmSaveAgreement);
+
+        this.loadTableServices();
 
     }
 

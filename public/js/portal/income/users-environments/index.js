@@ -84,7 +84,8 @@ company = {
     },
 
     createEntity : function(entity){
-        var tr = '<tr><td>'+entity.icm_entities_code+'</td><td>'+entity.icm_entities_name+'</td><td class="text-center"><input type="checkbox" class="entity" data-entityid="'+entity.icm_entities_id+'" data-userentityid="0"></td></tr>';
+
+        var tr = '<tr><td>'+entity.icm_entities_code+'</td><td>'+entity.icm_entities_name+'</td><td class="text-center"><input type="radio" name="environment_id" class="entity" data-entityid="'+entity.icm_entities_id+'" data-userentityid="0"></td></tr>';
         $('#tblentities tbody').append(tr);
 
         if(entity.user_icm_entities_id != null){

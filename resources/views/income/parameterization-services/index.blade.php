@@ -90,7 +90,7 @@
         <div class="br-pageheader pd-y-15 pd-l-20">
           <nav class="breadcrumb pd-0 mg-0 tx-12">
             <a class="breadcrumb-item" href="#">Ingreso a sedes</a>
-            <span class="breadcrumb-item active">Parametrización servicios</span>
+            <span class="breadcrumb-item active">Servicios ingreso a sedes</span>
           </nav>
         </div><!-- br-pageheader -->
         <div class="clearfix"></div>
@@ -102,7 +102,7 @@
                   <h1 class="text-primary"><i class="fa fa-building-o" aria-hidden="true"></i></h1>
               </td>
               <td>
-                  <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Parametrización servicios</h4>
+                  <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Servicios ingreso a sedes</h4>
                   <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
               </td>
           </tr>
@@ -175,7 +175,7 @@
                 <div class="row mb-4">
                     <div class="col-xl-12 mg-t-20 mg-xl-t-0">
                         <div class="form-layout form-layout-5 bd-info">
-                            <h5 class="mt-2"><i class="fa fa-server text-primary" aria-hidden="true"></i> Servicio</h5>
+                            <h5 class="mt-2"><i class="fa fa-server text-primary" aria-hidden="true"></i> Servicio ingreso a sedes</h5>
                             {{ Form::open(array(
                                 'id'=>'form-environment-income-items',
                                 'autocomplete'=>'off',
@@ -184,32 +184,32 @@
                             <div class="row">
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('name','Nombre producto',[],false) !!}
+                                    {!! Form::label('name','Nombre producto <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('name', null, array('placeholder' => 'Nombre producto','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     {!! Form::hidden('id') !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('code','Código producto',[],false) !!}
+                                    {!! Form::label('code','Código producto <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('code', null, array('placeholder' => 'Código producto','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                    {!! Form::label('number_places','Número cupos',[],false) !!}
+                                    {!! Form::label('number_places','Número cupos <span class="text-danger">*</span>',[],false) !!}
                                     {!! Form::text('number_places', null, array('placeholder' => 'Número cupos','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        {!! Form::label('value','Tarifa', [], false) !!}
+                                        {!! Form::label('value','Tarifa <span class="text-danger">*</span>', [], false) !!}
                                         {!! Form::text('value', null, array('placeholder' => 'Tarifa','class' => 'form-control form-control-sm monto','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        {!! Form::label('state','Estado', [], false) !!}
+                                        {!! Form::label('state','Estado <span class="text-danger">*</span>', [], false) !!}
                                         {!! Form::select('state',['A'=>'Activo', 'I' => 'Inactivo'],null, array('class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
                                     </div>
                                 </div>
@@ -221,7 +221,7 @@
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        {!! Form::label('icm_environment_icm_menu_item_id','Item liquidación', [], false) !!}
+                                        {!! Form::label('icm_environment_icm_menu_item_id','Item liquidación <span class="text-danger">*</span>', [], false) !!}
                                         {!! Form::select('icm_environment_icm_menu_item_id', [], null, array('id' => 'icm_environment_icm_menu_item_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
                                     </div>
                                 </div>

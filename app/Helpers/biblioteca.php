@@ -11,6 +11,10 @@ use App\Clases\Mail\sendMail;
 use App\Models\Amadeus\Menu;
 use App\Models\Amadeus\MenuItem;
 use App\Models\Amadeus\SalonMenuItem;
+use App\Models\Amadeus\FormasPago;
+use App\Models\Amadeus\CiudadesDian;
+use App\Models\Amadeus\ResolucionFactura;
+
 
 use App\Models\Income\IcmMenu;
 use App\Models\Income\IcmMenuItem;
@@ -19,6 +23,11 @@ use App\Models\Income\IcmEnvironmentIncomeItem;
 use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmEnvironmentIncomeItemDetail;
 use App\Models\Income\IcmEnvironment;
+use App\Models\Income\IcmPaymentMethod;
+use App\Models\Income\CommonCity;
+use App\Models\Income\IcmResolution;
+
+
 
 use Carbon\Carbon;
 
@@ -50,6 +59,45 @@ if (!function_exists('getReporteActivo')) {
         }
     }
 }
+
+if (!function_exists('preparedMethoPayment')) {
+    function preparedMethoPayment($payments)
+    {
+
+        $methodpayment = [
+            'T' => 'TARJETA DE CRÉDITO',
+            'D' => 'TARJETA DÉBITO',
+            'M' => 'MONEDA EFECTIVA',
+            'N' => 'CONSIGNACIONES',
+            'C' => 'CHEQUE',
+            'B' => 'BONOS',
+            'V' => 'VALES',
+            'O' => 'OTROS',
+        ];
+
+        $paymentgroup = [];
+        foreach ($payments as $key => $payment) {
+
+            if(!isset($paymentgroup[$payment->type_payment_method])){
+                $paymentgroup[$payment->type_payment_method] = [
+                    'name'     => $methodpayment[$payment->type_payment_method],
+                    'payments' => []
+                ];
+            }
+
+            $paymentgroup[$payment->type_payment_method]['payments'][] = [
+                'id'   => $payment->id,
+                'name' => $payment->name,
+            ];
+
+        }
+
+        return $paymentgroup;
+
+    }
+}
+
+
 
 
 if (! function_exists('sanear_string')) {
@@ -489,6 +537,88 @@ if (!function_exists('synchronizePOSSystem')) {
             }
 
         }
+
+        # FORMAS PAGO
+        $formaspago = FormasPago::all();
+        foreach ($formaspago as $key => $formapago) {
+            $paymentmethod = IcmPaymentMethod::find($formapago->forpag);
+            if(!$paymentmethod){
+                $paymentmethod = new IcmPaymentMethod;
+                $paymentmethod->id                  = $formapago->forpag;
+                $paymentmethod->name                = $formapago->detalle;
+                $paymentmethod->type_payment_method = $formapago->tipfor;
+                $paymentmethod->redeban_operation   = $formapago->operacion_redeban;
+                $paymentmethod->wallet_pocket       = isset($formapago->bolsillo_billetera) ? $formapago->bolsillo_billetera : '00';
+                $paymentmethod->state               = $formapago->estado;
+                $paymentmethod->user_created        = 1;
+                $paymentmethod->save();
+            }else{
+                $paymentmethod->update([
+                    'state' => $paymentmethod->state,
+                    'type_payment_method' => $paymentmethod->type_payment_method,
+                    'redeban_operation'   => $paymentmethod->redeban_operation,
+                    'wallet_pocket'       => isset($formapago->bolsillo_billetera) ? $formapago->bolsillo_billetera : '00'
+                ]);
+            }
+
+        }
+
+        # Ciudades DIAN
+        $commoncities = CiudadesDian::all();
+        foreach ($commoncities as $key => $commoncity) {
+            $city = CommonCity::find($commoncity->id);
+            if(!$city){
+                $city                       = new CommonCity;
+                $city->id                   = $commoncity->id;
+                $city->city_code            = $commoncity->codCiudad;
+                $city->city_name            = $commoncity->nombre_ciudad;
+                $city->department_name      = $commoncity->nombre_depto;
+                $city->department_code      = $commoncity->codDepto;
+                $city->country_code         = $commoncity->codPais;
+                $city->country_name         = $commoncity->nombre_pais;
+                $city->country_abbreviation = $commoncity->abreviatura_pais;
+                $city->user_created         = 1;
+                $city->save();
+            }
+        }
+
+        # Resoluciones POS.
+        $resolutions = ResolucionFactura::all();
+        foreach ($resolutions as $key => $resolution) {
+
+            $icmresolution = IcmResolution::find($resolution->id);
+            if(!$icmresolution){
+                $icmresolution = new IcmResolution;
+                $icmresolution->id                  = $resolution->id;
+                $icmresolution->icm_environment_id  = $resolution->salon_id;
+                $icmresolution->invoice_type        = $resolution->tipo_factura;
+                $icmresolution->authorization       = $resolution->autorizacion;
+                $icmresolution->authorization_from  = $resolution->fecha_autorizacion;
+                $icmresolution->authorization_to    = $resolution->fecha_fin_autorizacion;
+                $icmresolution->prefix              = $resolution->prefijo_facturacion;
+                $icmresolution->initial_consecutive = $resolution->consecutivo_inicial;
+                $icmresolution->final_consecutive   = $resolution->consecutivo_final;
+                $icmresolution->state               = $resolution->estado;
+                $icmresolution->user_created        = 1;
+                $icmresolution->save();
+            }else{
+                $icmresolution->update([
+                    'icm_environment_id' => $resolution->salon_id,
+                    'invoice_type'       => $resolution->tipo_factura,
+                    'authorization'      => $resolution->autorizacion,
+                    'authorization_from' => $resolution->fecha_autorizacion,
+                    'authorization_to'   => $resolution->fecha_fin_autorizacion,
+                    'prefix'             => $resolution->prefijo_facturacion,
+                    'initial_consecutive'=> $resolution->consecutivo_inicial,
+                    'final_consecutive'  => $resolution->consecutivo_final,
+                    'state'              => $resolution->estado,
+                    'user_created'       => 1
+                ]);
+            }
+
+
+        }
+
     }
 }
 

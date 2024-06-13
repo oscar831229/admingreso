@@ -6,7 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class IcmLiquidation extends Model
 {
-    protected $fillable = ['document_type', 'document_number', 'first_name', 'second_name', 'first_surname', 'second_surname', 'birthday_date', 'gender', 'total', 'state', 'user_created'];
+    protected $fillable = [
+        'sales_icm_environment_id',
+        'icm_environment_id',
+        'document_type',
+        'document_number',
+        'first_name',
+        'second_name',
+        'first_surname',
+        'second_surname',
+        /*'birthday_date',
+        'gender', */
+        'total',
+        'state',
+        'user_created'
+    ];
 
     public static function getDetailsServices($icm_liquidacion_id){
         $querySQL = "SELECT
@@ -17,7 +31,9 @@ class IcmLiquidation extends Model
                     ils.base,
                     ils.iva,
                     ils.impoconsumo,
-                    ils.total
+                    ils.total,
+                    ils.icm_type_subsidy_id,
+                    ils.discount
             FROM `icm_liquidation_services` AS ils
             INNER JOIN icm_income_items AS ieii ON ieii.id = ils.icm_income_item_id
             INNER JOIN icm_environment_icm_menu_items AS ieimi ON ieimi.id = ils.icm_environment_icm_menu_item_id

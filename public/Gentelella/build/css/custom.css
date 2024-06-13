@@ -4523,7 +4523,7 @@ fieldset {
   color: #fff; }
 
 .wizard_horizontal ul.wizard_steps li a.done:before, .wizard_horizontal ul.wizard_steps li a.done .step_no {
-  background: #1ABB9C;
+  background: #34495E;
   color: #fff; }
 
 .wizard_horizontal ul.wizard_steps li:first-child a:before {
@@ -4614,11 +4614,12 @@ fieldset {
   z-index: 5; }
 
 .wizard_verticle ul.wizard_steps li a.selected:before, .step_no {
-  background: #34495E;
-  color: #fff; }
+  background: #0b61b6;
+  color: #fff;
+}
 
 .wizard_verticle ul.wizard_steps li a.done:before, .wizard_verticle ul.wizard_steps li a.done .step_no {
-  background: #1ABB9C;
+  background: #34495E;
   color: #fff; }
 
 .wizard_verticle ul.wizard_steps li:first-child a:before {

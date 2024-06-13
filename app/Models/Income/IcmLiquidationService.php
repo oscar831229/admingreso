@@ -21,7 +21,9 @@ class IcmLiquidationService extends Model
         'total',
         'user_created',
         'user_updated',
-        'general_price'
+        'general_price',
+        'discount',
+        'icm_type_subsidy_id'
     ];
 
     public static function getPeopleService($icm_liquidation_service){

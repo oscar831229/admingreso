@@ -1,31 +1,35 @@
 
-// Libreria para trabajar con select dependientes 
+// Libreria para trabajar con select dependientes
 SelectAnidado = function() {
   return {
     autocargado: function(padre, hijo, url){
-      $("#"+ padre).change(event => {
 
-        if(`${event.target.value}` == ''){
-          $("#" + hijo).empty();
-          $("#"+hijo).append(`<option value=''>Seleccione...</option>`);
-          return false;
-        }
+        $("#"+ padre).change(event => {
 
+            if(`${event.target.value}` == ''){
+                $("#" + hijo).empty();
+                $("#"+hijo).append(`<option value=''>Seleccione...</option>`);
+                return false;
+            }
 
-        $.get(`${url}/${event.target.value}`, function(res, sta){
-          $("#" + hijo).empty();
-          $("#"+hijo).append(`<option value=''>Seleccione...</option>`);
-          $.each(res,function(key,val){
-            $("#"+hijo).append(`<option value=${key}> ${val} </option>`);
-          });
-          $("#"+hijo).trigger('change');
+            $.get(`${url}/${event.target.value}`, function(res, sta){
+                $("#" + hijo).empty();
+                $("#"+hijo).append(`<option value=''>Seleccione...</option>`);
+                $.each(res,function(key,val){
+                    $("#"+hijo).append(`<option value=${key}> ${val} </option>`);
+                });
+
+                if(Object.keys(res).length == 1){
+                    $(`#${hijo} option:eq(1)`).attr('selected', 'selected');
+                }
+                $("#"+hijo).trigger('change');
+            });
         });
-      });
     }
   }
 }();
 
-// Validacion de campos requedidos 
+// Validacion de campos requedidos
 var Biblioteca = function () {
   return {
       validacionGeneral: function (id, reglas, mensajes) {
@@ -58,7 +62,7 @@ var Biblioteca = function () {
                   }
               },
               invalidHandler: function (event, validator) { //display error alert on form submit
-                  
+
               },
               submitHandler: function (form) {
                   return true;
@@ -107,20 +111,20 @@ $('.submit-eliminar').on('click',function(event){
 
 
 function call_Ajax(rutaajax,objdata,typesend = "POST"){
-	
+
   var retorno;
   $.ajax({
     url: rutaajax,
     async: false,
-    data: objdata,		
+    data: objdata,
     beforeSend: function(objeto){
           // dialogLoading('show');
-    },        
+    },
     complete: function(objeto, exito){
       // dialogLoading('close');
       if(exito != "success"){
         alert("No se completo el proceso!");
-      }            
+      }
     },
     contentType: "application/x-www-form-urlencoded",
     dataType: "json",
@@ -148,7 +152,7 @@ $(document).on("input", ".numeric", function() {
 
 // Campos en mayuscula
 $(document).on("input", ".uppercase", function() {
-  $(this).val($(this).val().toUpperCase());  
+  $(this).val($(this).val().toUpperCase());
 });
 
 function fileIcon(extension){
@@ -169,7 +173,7 @@ function fileIcon(extension){
       case 'pdf':
         icon = '<i class="fa fa-file-pdf-o text-danger" aria-hidden="true"></i>';
         break;
-      
+
       case 'zip':
         icon = '<i class="fa fa-file-archive-o" aria-hidden="true"></i>';
         break;
@@ -178,12 +182,12 @@ function fileIcon(extension){
       case 'jpeg':
         icon = '<i class="fa fa-file-image-o" aria-hidden="true"></i>';
         break;
-      
+
       case 'ppt':
       case 'pptX':
         icon = '<i class="fa fa-file-powerpoint-o" aria-hidden="true"></i>';
         break;
-    
+
       default:
         icon = '<i class="fa fa-file" aria-hidden="true"></i>';
         break;

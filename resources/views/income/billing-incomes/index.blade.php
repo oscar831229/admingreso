@@ -10,12 +10,68 @@
             transition: .3s transform ease-in-out;
             transform: rotate(90deg);
         }
+        .table td, .table th {
+            padding: 0rem !important;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+        .table td {
+            padding: 0.25rem !important;
+        }
+
+        .btn-default {
+            color: #fff;
+            background-color: #34495E;
+            border-color: #34495E;
+        }
+
+        .btn-default:hover {
+            color: #fff;
+            background-color: #34495E;
+            border-color: #34495E;
+        }
+
+        .mediumscreen-modal .modal-dialog {
+            margin: 0;
+            margin-right: auto;
+            margin-left: auto;
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+        .mediumscreen-modal .modal-dialog {
+            width: 500px;
+        }
+        }
+        @media (min-width: 992px) {
+        .mediumscreen-modal .modal-dialog {
+            width: 600px;
+        }
+        }
+        @media (min-width: 1200px) {
+        .mediumscreen-modal .modal-dialog {
+            width: 1000px;
+        }
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #2a59a5 !important;
+            border-color: #2a59a5 !important;
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #2a59a5 !important;
+            border-color: #2a59a5 !important;
+        }
+
     </style>
 @endsection
 
 @section('scripts_content')
     <script src= "{{ asset('js/plugins/jquery.autocomplete/js/jquery.autocomplete.min.js') }}"></script>
     <script src="{{ asset('js/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/jQuery-Smart-Wizard/js/jquery.smartWizard.js') }}"></script>
     <script src="{{ asset('js/portal/income/billing-incomes/index.js') }}"></script>
 @endsection
 
@@ -30,7 +86,7 @@
         <div class="br-pageheader pd-y-15 pd-l-20">
           <nav class="breadcrumb pd-0 mg-0 tx-12">
             <a class="breadcrumb-item" href="#">Ingreso a sedes</a>
-            <span class="breadcrumb-item active">Facturación ingresos</span>
+            <span class="breadcrumb-item active">Facturación ingresos sedes</span>
           </nav>
         </div><!-- br-pageheader -->
         <div class="clearfix"></div>
@@ -68,7 +124,7 @@
                     <h4><i class="fa fa-money text-primary mr-2" aria-hidden="true"></i> <span id="name-environtment"></span></h4>
                 </div>
                 <div class="col-sm-6 text-left">
-                    <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> LIQUIDACIÓN: <span id="number-liquidation"></span></h4>
+                    <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> LIQUIDACIÓN: <span id="number-liquidation" style="font-weight: 900; color: #11239c;"></span></h4>
                 </div>
             </div>
             <div class="row">
@@ -103,13 +159,13 @@
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('document_number','Número documento <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
-                                {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                {!! Form::label('document_number','Número documento <span class="text-danger">*</span>',[],false) !!}
+                                {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('document_type','Tipo de documento <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::label('document_type','Tipo de documento <span class="text-danger">*</span>',[],false) !!}
                                 {!! Form::select('document_type', $identification_document_types, null, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
@@ -123,7 +179,7 @@
                         <div class="row">
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('first_name','Primer nombre <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::label('first_name','Primer nombre <span class="text-danger">*</span>',[],false) !!}
                                 {!! Form::text('first_name', null, array('id' => 'first_name','placeholder' => 'Primer nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
@@ -135,7 +191,7 @@
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('first_surname','Primer apellido <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::label('first_surname','Primer apellido <span class="text-danger">*</span>',[],false) !!}
                                 {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Primer apellido','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
@@ -147,13 +203,13 @@
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('birth_date','Fecha nacimiento <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
-                                {!! Form::date('birth_date', null, array('id' => 'birth_date','placeholder' => 'Primer nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                {!! Form::label('birthday_date','Fecha nacimiento <span class="text-danger">*</span>',[],false) !!}
+                                {!! Form::date('birthday_date', null, array('id' => 'birthday_date','placeholder' => 'Primer nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('gender','Genero <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                {!! Form::label('gender','Genero <span class="text-danger">*</span>',[],false) !!}
                                 {!! Form::select('gender', $genders, null, array('id' => 'gender','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
@@ -166,13 +222,13 @@
                                     <div class="row">
                                         <div class="col-sm-4">
                                             <div class="form-group">
-                                            {!! Form::label('icm_types_income_id','Tipo de ingreso <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                            {!! Form::label('icm_types_income_id','Tipo de ingreso <span class="text-danger">*</span>',[],false) !!}
                                             {!! Form::select('icm_types_income_id', $types_of_income, null, array('id' => 'icm_types_income_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                             </div>
                                         </div>
                                         <div class="col-sm-4">
                                             <div class="form-group">
-                                            {!! Form::label('icm_affiliate_category_id','Categoria <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>',[],false) !!}
+                                            {!! Form::label('icm_affiliate_category_id','Categoria <span class="text-danger">*</span>',[],false) !!}
                                             {!! Form::select('icm_affiliate_category_id', $icm_affiliate_categories, null, array('id' => 'icm_affiliate_category_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                             </div>
                                         </div>
@@ -229,7 +285,8 @@
                                 <tr>
                                     <th class="search-disabled" style="width: 5%">#</th>
                                     <th>Nombre servicio</th>
-                                    <th>Código Tar. Apli.</th>
+                                    <th>Código Tarifa</th>
+                                    <th>Subsidio</th>
                                     <th>Valor</th>
                                     <th>Iva</th>
                                     <th>Impoconsumo</th>
@@ -239,20 +296,24 @@
                             <tbody></tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="6" class="text-right">Subtotal</th>
-                                    <th id="subtotal">$0.00</th>
+                                    <th colspan="7" class="text-right">Subtotal</th>
+                                    <th id="subtotal" style="padding-left: 10px !important;">$0.00</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="6" class="text-right">Iva</th>
-                                    <th id="iva">$0.00</th>
+                                    <th colspan="7" class="text-right">Iva</th>
+                                    <th id="iva" style="padding-left: 10px !important;">$0.00</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="6" class="text-right">Impoconsumo</th>
-                                    <th id="impoconsumo">$0.00</th>
+                                    <th colspan="7" class="text-right">Impoconsumo</th>
+                                    <th id="impoconsumo" style="padding-left: 10px !important;">$0.00</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="6" class="text-right">Total</th>
-                                    <th id="total">$0.00</th>
+                                    <th colspan="7" class="text-right">Subsidio</th>
+                                    <th id="total_subsidy" style="padding-left: 10px !important;">$0.00</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="7" class="text-right" style="font-size: 16px;">Total</th>
+                                    <th id="total" style="padding-left: 10px !important; font-size: 16px;">$0.00</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -267,7 +328,7 @@
 </div>
 
 
-{{--  Modal nuevo o actualización producto --}}
+{{--  Grupo afiliados ingreso --}}
 <div class="modal fullscreen-modal fade" id="md-grupo-afiliado" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="width: 1000px;">
         <div class="modal-content">
@@ -336,7 +397,7 @@
         </div>
     </div>
 </div>
-{{--  Fin modal nuevo o actualización producto  --}}
+{{--  Fin modal Grupo afilia  --}}
 
 
 <div class="modal fullscreen-modal fade" id="md-icm_environment_income_items" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -420,5 +481,301 @@
         </div>
     </div>
 </div>
+
+<div class="modal mediumscreen-modal fade" id="md-payment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-primary">
+                <h6 class="modal-title" id="exampleModalLabel"><i class="fa fa-money mr-2" aria-hidden="true"></i><span id="label-type">PAGAR LIQUIDACIÓN</span></h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> LIQUIDACIÓN: <span id="number-liquidation" style="font-weight: 900; color: #11239c;">0000000012</span></h4>
+                    </div>
+                    <div class="col-sm-6 text-left">
+                        <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> FACTURA: <span id="number-invoice" style="font-weight: 900; color: #11239c;">HG20-340</span></h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 ">
+                        <div class="x_panel">
+                            <!--<div class="x_title">
+                                <h2>Pagos liquidación entrada sedes
+                                    {{--  <small>Sessions</small>  --}}
+                                </h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#">Settings 1</a>
+                                            </li>
+                                            <li><a href="#">Settings 2</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                            </div>-->
+                            <div class="x_content">
+                                <!-- Smart Wizard -->
+                                {{--  <p>This is a basic form wizard example that inherits the colors from the selected scheme.</p>  --}}
+                                <div id="wizard" class="form_wizard wizard_horizontal">
+                                    <ul class="wizard_steps">
+                                        <li>
+                                            <a href="#step-1">
+                                                <span class="step_no">1</span>
+                                                <span class="step_descr">Cliente factura<br />
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#step-2">
+                                                <span class="step_no">2</span>
+                                                <span class="step_descr">Formas de pago<br />
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div id="step-1">
+                                        <h2 class="StepTitle">
+                                            <i class="fa fa-user text-primary" aria-hidden="true"></i>
+                                            Cliente factura
+                                        </h2>
+                                        <div class="form-layout form-layout-1">
+                                            <div class="row mg-b-25">
+                                                {{ Form::open(array(
+                                                    'id'=>'form-billing-customer',
+                                                    'autocomplete'=>'off',
+                                                    'onsubmit' => 'return false;'
+                                                )) }}
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="document_number" class="form-control-label">Número documento: <span class="text-danger">*</span></label>
+                                                        {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Tipo documento: <span class="text-danger">*</span></label>
+                                                    {!! Form::select('document_type', $identification_document_types, null, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-3 div-first-name">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label"><span id="label-type-person">Primer nombre:</span><span class="text-danger">*</span></label>
+                                                    {!! Form::text('first_name', null, array('id' => 'first_name','placeholder' => 'Primer nombre','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-3 div-only-for-person">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Segundo nombre:</label>
+                                                    {!! Form::text('second_name', null, array('id' => 'second_name','placeholder' => 'Segundo nombre','class' => 'form-control form-control-sm uppercase', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-3 div-only-for-person">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Primer apellido: <span class="text-danger">*</span></label>
+                                                    {!! Form::text('first_surname', null, array('id' => 'first_surname','placeholder' => 'Primer apellido','class' => 'form-control form-control-sm uppercase','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-3 div-only-for-person">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Segundo apellido:</label>
+                                                    {!! Form::text('second_surname', null, array('id' => 'second_surname','placeholder' => 'Segundo apellido','class' => 'form-control form-control-sm uppercase', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Teléfono: <span class="text-danger">*</span></label>
+                                                    {!! Form::text('phone', null, array('id' => 'phone','placeholder' => 'Teléfono','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Correo electrónico: <span class="text-danger">*</span></label>
+                                                    {!! Form::text('email', null, array('id' => 'email','placeholder' => 'Correo electrónico','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                    <label class="form-control-label">Ciudad: <span class="text-danger">*</span></label>
+                                                    {!! Form::select('icm_municipality_id', $common_cities, null, array('id' => 'icm_municipality_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-6">
+                                                    <div class="form-group mg-b-10-force">
+                                                    <label class="form-control-label">Dirección: <span class="text-danger">*</span></label>
+                                                    {!! Form::text('address', null, array('id' => 'address','placeholder' => 'Dirección','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                <div class="col-lg-6">
+                                                    <div class="form-group mg-b-10-force">
+                                                    <label class="form-control-label">Regiment fiscal: <span class="text-danger">*</span></label>
+                                                    {!! Form::select('type_regime_id', $tax_regime, null, array('id' => 'type_regime_id','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                                    </div>
+                                                </div><!-- col-4 -->
+                                                {{ Form::close() }}
+                                            </div><!-- row -->
+                                        </div>
+                                    </div>
+                                    <div id="step-2">
+
+                                        <div id="div-form-payment">
+                                            <h2 class="StepTitle"><i class="fa fa-money text-primary" aria-hidden="true"></i> Formas de pago</h2>
+                                            {{ Form::open(array(
+                                                'id'=>'form-payments',
+                                                'autocomplete'=>'off',
+                                                'onsubmit' => 'return false;'
+                                            )) }}
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                    <label for="name">Forma de pago</label>
+                                                    <select class="form-control form-control-sm" style="height: 25px;" required="required" placeholder="Seleccione...." id="payment-method">
+                                                        <option value="" data-type-payment="">Seleccione...</option>
+                                                        @foreach ($icmpaymentmethod as $key => $group )
+                                                            <optgroup label="{{ $group['name'] }}">
+                                                                @foreach ($group['payments'] as $payment)
+                                                                <option value="{{ $payment['id'] }}" data-type-payment="{{ $key }}">{{ $payment['name'] }}</option>
+                                                                @endforeach
+                                                            </optgroup>
+                                                        @endforeach
+                                                    </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="form-group">
+                                                    <label for="approval_date">Fecha aprobación <span class="text-danger required-info-payment" style="display: none;">*</span></label>
+                                                    <input name="approval_date" id="approval_date" placeholder="Código" class="form-control form-control-sm" style="height: 25px;" type="date" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="form-group">
+                                                        <label for="approval_number">Número aprobación <span class="text-danger required-info-payment" style="display: none;">*</span></label>
+                                                        <input name="approval_number" id="approval_number" placeholder="Número de aprobación" class="form-control form-control-sm" style="height: 25px;" type="text" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="form-group">
+                                                        <label for="value">Valor recibido</label>
+                                                        <input name="value" id="value" placeholder="Valor" class="form-control form-control-sm monto" required="required" style="height: 25px;" type="text">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="form-group">
+                                                        <label for="state">&nbsp;</label>
+                                                        <div><a href="javascript:void(0)" data-id="1" class="tooltipsC btn-save-method-payment" title="Guardar forma de pago"><i class="fa fa-plus-square text-primary" aria-hidden="true"></i></a></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{ Form::close() }}
+                                        </div> <!-- div-form-payment -->
+
+                                        <h6><i class="fa fa-server text-primary" aria-hidden="true"></i> PAGOS LIQUIDACIÓN</h6>
+                                        <table class="table table-hover" id="tbl-income-payments" style="width: 100% !important;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="search-disabled" style="width: 5%">#</th>
+                                                    <th>Forma de pago</th>
+                                                    <th>Fecha de aprobación</th>
+                                                    <th>Número aprobación</th>
+                                                    <th>Valor recibido</th>
+                                                    <th>Valor aplicado</th>
+                                                    <th>Sobrante</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot>
+                                                <tr style="display: none;">
+                                                    <th colspan="6" class="text-right">Subtotal</th>
+                                                    <th id="subtotal" style="padding-left: 10px !important;">$0.00</th>
+                                                </tr>
+                                                <tr style="display: none;">
+                                                    <th colspan="6" class="text-right">Iva</th>
+                                                    <th id="iva" style="padding-left: 10px !important;">$0.00</th>
+                                                </tr>
+                                                <tr style="display: none;">
+                                                    <th colspan="6" class="text-right">Impoconsumo</th>
+                                                    <th id="impoconsumo" style="padding-left: 10px !important;">$0.00</th>
+                                                </tr>
+                                                <tr style="display: none;">
+                                                    <th colspan="6" class="text-right">Subsidio</th>
+                                                    <th id="total_subsidy" style="padding-left: 10px !important;">$0.00</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="6" class="text-right" style="font-size: 16px;">Total</th>
+                                                    <th id="total" style="padding-left: 10px !important; font-size: 16px;">$0.00</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="6" class="text-right" style="font-size: 16px;">Total pago</th>
+                                                    <th id="total_payment" style="padding-left: 10px !important; font-size: 16px;">$0.00</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="6" class="text-right" style="font-size: 16px;">Saldo</th>
+                                                    <th id="total_balance" style="padding-left: 10px !important; font-size: 16px;">$0.00</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan="6" class="text-right" style="font-size: 16px;">Total devolución</th>
+                                                    <th id="total_value_returned" style="padding-left: 10px !important; font-size: 16px;">$0.00</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <button class="btn btn-primary btn-sm btn-block" id="btn-execute-payment" disabled='disabled'><i class="fa fa-file-text-o mg-r-10"></i> Generar factura</button>
+                                                <button class="btn btn-primary btn-sm btn-block" id="btn-execute-payment" disabled='disabled'><i class="fa fa-print" aria-hidden="true"></i> Imprimir factura</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End SmartWizard Content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fullscreen-modal fade" id="md-resolutions" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 800px;">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-primary">
+                <h6 class="modal-title" id="exampleModalLabel"><i class="fa fa-files-o" aria-hidden="true"></i> Resoluciones de facturación</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                        {!! Form::label('icm_resolution_id', 'Resolución:',[],false) !!}
+                        {!! Form::select('icm_resolution_id', [], null, array('id' => 'icm_resolution_id', 'class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-accept-payment">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 @endsection
