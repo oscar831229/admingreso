@@ -102,6 +102,7 @@ class TableIncomeGenerate extends Migration
             $table->string('code', 15);
             $table->integer('number_places');
             $table->decimal('value', 20, 2);
+            $table->decimal('value_high', 20, 2);
             $table->text('observations')->nullable();
 
             $table->unsignedBigInteger('icm_environment_id');
@@ -142,6 +143,7 @@ class TableIncomeGenerate extends Migration
             $table->unsignedBigInteger('icm_affiliate_category_id');
             $table->unsignedBigInteger('icm_rate_type_id');
             $table->decimal('value', 20, 2);
+            $table->decimal('subsidy', 20, 2)->default(0);
             $table->string('state', 1  )->default('A');
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();

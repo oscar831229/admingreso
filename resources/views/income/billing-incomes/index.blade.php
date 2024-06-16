@@ -65,6 +65,13 @@
             border-color: #2a59a5 !important;
         }
 
+        .disabled-link {
+            pointer-events: none !important; /* Evita clics en el enlace */
+            color: #fff !important;
+            background-color: #7493c4 !important;
+            border-color: #7493c4 !important;
+        }
+
     </style>
 @endsection
 
@@ -73,6 +80,9 @@
     <script src="{{ asset('js/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/plugins/jQuery-Smart-Wizard/js/jquery.smartWizard.js') }}"></script>
     <script src="{{ asset('js/portal/income/billing-incomes/index.js') }}"></script>
+    <script>
+        auth_amadeus = <?= $auth_pos_amadeus ?>
+    </script>
 @endsection
 
 
@@ -353,7 +363,7 @@
                               <th class="column-title">Sexo</th>
                               <th class="column-title">Fecha nacimiento</th>
                               <th class="column-title">Edad</th>
-                              <th class="column-title">Empresa afilia</th>
+                              <th class="column-title">Empresa</th>
                               <th class="bulk-actions" colspan="7">
                                 <a class="antoo" style="color:#fff; font-weight:500;">Personas seleccionadas ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
                               </th>
@@ -497,7 +507,7 @@
                         <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> LIQUIDACIÓN: <span id="number-liquidation" style="font-weight: 900; color: #11239c;">0000000012</span></h4>
                     </div>
                     <div class="col-sm-6 text-left">
-                        <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> FACTURA: <span id="number-invoice" style="font-weight: 900; color: #11239c;">HG20-340</span></h4>
+                        <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> FACTURA: <span id="number-invoice" style="font-weight: 900; color: #11239c;"></span></h4>
                     </div>
                 </div>
                 <div class="row">
@@ -728,12 +738,12 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
-                                        <div class="row">
+                                        {{--  <div class="row">
                                             <div class="col-sm-12">
                                                 <button class="btn btn-primary btn-sm btn-block" id="btn-execute-payment" disabled='disabled'><i class="fa fa-file-text-o mg-r-10"></i> Generar factura</button>
-                                                <button class="btn btn-primary btn-sm btn-block" id="btn-execute-payment" disabled='disabled'><i class="fa fa-print" aria-hidden="true"></i> Imprimir factura</button>
+                                                <button class="btn btn-primary btn-sm btn-block" style="display: none;" id="btn-print-payment"><i class="fa fa-print" aria-hidden="true"></i> Imprimir factura</button>
                                             </div>
-                                        </div>
+                                        </div>  --}}
                                     </div>
                                 </div>
                                 <!-- End SmartWizard Content -->
@@ -760,12 +770,19 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-3" id="div-password">
+                        <div class="form-group">
+                        {!! Form::label('password', 'Contraseña POS:',[],false) !!}
+                        {!! Form::password('password', array('id' => 'password', 'class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
                         <div class="form-group">
                         {!! Form::label('icm_resolution_id', 'Resolución:',[],false) !!}
                         {!! Form::select('icm_resolution_id', [], null, array('id' => 'icm_resolution_id', 'class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class="modal-footer">

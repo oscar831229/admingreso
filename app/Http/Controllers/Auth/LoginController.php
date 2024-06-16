@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Admin\AuthenticationLog;
+use Illuminate\Support\Facades\Session;
 
 use BrowserDetect;
 
@@ -88,7 +89,12 @@ class LoginController extends Controller
             ]);
 
             $user->setSession($roles->toArray());
-            
+
+            // $allSessions = Session::all();
+
+            // // Mostrar las variables de sesión
+            // dd($allSessions); // dd() imprime y termina la ejecución
+
         } else {
 
             AuthenticationLog::create([
@@ -103,5 +109,5 @@ class LoginController extends Controller
         }
     }
 
-    
+
 }

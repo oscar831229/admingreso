@@ -203,8 +203,14 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        {!! Form::label('value','Tarifa <span class="text-danger">*</span>', [], false) !!}
-                                        {!! Form::text('value', null, array('placeholder' => 'Tarifa','class' => 'form-control form-control-sm monto','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                        {!! Form::label('value','Venta temporada baja <span class="text-danger">*</span>', [], false) !!}
+                                        {!! Form::text('value', null, array('placeholder' => 'Temporada baja','class' => 'form-control form-control-sm monto','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        {!! Form::label('value_high','Venta temporada alta <span class="text-danger">*</span>', [], false) !!}
+                                        {!! Form::text('value_high', null, array('placeholder' => 'Temporada alta','class' => 'form-control form-control-sm monto','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -213,7 +219,7 @@
                                         {!! Form::select('state',['A'=>'Activo', 'I' => 'Inactivo'],null, array('class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
                                     </div>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-6">
                                     <div class="form-group">
                                         {!! Form::label('observations','Observaciones', [], false) !!}
                                         {!! Form::textarea('observations', null, ['class'=>'form-control','rows' => '2']) !!}
@@ -245,14 +251,24 @@
                                     <table class="table table-bordered" id="tbl-categories" style="width: 100% !important;">
                                         <thead>
                                             <tr>
-                                                <th rowspan="2" class="text-center" style="margin: 0px auto;">TIPO DE INGRESO</th>
-                                                <th colspan="4" class="text-center">CATEGORIAS</th>
+                                                <th rowspan="3" class="text-center" style="margin: 0px auto;">TIPO DE INGRESO</th>
+                                                <th colspan="8" class="text-center">CATEGORIAS</th>
                                             </tr>
 
                                             <tr>
                                                 @foreach ($affiliatecategories as $affiliatecategory)
-                                                <th>{{ $affiliatecategory->name }}</th>
+                                                    <th colspan="2">{{ $affiliatecategory->name }}</th>
                                                 @endforeach
+                                            </tr>
+                                            <tr>
+                                                <th>Venta</th>
+                                                <th>Subsidio</th>
+                                                <th>Venta</th>
+                                                <th>Subsidio</th>
+                                                <th>Venta</th>
+                                                <th>Subsidio</th>
+                                                <th>Venta</th>
+                                                <th>Subsidio</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -260,7 +276,23 @@
                                             <tr>
                                                 <th class="text-right">{{ $income_rate['type_income_name'] }}</th>
                                                 @foreach ($income_rate['categories'] as $categorie)
-                                                <td><input @php echo $categorie['control'] ? '' : 'readonly';   @endphp placeholder="Tarifa {{ strtoupper($categorie['affiliatecategory']->code ) }}" data-type="{{ $income_rate['type_income_id'] }}" data-category_id = "{{ $categorie['affiliatecategory']->id }}" data-icm_rate_type_id = "{{ $rate_type['id'] }}" class="form-control form-control-sm monto rate" style="height: 25px;" value=""></td>
+                                                    @if ($income_rate['type_income_name'] == 'AFILIADO')
+                                                        @php
+                                                            $colspan = 1;
+                                                        @endphp
+                                                    @else
+                                                        @php
+                                                            $colspan = 2;
+                                                        @endphp
+                                                    @endif
+                                                    <td colspan="{{ $colspan }}">
+                                                        <input @php echo $categorie['control'] ? '' : 'readonly';   @endphp placeholder="Venta {{ strtoupper($categorie['affiliatecategory']->code ) }}" data-type="{{ $income_rate['type_income_id'] }}" data-category_id = "{{ $categorie['affiliatecategory']->id }}" data-icm_rate_type_id = "{{ $rate_type['id'] }}" class="form-control form-control-sm monto rate  valor_venta" style="height: 25px;" value="">
+                                                    </td>
+                                                    @if ($income_rate['type_income_name'] == 'AFILIADO')
+                                                    <td>
+                                                        <input @php echo $categorie['control'] ? '' : 'readonly';   @endphp placeholder="Subsidio {{ strtoupper($categorie['affiliatecategory']->code ) }}" data-type="{{ $income_rate['type_income_id'] }}" data-category_id = "{{ $categorie['affiliatecategory']->id }}" data-icm_rate_type_id = "{{ $rate_type['id'] }}" class="form-control form-control-sm monto subsidio_venta" style="height: 25px;" value="">
+                                                    </td>
+                                                    @endif
                                                 @endforeach
                                             </tr>
                                             @endforeach

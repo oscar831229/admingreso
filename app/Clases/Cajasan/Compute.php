@@ -15,25 +15,40 @@ class Compute
 
     public static function calcularValorServicio($income_items, $client, $date){
 
-        # Tarifa general
-        $service_value[] = [
-            'value'   => $income_items->value,
-            'class'   => 'default',
-            'code'    => 'GENERAL',
-            'alterno' => 'GEN'
-        ];
 
-        $objdate = Carbon::createFromFormat('Ymd', $date);
+
+
+
+        $objdate = Carbon::createFromFormat('Y-m-d', $date);
         $year    = $objdate->format('Y');
 
         # Festivo
-        $holidays = getHolidays($year);
+        $holidays       = getHolidays($year);
         $tempodada_alta = isset($holidays[$date]) ? 'A' : 'V';
 
         # Temporada alta
-        if(!$tempodada_alta){
+        if(!isset($holidays[$date])){
             $special_rate   = IcmSpecialRate::where(['date' => $date])->first();
             $tempodada_alta = $special_rate ? 'A' : 'V';
+        }
+
+        if($tempodada_alta == 'V'){
+            # Tarifa general
+            $service_value[] = [
+                'value'   => $income_items->value,
+                'class'   => 'default',
+                'code'    => 'GENERAL_'.$tempodada_alta,
+                'alterno' => 'GEN',
+                'subsidy' => 0
+            ];
+        }else{
+            $service_value[] = [
+                'value'   => $income_items->value_high,
+                'class'   => 'default',
+                'code'    => 'GENERAL_'.$tempodada_alta,
+                'alterno' => 'GEN',
+                'subsidy' => 0
+            ];
         }
 
         $temporada = IcmRateType::where(['code' => $tempodada_alta])->first();
@@ -47,15 +62,17 @@ class Compute
 
         if($items_details){
 
-            $income_type = $items_details->icm_types_income->code ? $items_details->icm_types_income->code : 'REV';
+            $income_type = $items_details->icm_types_income->code ? $items_details->icm_types_income->code             : 'REV';
             $category    = $items_details->icm_affiliate_category->code ? $items_details->icm_affiliate_category->code : 'NE';
             $code        = $income_type.'_'.$category.'_'.$tempodada_alta;
+            $subsidy     = $income_type == 'AFI' ? $items_details->subsidy : 0;
 
             $service_value[] = [
                 'value'   => $items_details->value,
                 'class'   => 'parametrizacion',
                 'code'    => $code,
-                'alterno' => $income_type
+                'alterno' => $income_type,
+                'subsidy' => $subsidy
             ];
         }
 
@@ -78,7 +95,9 @@ class Compute
                     'value'   =>  $detail->value,
                     'class'   => 'convenio',
                     'code'    => 'CONVENIO_'.$icm_agreement->code,
-                    'alterno' => 'CONV'
+                    'alterno' => 'CONV',
+                    'subsidy' => $subsidy
+
                 ];
             }
 

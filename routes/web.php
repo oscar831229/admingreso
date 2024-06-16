@@ -46,6 +46,8 @@
     Route::group(['middleware' => ['auth'],'prefix' => 'income', 'namespace' => 'income'], function() {
 
         Route::resource('parameterization-services','ParameterizationServiceController');
+        Route::get('consecutive-codes/{code}','ParameterizationServiceController@consecutiveCodes');
+
         Route::post('datatable-parameterization-services', 'ParameterizationServiceController@datatableParameterizationServices');
         Route::get('environment-menus-items/{environment_id}','ParameterizationServiceController@getEnvironmentMenusItems');
         Route::get('environment-income-services/{environment_id}','ParameterizationServiceController@getEnvironmentIncomeServices');
@@ -66,6 +68,10 @@
         Route::get('view-liquidation-totals/{icm_liquidation_id}', 'BillingIncomeController@viewLiquidationTotals');
         Route::get('view-liquidation-payment/{icm_liquidation_id}', 'BillingIncomeController@viewLiquidationPayment');
         Route::post('pay-billing-incomes', 'BillingIncomeController@payBillingIncomes');
+        Route::get('billing-incomes-print/{icm_liquidation_id}', 'BillingIncomeController@billingIncomesPrint');
+
+
+
 
 
         Route::resource('incomes','IncomeController');

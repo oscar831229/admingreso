@@ -22,7 +22,7 @@ class CrearMenuSeeder extends Seeder
             array('id' => '4'  , 'menu_id'  => '1' , 'nombre' => 'Menu Rol'                   , 'url' => 'Admin/menu-rol'                      , 'orden' => '4'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '5'  , 'menu_id'  => '1' , 'nombre' => 'Emails'                     , 'url' => 'Admin/emails'                        , 'orden' => '5'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '6'  , 'menu_id'  => '1' , 'nombre' => 'Plantillas'                 , 'url' => 'Admin/plantillas'                    , 'orden' => '6'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '7'  , 'menu_id'  => '0' , 'nombre' => 'Parametros ingreso a sedes' , 'url' => '#'                                   , 'orden' => '7'  , 'icono' => 'fa fa-arrow-right', 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '7'  , 'menu_id'  => '0' , 'nombre' => 'Parametros ingresos' , 'url' => '#'                                   , 'orden' => '7'  , 'icono' => 'fa fa-arrow-right', 'created_at' => $now, 'updated_at' => $now),
             array('id' => '8'  , 'menu_id'  => '7' , 'nombre' => 'Ambientes'                  , 'url' => 'income/environments'                 , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '9'  , 'menu_id'  => '7' , 'nombre' => 'Tipos de tarifa'            , 'url' => 'income/rate-types'                   , 'orden' => '9'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '10' , 'menu_id'  => '7' , 'nombre' => 'Categorias cajasan'         , 'url' => 'income/affiliate-categories'         , 'orden' => '11'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
@@ -31,9 +31,9 @@ class CrearMenuSeeder extends Seeder
             array('id' => '13' , 'menu_id'  => '7' , 'nombre' => 'Servicios de ingreso'  , 'url' => 'income/parameterization-services'    , 'orden' => '14'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '14' , 'menu_id'  => '7' , 'nombre' => 'Empresas convenio'   , 'url' => 'income/parameterization-companies'   , 'orden' => '15'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '15' , 'menu_id'  => '7' , 'nombre' => 'Convenios'  , 'url' => 'income/parameterization-agreements'  , 'orden' => '16'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '16'  , 'menu_id'  => '0' , 'nombre' => 'Ingreso a sedes'            , 'url' => '#'                                   , 'orden' => '7'  , 'icono' => 'fa fa-arrow-right', 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '16' , 'menu_id'  => '0' , 'nombre' => 'Ingreso a sedes'            , 'url' => '#'                                   , 'orden' => '7'  , 'icono' => 'fa fa-arrow-right', 'created_at' => $now, 'updated_at' => $now),
             array('id' => '17' , 'menu_id'  => '16' , 'nombre' => 'Facturación y ingreso'      , 'url' => 'income/billing-incomes'              , 'orden' => '17' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'            , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+           // array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'            , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '19' , 'menu_id'  => '16' , 'nombre' => 'Reportes'                   , 'url' => 'income/income-reports'               , 'orden' => '19' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
         ];
 

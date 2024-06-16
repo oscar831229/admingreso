@@ -23,6 +23,7 @@ class IcmLiquidationService extends Model
         'user_updated',
         'general_price',
         'discount',
+        'subsidy',
         'icm_type_subsidy_id'
     ];
 
@@ -45,4 +46,10 @@ class IcmLiquidationService extends Model
         return $people;
 
     }
+
+    public function icm_liquidation_details(){
+        return $this->hasMany('App\Models\Income\IcmLiquidationDetail');
+    }
+
+
 }

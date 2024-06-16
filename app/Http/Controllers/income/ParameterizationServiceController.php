@@ -114,7 +114,8 @@ class ParameterizationServiceController extends Controller
         $id = empty($request->id) ? 0 : $request->id;
         $incomeitem = IcmIncomeItem::find($id);
         $data = $request->all();
-        $data['value'] = str_replace(",", "", $data['value']);
+        $data['value']      = str_replace(",", "", $data['value']);
+        $data['value_high'] = str_replace(",", "", $data['value_high']);
         if(!$incomeitem){
             $data['user_created'] = auth()->user()->id;
             $incomeitem = IcmIncomeItem::create($data);
@@ -140,23 +141,27 @@ class ParameterizationServiceController extends Controller
                 ->first();
 
                 # Valor ingresos
-                $income_rate['value'] = str_replace(",", "", $income_rate['value']);
+                $income_rate['value']   = str_replace(",", "", $income_rate['value']);
+                $income_rate['subsidy'] = str_replace(",", "", $income_rate['subsidy']);
+                $income_rate['subsidy'] = $income_rate['subsidy'] == '' ? 0 : $income_rate['subsidy'];
 
                 if($icmrate){
                     unset($income_rate_details[$icmrate->id]);
                     $icmrate->update([
-                        'value' => $income_rate['value'],
+                        'value'        => $income_rate['value'],
+                        'subsidy'      => $income_rate['subsidy'],
                         'user_updated' => $user_id,
-                        'state' => 'A'
+                        'state'        => 'A'
                     ]);
                 }else{
                     IcmIncomeItemDetail::create([
-                        'icm_income_item_id' => $incomeitem->id,
-                        'icm_types_income_id' => $income_rate['icm_types_income_id'],
+                        'icm_income_item_id'        => $incomeitem->id,
+                        'icm_types_income_id'       => $income_rate['icm_types_income_id'],
                         'icm_affiliate_category_id' => $income_rate['icm_affiliate_category_id'],
-                        'icm_rate_type_id' => $income_rate['icm_rate_type_id'],
-                        'value' => $income_rate['value'],
-                        'user_created' => $user_id
+                        'icm_rate_type_id'          => $income_rate['icm_rate_type_id'],
+                        'value'                     => $income_rate['value'],
+                        'subsidy'                   => $income_rate['subsidy'],
+                        'user_created'              => $user_id
                     ]);
                 }
             }
@@ -320,6 +325,28 @@ class ParameterizationServiceController extends Controller
         ]);
 
 
+    }
+
+    public function consecutiveCodes($code){
+
+        $data = '';
+        switch ($code) {
+
+            case 'services':
+                $prefix = 'SER';
+                $amount = icmIncomeItem::count() + 1;
+                $data   = $prefix.$amount;
+                break;
+
+            default:
+                # code...
+                break;
+        }
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data'    => $data
+        ]);
     }
 
     /**

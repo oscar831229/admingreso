@@ -79,8 +79,9 @@ class TablasProcessInvoice extends Migration
         # Tabla de liquidaciones icm_liquidations
         schema::create('icm_liquidations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sales_icm_environment_id')->comments('Ambiente desde donde se recauda - venta');
-            $table->unsignedBigInteger('icm_environment_id')->comments('Ambiente en donde es el ingreso');
+            $table->string('uuid')->unique();
+            $table->unsignedBigInteger('sales_icm_environment_id')->comment('Ambiente desde donde se recauda - venta');
+            $table->unsignedBigInteger('icm_environment_id')->comment('Ambiente en donde es el ingreso');
             $table->unsignedBigInteger('document_type');
             $table->unsignedBigInteger('document_number');
             $table->string('first_name', 150);
@@ -102,7 +103,13 @@ class TablasProcessInvoice extends Migration
             $table->decimal('impoconsumo', 20, 2)->default(0);
             $table->decimal('total', 20, 2)->default(0);
             $table->decimal('total_subsidy', 20, 2)->default(0);
-            $table->string('state', 1);
+            $table->string('state', 1)->default('P')->comment('Estado de liquidación P:Pendiente, F:Facturado, B: Anulado');
+
+            $table->unsignedBigInteger('icm_resolution_id')->nullable();
+            $table->string('billing_prefix', 10)->nullable();
+            $table->unsignedBigInteger('consecutive_billing')->nullable();
+
+
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
@@ -138,8 +145,9 @@ class TablasProcessInvoice extends Migration
             $table->integer('number_places');
             $table->string('applied_rate_code', 50)->nullable();
             $table->decimal('general_price', 20, 2)->comment('Precio general del servicio iva incluido');
-            $table->unsignedBigInteger('icm_type_subsidy_id')->default(0)->comment('0 no aplica subsidio');
             $table->decimal('discount', 20, 2)->default(0);
+            $table->decimal('subsidy', 20, 2)->default(0);
+            $table->unsignedBigInteger('icm_type_subsidy_id')->default(0)->comment('0 no aplica subsidio');
             $table->decimal('base', 20, 2);
             $table->decimal('percentage_iva', 20, 2);
             $table->decimal('iva', 20, 2);

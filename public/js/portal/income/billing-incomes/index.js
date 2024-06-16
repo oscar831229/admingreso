@@ -1,4 +1,6 @@
-var wizard = null;
+var wizard       = null;
+var auth_amadeus = 0;
+
 $(document).ready(function () {
     environment.init();
     invoice.init();
@@ -210,21 +212,23 @@ invoice = {
         $('#tbl-grupo-afiliado tbody').empty();
         $.each(family_group, function(index, value){
 
-            let check = document_number == value.document_number ? 'checked' : '';
+            let check = document_number == value.document_number ? 'check-selected' : '';
+            let fecha_nacimiento = formatearFecha(value.birthday_date);
 
             tr += `<tr class="even pointer">
                 <td class="a-center ">
-                    <input type="checkbox" class="flat check-affiliate" data-index="${index}" ${check}>
+                    <input type="checkbox" class="flat check-affiliate ${check}" data-index="${index}">
                 </td>
                 <td class=" ">${value.document_number}</td>
                 <td class=" ">${value.first_name} ${value.second_name} ${value.first_surname} ${value.second_surname}</td>
                 <td class=" ">${value.icm_affiliate_category_code}</td>
                 <td class=" ">${value.gender_code}</td>
-                <td class=" ">${value.birth_date}</td>
+                <td class=" ">${fecha_nacimiento}</td>
                 <td class="a-right a-right ">${value.number_years}</td>
                 <td class="a-right a-right ">${value.name_company_affiliates}</td>
                 </td>
             </tr>`;
+
         });
 
         $('#tbl-grupo-afiliado tbody').html(tr);
@@ -236,11 +240,15 @@ invoice = {
     },
 
     initIcheck : function(){
+
         $("input.flat").iCheck('destroy');
         $("input.flat").iCheck({
             checkboxClass: "icheckbox_flat-green",
             radioClass: "iradio_flat-green"
         })
+
+        $(".bulk_action input.check-affiliate, .bulk_action input#check-all").iCheck("uncheck");
+        $(".bulk_action input.check-selected").iCheck("check");
     },
 
     displayProcessColumns : function(){
@@ -313,13 +321,13 @@ invoice = {
 
     confirmbBillingIncomes : function(){
 
-        if(!$('#form-billing-incomes').valid()){
-            Biblioteca.notificaciones('Existe información sin diligenciar.', 'Ingreso sedes', 'warning');
+        if($('#icm_income_item_id').val() == ''){
+            Biblioteca.notificaciones('No ha seleccionado el servicio a utilizar', 'Ingreso sedes', 'warning');
             return false;
         }
 
-        if($('#icm_income_item_id').val() == ''){
-            Biblioteca.notificaciones('No ha seleccionado el servicio a utilizar', 'Ingreso sedes', 'warning');
+        if(!$('#form-billing-incomes').valid()){
+            Biblioteca.notificaciones('Existe información sin diligenciar.', 'Ingreso sedes', 'warning');
             return false;
         }
 
@@ -438,7 +446,7 @@ invoice = {
                         var iva         = formatearNumero(value.iva);
                         var impoconsumo = formatearNumero(value.impoconsumo);
                         var total       = formatearNumero(value.total);
-                        var subsidio    = formatearNumero(value.icm_type_subsidy_id == 1 ? value.discount : 0);
+                        var subsidio    = formatearNumero(value.subsidy);
 
                         tr += `<tr>
                             <td><h6 class="offset-md-3 let collapsed" data-toggle="collapse" href="#${value.id}" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-chevron-right mr-2" aria-hidden="true"></i>${number}<div></h6></td>
@@ -578,11 +586,6 @@ invoice = {
     loadTablePeople : function(services){
 
         var tr = '';
-        var btnedit = '';
-        var btnupload = '';
-        var btnview = '';
-        var btndowload = '';
-        var profiles = [];
 
 
         $.each(services, function(index_service, service){
@@ -594,28 +597,9 @@ invoice = {
                 // detail = funcionarios.depuraNulls(detail);
                 var number = parseInt(index) + 1;
 
-                btnview = `<a href="javascript:void(0);" class="btn-accion-tabla view-support tooltipsC" title="Ver datos" data-index_contract="${index_service}" data-index="${index}" data-hrm_academic_training_people_id="${detail.id}">
-                    <i class="fa fa-eye"></i>
+                btndeleteperson  = `<a href="javascript:void(0);" class="btn-delete-person tooltipsC" title="Anular persona" data-icm_liquidation_detail_id="${detail.id}" style="color: #0f6eb9;">
+                    <i class="fa fa-trash-o text-danger" aria-hidden="true"></i>
                 </a>`;
-
-                btnedit   = '';
-                btnupload = '';
-                btnview   = '';
-
-                // if(contract.state != 'I'){
-                //     btnedit = `<a href="javascript:void(0);" class="btn-accion-tabla edit-support tooltipsC" title="Editar información documentos soporte" data-index_contract="${index_contract}" data-index="${index}" data-hrm_academic_training_people_id="${detail.hrm_academic_training_people_id}">
-                //         <i class="fa fa-edit text-success"></i>
-                //     </a>`;
-
-                //     btnupload = detail.hrm_academic_training_people_id == 0 ? '' : `<a href="javascript:void(0);" class="btn-accion-tabla upload-support tooltipsC" title="Cargar documento soporte" data-index_contract="${index_contract}" data-index="${index}" data-hrm_academic_training_people_id="${detail.hrm_academic_training_people_id}" data-hrm_academic_training_id="${detail.hrm_academic_training_id}" style="color: #FF5722;">
-                //         <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                //     </a>`;
-                // }
-
-
-                // btndowload = detail.common_general_document_id == 0 ? '' : `<a href="javascript:void(0);" class="btn-accion-tabla donwload-support tooltipsC" title="Descargar documento soporte" data-index_contract="${index_contract}" data-index="${index}" data-hrm_academic_training_people_id="${detail.hrm_academic_training_people_id}" data-hrm_academic_training_id="${detail.hrm_academic_training_id}" style="color: #0f6eb9;">
-                //     <i class="fa fa-cloud-download" aria-hidden="true"></i>
-                // </a>`;
 
                 tr  ='<tr>'
                     +'    <td>'+ number +'</td>'
@@ -625,8 +609,7 @@ invoice = {
                     +'    <td>'+ detail.icm_affiliate_category_name +'</td>'
                     +'    <td>'+ detail.icm_family_compensation_fund_name +'</td>'
                     +'    <td></td>'
-                    +'    <td class="text-center">' +  btnview + btnedit + btnupload + btndowload
-                    +'    </td>'
+                    +'    <td class="text-center">' + btndeleteperson +'    </td>'
                     +'</tr>';
 
                 $(`#tbl-${service.id} tbody`).append(tr);
@@ -726,13 +709,80 @@ invoice = {
         // Asignar número de liquidación a pagar en la componente
         var icm_liquidation_id     = invoice.icm_liquidation_id;
         payment.icm_liquidation_id = invoice.icm_liquidation_id;
+        payment.is_invoiced        = 0;
+        $('#btn-execute-payment').show();
+        $('#btn-print-payment').hide();
+        $('#div-form-payment').show();
+        $('.btn-delete-method-payment').show();
+        $('#number-invoice').html('');
         payment.startPaymentProcess(element);
 
     },
 
     control_init_step : false,
 
+    btndeletePerson: function(){
 
+        var icm_liquidation_detail_id = $(this).data('icm_liquidation_detail_id');
+        var element = $(this);
+        swal({
+            title: 'Eliminar persona liquidación',
+            text: "¿Esta seguro de continuar con el proceso.?",
+            icon: 'warning',
+            showConfirmButton:false,
+            buttons: {
+                Aceptar: {
+                    text: "Aceptar",
+                    value: 'Aceptar',
+                    visible: true
+                },
+                cancel: true
+            },
+        }).then((value) => {
+            if (value) {
+                btn.loading(element);
+                setTimeout(function(){
+                    $.ajax({
+                        url: `/income/billing-incomes/${icm_liquidation_detail_id}`,
+                        async: false,
+                        data: {
+                            icm_liquidation_id : invoice.icm_liquidation_id,
+                            _token             : $('input[name=_token]').val()
+                        },
+                        beforeSend: function(objeto){
+
+                        },
+                        complete: function(objeto, exito){
+                            btn.reset(element);
+                            if(exito != "success"){
+                                alert("No se completo el proceso!");
+                            }
+                        },
+                        contentType: "application/x-www-form-urlencoded",
+                        dataType: "json",
+                        error: function(objeto, quepaso, otroobj){
+                            alert("Ocurrio el siguiente error: "+quepaso);
+                            btn.reset(element);
+                        },
+                        global: true,
+                        ifModified: false,
+                        processData:true,
+                        success: function(response){
+                            btn.reset(element);
+                            if(response.success){
+                                Biblioteca.notificaciones('Proceso realizado de forma exitosa', 'Ingreso a sedes', 'success');
+                                invoice.loadLiquidationDetail();
+                            }else{
+                                Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
+                            }
+                        },
+                        timeout: 30000,
+                        type: 'DELETE'
+                    });
+                },60)
+            }
+        });
+    },
 
     init : function(){
 
@@ -746,6 +796,9 @@ invoice = {
         $('body').on('click', '#btn-save', this.confirmbBillingIncomes);
         $('body').on('click', '#btn-mass-affiliate', this.conAffiliateRegistration);
         $('body').on('click', '#pay-settlement', this.confirmExecutePay);
+        $('body').on('click', '.btn-delete-person', this.btndeletePerson);
+
+
 
         $('#icm_companies_agreement_name').autocomplete({
             serviceUrl:'/income/find-icm-companies-agreement',
@@ -795,6 +848,8 @@ payment = {
 
     total_balance : 0,
 
+    is_invoiced : 0,
+
     resetForm : function(){
         $('#form-billing-customer').find(':input').not('[name="document_number"], [name="_token"]').val('');
     },
@@ -808,6 +863,11 @@ payment = {
     },
 
     startPaymentProcess : function(element){
+
+        if(payment.icm_liquidation_id == null || payment.icm_liquidation_id == 0){
+            Biblioteca.notificaciones('No existe liquidación para procesar', 'Ingreso a sedes', 'warning');
+            return false;
+        }
 
         btn.loading(element);
 
@@ -842,6 +902,8 @@ payment = {
                         loadDataForm('form-billing-customer', response.customer);
                         invoice.disableFields(true, '#form-billing-customer');
                         payment.document_number = response.customer.document_number;
+                        let numeroCompleto = completarConCeros(payment.icm_liquidation_id, 10);
+                        $('#md-payment').find('#number-liquidation').html(numeroCompleto);
                         $('#md-payment').modal({
                             backdrop: 'static',
                             keyboard: false
@@ -963,12 +1025,16 @@ payment = {
                 var stepIndex     = context.fromStep; // Índice del paso actual
                 var nextStepIndex = context.toStep; // Índice del siguiente paso
 
-
+                $('#btn-execute-payment').hide();
                 if(nextStepIndex > stepIndex && stepIndex == 1 ){
 
                     if(!$('#form-billing-customer').valid()){
                         Biblioteca.notificaciones('Existe información requerida sin diligenciar.', 'Pago ingreso a sedes', 'warning');
                         return false;
+                    }
+
+                    if(payment.is_invoiced == 0){
+                        $('#btn-execute-payment').show();
                     }
 
                     // Actualizar datos clientes
@@ -1010,6 +1076,10 @@ payment = {
                             type: 'PUT'
                         });
                     },60)
+
+                }
+
+                if(nextStepIndex > stepIndex && stepIndex == 2 ){
 
                 }
 
@@ -1162,9 +1232,9 @@ payment = {
         payment.total_balance = payment.data.total - total_payments;
         $('#total_balance').html(formatearNumero(payment.total_balance));
 
-        $('#btn-execute-payment').attr('disabled', true);
-        if(payment.total_balance == 0){
-            $('#btn-execute-payment').attr('disabled', false);
+        $('#btn-execute-payment').addClass('disabled-link');
+        if(payment.total_balance == 0 && payment_methods.length > 0){
+            $('#btn-execute-payment').removeClass('disabled-link');
         }
 
         payment.total_payment_recorded = total_payments;
@@ -1206,10 +1276,36 @@ payment = {
     },
 
     executePayment : function(){
+
+        const token = sessionStorage.getItem('token');
+        $('#div-password').show();
+        if(auth_amadeus == 1){
+            $('#div-password').hide();
+        }
+
+        $('#password').val('');
+        $('#icm_resolution_id').val('');
+
+        if($('#icm_resolution_id option').length == 2){
+            $('#icm_resolution_id option').eq(1).prop('selected', true);
+        }
+
         $('#md-resolutions').modal();
+
     },
 
     acceptPayment : function(){
+
+
+        if(auth_amadeus == 0 && $('#password').val() == ''){
+            Biblioteca.notificaciones('Debe autenticarse con contraseña sistema pos para facturar', 'Ingreso a sedes', 'warning');
+            return false;
+        }
+
+        if($('#icm_resolution_id').val() == ''){
+            Biblioteca.notificaciones('Debe seleccionar una resolución para continuar', 'Ingreso a sedes', 'warning');
+            return false;
+        }
 
         var icm_resolution_id = $('#icm_resolution_id').val();
         element               = $(this);
@@ -1235,6 +1331,8 @@ payment = {
                 btn.loading(element);
 
                 setTimeout(function(){
+
+
                     $.ajax({
                         url: '/income/pay-billing-incomes',
                         async: true,
@@ -1242,6 +1340,7 @@ payment = {
                             icm_liquidation_id : payment.icm_liquidation_id,
                             icm_resolution_id  : icm_resolution_id,
                             payment_methods    : payment_methods,
+                            password           : $('#password').val(),
                             _token             : $('[name=_token]').val()
                         },
                         beforeSend: function(objeto){
@@ -1265,15 +1364,24 @@ payment = {
                         success: function(response){
                             btn.reset(element);
                             if(response.success){
+                                auth_amadeus = 1;
                                 Biblioteca.notificaciones('Proceso exitoso.', 'Ingreso a sedes', 'success');
-                                invoice.icm_liquidation_id = response.data.id;
-                                let numeroCompleto = completarConCeros(invoice.icm_liquidation_id, 10);
-                                $('#number-liquidation').html(numeroCompleto);
-                                invoice.loadLiquidationDetail();
-                                document.getElementById('form-billing-incomes').reset();
-                                $('#icm_types_income_id').trigger('change');
-                                $('#document_number').focus();
-                                invoice.disableFields(false);
+                                $('#md-resolutions').modal('hide');
+                                $('#btn-execute-payment').hide();
+	                            $('#btn-print-payment').show();
+                                $('#div-form-payment').hide();
+                                $('.buttonPrevious').hide();
+                                $('.btn-delete-method-payment').hide();
+                                $('#number-invoice').html(response.billing_prefix + '-' + response.consecutive_billing);
+                                payment.is_invoiced = 1;
+                                // invoice.icm_liquidation_id = response.data.id;
+                                // let numeroCompleto = completarConCeros(invoice.icm_liquidation_id, 10);
+                                // $('#number-liquidation').html(numeroCompleto);
+                                // invoice.loadLiquidationDetail();
+                                // document.getElementById('form-billing-incomes').reset();
+                                // $('#icm_types_income_id').trigger('change');
+                                // $('#document_number').focus();
+                                // invoice.disableFields(false);
                             }else{
                                 Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
                             }
@@ -1285,6 +1393,10 @@ payment = {
 
             }
         });
+    },
+
+    printInvoice : function(){
+        window.open(`/income/billing-incomes-print/${payment.icm_liquidation_id}`, null, 'width=300, height=700, toolbar=no, statusbar=no');
     },
 
     init : function(){
@@ -1301,6 +1413,7 @@ payment = {
 
         $('body').on('click', '#btn-execute-payment', this.executePayment);
         $('#md-resolutions').on('click', '#btn-accept-payment', this.acceptPayment);
+        $('body').on('click', '#btn-print-payment', this.printInvoice);
 
 
         $("#form-payments").on('keypress',"input[name='value']", function(event){
@@ -1329,6 +1442,22 @@ payment = {
                 }, 360);
             }
 
+        });
+
+
+        $('#md-resolutions').on('shown.bs.modal', function (e) {
+            $('#password').trigger('focus');
+        });
+
+        $('#md-resolutions').on('hidden.bs.modal', function (e) {
+            $('body').addClass('modal-open');
+        });
+
+        $('#md-payment').on('hidden.bs.modal', function (e) {
+            if(payment.is_invoiced == 1){
+                invoice.icm_liquidation_id = 0;
+                invoice.loadLiquidationDetail();
+            }
         });
 
     }
@@ -1472,6 +1601,21 @@ btn = {
     }
 
 }
+
+function formatearFecha(cadenaFecha) {
+
+    if(typeof cadenaFecha === 'string'){
+        var año = cadenaFecha.substring(0, 4);
+        var mes = cadenaFecha.substring(4, 6);
+        var dia = cadenaFecha.substring(6, 8);
+
+        return año + '-' + mes + '-' + dia;
+    }
+    return '';
+
+
+}
+
 
 
 function completarConCeros(numero, longitud) {

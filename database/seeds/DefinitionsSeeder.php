@@ -29,12 +29,14 @@ class DefinitionsSeeder extends Seeder
                 'name' => 'Tipos de documento de identificación',
                 'details' => 'Tipos de documento de identificación',
                 'detaildefinitions' => [
-                    ['code' => 'CC', 'name' => 'Cédula de Ciudadanía', 'details' => 'Cédula de Ciudadanía '],
-                    ['code' => 'CE', 'name' => 'Cédula de Extranjería ', 'details' => 'Cédula de Ciudadanía '],
-                    ['code' => 'PA', 'name' => 'Pasaporte', 'details' => 'Cédula de Ciudadanía'],
-                    ['code' => 'NI', 'name' => 'Nit', 'details' => 'Nit'],
-                    ['code' => 'TI', 'name' => 'Tarjeta de identidad', 'details' => 'Tarjeta de identidad'],
-                    ['code' => 'TC', 'name' => 'Registro civil', 'details' => 'Registro civil']
+                    ['code' => '13', 'name' => 'CEDULA CIUDADANIA', 'details' => 'CEDULA CIUDADANIA'],
+                    ['code' => '22', 'name' => 'CEDULA EXTRANJERIA', 'details' => 'CEDULA EXTRANJERIA'],
+                    ['code' => '21', 'name' => 'TARJETA EXTRANJERIA', 'details' => 'TARJETA EXTRANJERIA'],
+                    ['code' => '12', 'name' => 'TARJETA IDENTIDAD', 'details' => 'TARJETA IDENTIDAD'],
+                    ['code' => '41', 'name' => 'PASAPORTE', 'details' => 'PASAPORTE'],
+                    ['code' => '11', 'name' => 'REGISTRO CIVIL', 'details' => 'REGISTRO CIVIL'],
+                    ['code' => '31', 'name' => 'NIT', 'details' => 'NIT'],
+                    ['code' => '91', 'name' => 'NUIP', 'details' => 'NUIP']
                 ]
                 ], [
                     'code' => 'gender',

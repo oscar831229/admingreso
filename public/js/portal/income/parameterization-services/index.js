@@ -180,6 +180,46 @@ services = {
     },
 
     viewFormNewEnvironmentService : function(){
+        var element = $(this);
+
+        if (element.is("button")) {
+            $("#code").prop("disabled", false);
+            btn.loading(element);
+            setTimeout(function(){
+                $.ajax({
+                    url: '/income/consecutive-codes/services',
+                    async: true,
+                    data: {},
+                    beforeSend: function(objeto){
+
+                    },
+                    complete: function(objeto, exito){
+                        btn.reset(element);
+                        if(exito != "success"){
+                            alert("No se completo el proceso!");
+                        }
+                    },
+                    contentType: "application/x-www-form-urlencoded",
+                    dataType: "json",
+                    error: function(objeto, quepaso, otroobj){
+                        alert("Ocurrio el siguiente error: "+quepaso);
+                        btn.reset(element);
+                    },
+                    global: true,
+                    ifModified: false,
+                    processData:true,
+                    success: function(response){
+                        if(response.success && response.data.trim() != ''){
+                            $('#code').val(response.data);
+                            $("#code").prop("disabled", true);
+                        }
+                    },
+                    timeout: 30000,
+                    type: 'GET'
+                });
+            },100)
+        }
+
         services.resetFormsRates();
         $('#form-environment-income-items :input').prop('disabled', false);
         $('#form-environment-income-items').find("[name=id]").val('');
@@ -202,6 +242,8 @@ services = {
             Biblioteca.notificaciones('Existen datos pendientes de diligenciar.', 'Comercios aliados', 'warning');
             return false;
         }
+
+        $("#code").prop("disabled", false);
 
         const element = $(this);
         var jsonData=$('#form-environment-income-items').serializeArray()
@@ -359,12 +401,20 @@ services = {
         var income_rate = [];
         $('.rate').each(function(index, element){
             if($(element).val().trim() != ''){
+                var subsidy = 0;
                 var rate = {}
-                rate.icm_types_income_id        = $(element).data('type');
+                rate.icm_types_income_id       = $(element).data('type');
                 rate.icm_affiliate_category_id = $(element).data('category_id');
                 rate.value                     = $(element).val();
                 rate.icm_rate_type_id          = $(element).data('icm_rate_type_id');
+                rate.subsidy                   = subsidy;
+
+                if($(`input.subsidio_venta[data-type=${rate.icm_types_income_id}][data-category_id=${rate.icm_affiliate_category_id}][data-icm_rate_type_id=${rate.icm_rate_type_id}]`).length > 0){
+                    rate.subsidy = $(`input.subsidio_venta[data-type=${rate.icm_types_income_id}][data-category_id=${rate.icm_affiliate_category_id}][data-icm_rate_type_id=${rate.icm_rate_type_id}]`).val();
+                }
+
                 income_rate.push(rate);
+
             }
         });
 
@@ -409,6 +459,7 @@ services = {
                         services.viewFormNewEnvironmentService();
                         loadDataForm('form-environment-income-items', response.data);
                         $('#value').trigger('change');
+                        $('#value_high').trigger('change');
                         loadIncomeRates('body', response.income_item_detail);
                         $('#icm_environment_icm_menu_item_id').selectpicker('refresh');
                         $('#form-environment-income-items').find('#name').attr('disabled', true);
@@ -528,8 +579,12 @@ loadDataForm = function(idform, data){
 }
 
 loadIncomeRates = function(idform, data){
+
     $.each(data, function(index, value){
-        $(`input[data-type=${value.icm_types_income_id}][data-category_id=${value.icm_affiliate_category_id}][data-icm_rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
+        $(`input.valor_venta[data-type=${value.icm_types_income_id}][data-category_id=${value.icm_affiliate_category_id}][data-icm_rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
+        if($(`input.subsidio_venta[data-type=${value.icm_types_income_id}][data-category_id=${value.icm_affiliate_category_id}][data-icm_rate_type_id=${value.icm_rate_type_id}]`).length > 0){
+            $(`input.subsidio_venta[data-type=${value.icm_types_income_id}][data-category_id=${value.icm_affiliate_category_id}][data-icm_rate_type_id=${value.icm_rate_type_id}]`).val(value.subsidy).trigger('change');
+        }
     });
 }
 

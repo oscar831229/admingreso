@@ -12,6 +12,7 @@ class IcmIncomeItemDetail extends Model
         'icm_affiliate_category_id',
         'icm_rate_type_id',
         'value',
+        'subsidy',
         'state',
         'user_created',
         'user_updated'

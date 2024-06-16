@@ -12,6 +12,8 @@
  */
 
 function SmartWizard(target, options) {
+
+    alert('Cargando wizar');
     this.target       = target;
     this.options      = options;
     this.curStepIdx   = options.selected;

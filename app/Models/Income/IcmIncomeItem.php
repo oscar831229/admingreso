@@ -12,6 +12,7 @@ class IcmIncomeItem extends Model
         'code',
         'number_places',
         'value',
+        'value_high',
         'observations',
         'icm_environment_id',
         'icm_environment_icm_menu_item_id',

@@ -24,14 +24,29 @@ use App\Models\Income\IcmLiquidation;
 use App\Models\Income\IcmPaymentMethod;
 use App\Models\Income\CommonCity;
 
+use App\Models\Common\DetailDefinition;
+
 use App\Clases\Cajasan\Afiliacion;
 use App\Clases\Cajasan\Compute;
 
 use Illuminate\Support\Facades\DB;
+use App\Services\AmadeusPosApiService;
+use Ramsey\Uuid\Uuid;
+
 
 
 class BillingIncomeController extends Controller
 {
+
+
+    protected $AmadeusPosApiService;
+
+    public function __construct(AmadeusPosApiService $AmadeusPosApiService)
+    {
+        $this->AmadeusPosApiService = $AmadeusPosApiService;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -83,7 +98,14 @@ class BillingIncomeController extends Controller
         # Categoria
         $icm_affiliate_categories = IcmAffiliateCategory::where(['state' => 'A'])->get()->pluck('name', 'id');
 
-        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds', 'genders', 'types_person', 'tax_regime', 'icmpaymentmethod', 'common_cities'));
+        $auth_pos_amadeus = 0;
+        $user_id          = auth()->user()->id;
+
+        if (\Session::has('auth_amadeus_pos'.$user_id)){
+            $auth_pos_amadeus = 1;
+        }
+
+        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds', 'genders', 'types_person', 'tax_regime', 'icmpaymentmethod', 'common_cities', 'auth_pos_amadeus'));
 
     }
 
@@ -148,6 +170,7 @@ class BillingIncomeController extends Controller
                 $gender_code        = homologacionDatosAfiliado('genero', $afiliado['genero']);
                 $document_type_code = homologacionDatosAfiliado('tipo_dcto_beneficiario', $afiliado['tipo_dcto_beneficiario']);
                 $edad               = calcularEdad($afiliado['fecha_nacimiento']);
+
 
                 $affiliate_group[] = [
                     'document_number'                 => $afiliado['dcto_beneficiario'],
@@ -254,8 +277,14 @@ class BillingIncomeController extends Controller
         $income_item    = IcmIncomeItem::find($icm_income_item_id);
         $icmliquidation = IcmLiquidation::find($icm_liquidation_id);
         if(empty($icmliquidation)){
+
             $client_liquidation = $clients[0];
+
+            # UUID identificación unica para facturación.
+            $uuid = Uuid::uuid4()->toString();
+
             $icmliquidation = IcmLiquidation::create([
+                'uuid'                     => $uuid,
                 'sales_icm_environment_id' => $icm_environment->id,
                 'icm_environment_id'       => $income_item->icm_environment_id,
                 'document_type'            => $client_liquidation['document_type'],
@@ -346,11 +375,11 @@ class BillingIncomeController extends Controller
                 $discriminated_value           = Compute::calculateTaxes($icm_menu_items, $valorservicio[0]['value']);
 
                 # Identificar descuento - tipo de descuento
-                $discount = $income_item->value - $valorservicio[0]['value'];
+                $discount = $valorservicio[0]['alterno'] != 'AFI' ? $income_item->value - $valorservicio[0]['value'] : 0;
 
                 # Identificar si el servicio aplica subsidio
                 $icm_types_income    = IcmTypesIncome::find($client['icm_types_income_id']);
-                $icm_type_subsidy_id = $valorservicio[0]['alterno'] == 'AFI' && $discount > 0 ? 1 : 0;
+                $icm_type_subsidy_id = $valorservicio[0]['alterno'] == 'AFI' && $valorservicio[0]['subsidy'] > 0 ? 1 : 0;
 
                 $liquidationservice  = IcmLiquidationService::create([
                     'icm_liquidation_id'               => $icmliquidation->id,
@@ -368,7 +397,8 @@ class BillingIncomeController extends Controller
                     'user_created'                     => $user_id,
                     'general_price'                    => $income_item->value,
                     'discount'                         => $discount,
-                    'icm_type_subsidy_id'              => $icm_type_subsidy_id
+                    'icm_type_subsidy_id'              => $icm_type_subsidy_id,
+                    'subsidy'                          => $valorservicio[0]['subsidy']
                 ]);
 
             }
@@ -409,10 +439,7 @@ class BillingIncomeController extends Controller
                 SUM(ils.iva) AS iva,
                 SUM(ils.impoconsumo) AS impoconsumo,
                 SUM(ils.total) AS total,
-                SUM(CASE
-                    WHEN IFNULL(icm_type_subsidy_id, 0) = 1 THEN discount
-                    ELSE 0
-                END) AS total_subsidy
+                SUM(ils.subsidy) AS total_subsidy
             FROM `icm_liquidations` AS il
             INNER JOIN `icm_liquidation_services` AS ils ON ils.icm_liquidation_id = il.id
             WHERE il.id = ?
@@ -436,9 +463,45 @@ class BillingIncomeController extends Controller
 
     }
 
+    public function billingIncomesPrint($icm_liquidation_id){
+
+        $icm_liquidation = IcmLiquidation::find($icm_liquidation_id);
+        $user_id = auth()->user()->id;
+        $password = \Session::get('auth_amadeus_pos'.$user_id);
+
+        // Llamar al servicio REST con los datos de la factura
+        $this->AmadeusPosApiService->setHeader([
+            'autorization'  => $password,
+            'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json'
+        ]);
+
+        $response = $this->AmadeusPosApiService->imprimirFactura([
+            "environment_id"      => $icm_liquidation->sales_icm_environment_id,
+            "billing_prefix"      => $icm_liquidation->billing_prefix,
+            "consecutive_billing" => $icm_liquidation->consecutive_billing,
+	        "document_type"       => 'F',
+        ]);
+
+
+        if(!$response['success']){
+            throw new \Exception($response['message'], 1);
+        }
+
+        $facturabase64 = $response['name'];
+        $facturahtml   = base64_decode($facturabase64);
+
+        echo $facturahtml;
+
+
+    }
+
     public function payBillingIncomes(Request $request){
 
         DB::beginTransaction();
+
+        $billing_prefix      = '';
+        $consecutive_billing = '';
 
         try {
 
@@ -446,6 +509,7 @@ class BillingIncomeController extends Controller
             $icm_resolution_id  = $request->icm_resolution_id;
             $icm_liquidation_id = $request->icm_liquidation_id;
             $payment_methods    = $request->payment_methods;
+            $password           = $request->password;
 
             # Liquidacion
             $icm_liquidation = IcmLiquidation::where(['id' => $icm_liquidation_id])->first();
@@ -468,7 +532,39 @@ class BillingIncomeController extends Controller
                 ]);
             }
 
-            $icm_liquidation->update(['state' => 'F']);
+
+            # Consumo servicio REST
+            if (!\Session::has('auth_amadeus_pos'.$user_id)){
+                $password = AmadeusPosApiService::encrypt($password, '');
+            }else{
+                $password = \Session::get('auth_amadeus_pos'.$user_id);
+            }
+
+
+            // Llamar al servicio REST con los datos de la factura
+            $this->AmadeusPosApiService->setHeader([
+                'autorization'  => $password,
+                'Accept'        => 'application/json',
+                'Content-Type'  => 'application/json'
+            ]);
+
+            $response = $this->AmadeusPosApiService->facturarLiquidacion(self::liquitacionToJson($icm_liquidation_id, $icm_resolution_id));
+            if(!$response['success']){
+                throw new \Exception($response['message'], 1);
+            }
+
+            \Session::put('auth_amadeus_pos'.$user_id, $password);
+
+            $icm_liquidation->update([
+                'state'               => 'F',
+                'icm_resolution_id'   => $icm_resolution_id,
+                'billing_prefix'      => $response['factura']['prefijo_facturacion'],
+                'consecutive_billing' => $response['factura']['consecutivo_facturacion'],
+                'user_updated'        => $user_id
+            ]);
+
+            $billing_prefix      = $response['factura']['prefijo_facturacion'];
+            $consecutive_billing = $response['factura']['consecutivo_facturacion'];
 
             DB::commit();
 
@@ -485,14 +581,96 @@ class BillingIncomeController extends Controller
         }
 
         return response()->json([
-            'success' =>  true,
-            'message' => '',
-            'data'    => []
+            'success'             =>  true,
+            'message'             => '',
+            'data'                => [],
+            'billing_prefix'      => $billing_prefix,
+            'consecutive_billing' => $consecutive_billing
         ]);
 
     }
 
+    public static function liquitacionToJson($icm_liquidation_id, $icm_resolution_id){
+
+        $icm_liquidation = IcmLiquidation::find($icm_liquidation_id);
+
+        $data = [
+            'uuid'              => $icm_liquidation->uuid,
+            'liquidation_id'    => $icm_liquidation->id,
+            'environment_id'    => $icm_liquidation->sales_icm_environment_id,
+            'resolution_id'     => $icm_resolution_id,
+            'customer'          => [],
+            'payment_methods'   => [],
+            'liquidation_lines' => []
+        ];
+
+        # Cliente factura
+        $icmcustomer   = $icm_liquidation->icm_customer;
+        $document_type = DetailDefinition::find($icmcustomer->document_type);
+
+
+        $data['customer'] = [
+            'type_document_identification_id' => $document_type->code,
+            'identification_number'           => $icmcustomer->document_number,
+            'type_organization_id'            => 1,
+            'first_name'                      => $icmcustomer->first_name,
+            'second_name'                     => $icmcustomer->second_name,
+            'first_surname'                   => $icmcustomer->first_surname,
+            'second_surname'                  => $icmcustomer->second_surname,
+            'phone'                           => $icmcustomer->phone,
+            'email'                           => $icmcustomer->email,
+            'municipality_id'                 => $icmcustomer->icm_municipality_id,
+            'address'                         => $icmcustomer->address,
+            'type_regime_id'                  => $icmcustomer->type_regime_id,
+            'postal_code'                     => '680001',
+            'birth_date'                      => $icmcustomer->birthday_date,
+        ];
+
+        # Metodos de Pago liquidación
+        $payment_methods = $icm_liquidation->icm_liquidation_payments;
+        foreach ($payment_methods as $key => $payment_method) {
+            $data['payment_methods'][] = [
+                "icm_payment_method_id" => $payment_method->icm_payment_method_id,
+                "approval_date"         => $payment_method->approval_date,
+                "approval_number"       => $payment_method->approval_number,
+                "value"                 => $payment_method->value
+            ];
+        }
+
+        # Servicio facturados
+        $liquidation_lines = $icm_liquidation->icm_liquidation_services;
+        foreach ($liquidation_lines as $key => $liquidation_line) {
+
+            $discount = $liquidation_line->icm_type_subsidy_id == 0 ? 0 : $liquidation_line->discount;
+
+            $icm_environment_icm_menu_item = IcmEnvironmentIcmMenuItem::find($liquidation_line->icm_environment_icm_menu_item_id);
+
+            $data['liquidation_lines'][] = [
+                "menus_items_id" => $icm_environment_icm_menu_item->icm_menu_item_id,
+                "amount"         => "1",
+                "value"          => $liquidation_line->base,
+                "iva"            => $liquidation_line->iva,
+                "impo"           => $liquidation_line->impoconsumo,
+                "total"          => $liquidation_line->total,
+                "subsidy"        => $liquidation_line->subsidy,
+                "type_subsidy"   => $liquidation_line->icm_type_subsidy_id
+            ];
+        }
+
+        return $data;
+
+    }
+
     public function getBillingPeopleServices($icm_liquidation_id){
+
+        if($icm_liquidation_id == 0){
+            return response()->json([
+                'success' => true,
+                'message' => '',
+                'data' => []
+            ]);
+        }
+
 
         $services = IcmLiquidation::find($icm_liquidation_id)->icm_liquidation_services()->where(['state' => 'A'])->get();
 
@@ -511,6 +689,26 @@ class BillingIncomeController extends Controller
 
     public function viewLiquidationTotals($icm_liquidation_id){
 
+        if($icm_liquidation_id == 0){
+
+            $base          = 0;
+            $iva           = 0;
+            $impoconsumo   = 0;
+            $total         = 0;
+            $total_subsidy = 0;
+
+            return response()->json([
+                'success' => true,
+                'message' => '',
+                'data' => [
+                    'base'          => $base,
+                    'iva'           => $iva,
+                    'impoconsumo'   => $impoconsumo,
+                    'total'         => $total,
+                    'total_subsidy' => $total_subsidy,
+                ]
+            ]);
+        }
         $icm_liquidation = IcmLiquidation::find($icm_liquidation_id);
 
         return response()->json([
@@ -635,7 +833,65 @@ class BillingIncomeController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        DB::beginTransaction();
+
+        try {
+
+            $request = request();
+            $icm_liquidation_details  = IcmLiquidationDetail::where(['icm_liquidation_id' => $request->icm_liquidation_id, 'id' => $id ])->first();
+            $icm_liquidation_services = IcmLiquidationService::find($icm_liquidation_details->icm_liquidation_service_id);
+
+            $icm_liquidation_details->delete();
+            $count = $icm_liquidation_services->icm_liquidation_details()->count();
+            if($count == 0){
+                $icm_liquidation_services->delete();
+            }
+
+            DB::commit();
+
+            # Actualizar totales liquidacion
+            $querySQL = "UPDATE icm_liquidations
+            INNER JOIN (
+                SELECT
+                    il.id,
+                    SUM(ils.base) AS base,
+                    SUM(ils.iva) AS iva,
+                    SUM(ils.impoconsumo) AS impoconsumo,
+                    SUM(ils.total) AS total,
+                    SUM(ils.subsidy) AS total_subsidy
+                FROM `icm_liquidations` AS il
+                INNER JOIN `icm_liquidation_services` AS ils ON ils.icm_liquidation_id = il.id
+                WHERE il.id = ?
+                GROUP BY il.id
+            ) AS subconsulta ON subconsulta.id = icm_liquidations.id
+            SET
+                icm_liquidations.base          = subconsulta.base,
+                icm_liquidations.iva           = subconsulta.iva,
+                icm_liquidations.impoconsumo   = subconsulta.impoconsumo,
+                icm_liquidations.total         = subconsulta.total,
+                icm_liquidations.total_subsidy = subconsulta.total_subsidy";
+
+            \DB::select($querySQL, [$request->icm_liquidation_id]);
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return response()->json([
+                'success' =>  false,
+                'message' => $e->getMessage(),
+                'data'    => []
+            ]);
+
+        }
+
+        return response()->json([
+            'success'             =>  true,
+            'message'             => '',
+            'data'                => [],
+        ]);
+
     }
 
 }

@@ -95,6 +95,9 @@ function SmartWizard(target, options) {
             }
         }
 
+        elmActionBar.append(`<a href="javascript:void(0)" id="btn-execute-payment" class="buttonInvoice btn btn-primary disabled-link" style="display:none;">Generar factura</a>`);
+        elmActionBar.append(`<a href="javascript:void(0)" id="btn-print-payment" class="buttonPrint btn btn-warning" style="display:none;">Imprimir factura</a>`);
+
         $this.target.append(elmActionBar);
         this.contentWidth = $this.elmStepContainer.width();
 
