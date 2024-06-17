@@ -36,7 +36,7 @@ class ParameterizationServiceController extends Controller
         $icm_environments = IcmEnvironment::all();
 
         # Sincronizar sistema POS REST
-        synchronizePOSSystem();
+        // synchronizePOSSystem('initialization');
 
         $types_of_income     = IcmTypesIncome::where(['state' => 'A'])->get();
         $affiliatecategories = IcmAffiliateCategory::where(['state' => 'A'])->orderby('code', 'asc')->get();

@@ -4,9 +4,9 @@
         <div class="nav toggle">
             <a id="menu_toggle"><i class="fa fa-bars"></i></a>
         </div>
-        <nav class="nav navbar-nav" style="float: left; margin: 0; width: 400px !important;">
+        <nav class="nav navbar-nav" style="float: left; margin: 0; width: 600px !important;">
             <ul class=" navbar-right">
-            <div><i class="fa fa-calendar" aria-hidden="true"></i> Fecha sistema : {{ formatDate(getSystemDate(), 'Y-m-d') }}</div>
+            <div><i class="fa fa-calendar" aria-hidden="true"></i> Fecha sistema : {{ formatDate(getSystemDate(), 'Y-m-d') }}  :  {!! obtenerTemporadaNameDate(getSystemDate()) !!}</div>
             </ul>
         </nav>
         <nav class="nav navbar-nav">

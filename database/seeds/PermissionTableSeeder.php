@@ -18,32 +18,32 @@ class PermissionTableSeeder extends Seeder
             [
                 'name' => 'role-list',
                 'module' => 'core-role',
-                'descripcion' => 'Permisos listar roles' 
+                'descripcion' => 'Permisos listar roles'
             ],
             [
                 'name' => 'role-create',
                 'module' => 'core-role',
-                'descripcion' => 'Permisos crear roles' 
+                'descripcion' => 'Permisos crear roles'
             ],
             [
                 'name' => 'role-edit',
                 'module' => 'core-role',
-                'descripcion' => 'Permisos editar roles' 
+                'descripcion' => 'Permisos editar roles'
             ],
             [
                 'name' => 'user-list',
                 'module' => 'core-user',
-                'descripcion' => 'Permisos listar usuarios' 
+                'descripcion' => 'Permisos listar usuarios'
             ],
             [
                 'name' => 'user-create',
                 'module' => 'core-user',
-                'descripcion' => 'Permisos crear usuarios' 
+                'descripcion' => 'Permisos crear usuarios'
             ],
             [
                 'name' => 'user-edit',
                 'module' => 'core-user',
-                'descripcion' => 'Permisos editar usuarios' 
+                'descripcion' => 'Permisos editar usuarios'
             ],
             [
                 'name' => 'user-generate-token',
@@ -53,55 +53,55 @@ class PermissionTableSeeder extends Seeder
             [
                 'name' => 'menu-rol-list',
                 'module' => 'core-user',
-                'descripcion' => 'Permisos listar menu rol' 
+                'descripcion' => 'Permisos listar menu rol'
             ],
             [
                 'name' => 'emails-list',
                 'module' => 'core-user',
-                'descripcion' => 'Listar emails' 
+                'descripcion' => 'Listar emails'
             ],
             [
                 'name' => 'emails-create',
                 'module' => 'core-user',
-                'descripcion' => '' 
+                'descripcion' => ''
             ],
             [
                 'name' => 'emails-edit',
                 'module' => 'core-user',
-                'descripcion' => 'Editar emails' 
+                'descripcion' => 'Editar emails'
             ],
             [
                 'name' => 'emails-delete',
                 'module' => 'core-user',
-                'descripcion' => 'Borrar emails' 
+                'descripcion' => 'Borrar emails'
             ],
             [
                 'name' => 'plantillas-create',
                 'module' => 'core-user',
-                'descripcion' => 'Crear plantillas' 
+                'descripcion' => 'Crear plantillas'
             ],
             [
                 'name' => 'plantillas-edit',
                 'module' => 'core-user',
-                'descripcion' => 'Editar plantilla' 
+                'descripcion' => 'Editar plantilla'
             ],
             [
                 'name' => 'menu-rol-edit',
                 'module' => 'core-user',
-                'descripcion' => 'Permisos editar menu rol' 
+                'descripcion' => 'Permisos editar menu rol'
             ],
             [
-                'name' => 'his-medical-appointments-index',
-                'module' => 'system-his',
-                'descripcion' => 'Consultar agenda clinica HIS (INDIGO)' 
+                'module'      => 'api-services',
+                'name'        => 'dictionary-synchronization',
+                'descripcion' => 'Permisos sincronización de datos compartidos POS'
             ],
             [
-                'name' => 'his-schedule-listings-index',
-                'module' => 'system-his',
-                'descripcion' => 'Consultar especialidas y profesionales agenda HIS (INDIGO)' 
+                'module'      => 'api-services',
+                'name'        => 'rate-synchronization',
+                'descripcion' => 'Permisos sincronización de tarifas con centralizador'
             ]
         ];
-   
+
 
         foreach ($permissions as $permission) {
 
@@ -111,7 +111,7 @@ class PermissionTableSeeder extends Seeder
                 Permission::create($permission);
             }
 
-            
+
         }
     }
 }

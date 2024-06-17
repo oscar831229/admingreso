@@ -6,7 +6,7 @@ use Closure;
 
 use Illuminate\Support\Facades\Log;
 
-use App\Models\His\LogApiRequest;
+use App\Models\LogApiRequest;
 
 class LogRequests
 {
@@ -41,10 +41,10 @@ class LogRequests
 
         # Registra log base de datos
         LogApiRequest::create([
-            'user_id' => $user_id, 
-            'method' => $method, 
-            'url' =>$url, 
-            'response' => $response, 
+            'user_id' => $user_id,
+            'method' => $method,
+            'url' =>$url,
+            'response' => $response,
             'ip' => $ip
         ]);
 
@@ -54,7 +54,7 @@ class LogRequests
         // "Response : {$response->getContent()} \n";
 
         // Log::info($log);
-    
+
     }
-    
+
 }
