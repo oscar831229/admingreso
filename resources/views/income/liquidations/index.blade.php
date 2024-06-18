@@ -48,7 +48,7 @@
 @section('scripts_content')
     <script src="{{ asset('theme/lib/internacionalizacion/es.js') }}"></script>
     <script src="{{ asset('theme/lib/datatables/jquery.dataTables.js') }}"></script>
-    <script src="{{ asset('js/portal/income/affiliate-categories/index.js') }}"></script>
+    <script src="{{ asset('js/portal/income/liquidations/index.js') }}"></script>
 @endsection
 
 
@@ -62,7 +62,7 @@
           <div class="br-pageheader pd-y-15 pd-l-20">
             <nav class="breadcrumb pd-0 mg-0 tx-12">
               <a class="breadcrumb-item" href="#">Ingreso a sedes</a>
-              <span class="breadcrumb-item active">Categoria afiliados</span>
+              <span class="breadcrumb-item active">Liquidaciones generadas</span>
             </nav>
           </div><!-- br-pageheader -->
           <div class="clearfix"></div>
@@ -72,29 +72,60 @@
                 <table width='100%' style="margin-bottom: 20px;">
                     <tr>
                         <td width='50' align="center" valign="top" class="pr-4">
-                            <h1 class="text-primary"><i class="fa fa-codiepie" aria-hidden="true"></i></h1>
+                            <h1 class="text-primary"><i class="fa fa-list" aria-hidden="true"></i></h1>
                         </td>
                         <td>
-                            <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Categoria afiliados</h4>
+                            <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Liquidaciones generadas</h4>
                             <span class='titulos'>&nbsp;</span>
                         </td>
                     </tr>
                 </table>
 
-                <button class="btn btn-warning btn-sm btn-block mg-b-10" id="btn-new-categories"><i class="fa fa-plus-square-o mg-r-10"></i> NUEVA CATEGORIA AFILIADOS</button>
+                <div class="row">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                {!! Form::label('date_from','<i class="fa fa-play-circle text-success" aria-hidden="true"></i> Estado liquidación', [], false) !!}
+                                {!! Form::select('state_liquidation', ['P' => 'PENDIENTES', 'F' => 'FACTURADA' ],  null, ['class' => 'form-control form-control-sm', 'id' => 'state_liquidation', 'placeholder' => 'Seleccione...', 'style'=>'height: 25px;']) !!}
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                {!! Form::label('date_from','<i class="fa fa-calendar" aria-hidden="true"></i> Fecha inicial', [], false) !!}
+                                {!! Form::date('date_from', null, array('id' => 'date_from','placeholder' => 'Número de lote','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                {!! Form::label('date_to','<i class="fa fa-calendar" aria-hidden="true"></i> Fecha final', [], false) !!}
+                                {!! Form::date('date_to', null, array('id' => 'date_to','placeholder' => 'Número de lote','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <br>
+                                <button class="btn btn-primary btn-sm mr-3" id="btn-refresh-liquidation"><i class="fa fa-refresh mg-r-10"></i> Actualizar </button>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
 
                 <div class="row text-center mt-2">
                     <div class="col-sm-12">
                         <div class="form-group">
                             <div class="rounded table-responsive">
-                                <table class="table table-bordered dataTable" style="width: 99%;" id="tbl-categories">
+                                <table class="table table-bordered dataTable" style="width: 99%;" id="tbl-liquidations">
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Código</th>
-                                            <th>Nombre</th>
-                                            <th>Usuario crea</th>
+                                            <th>Número liquidación</th>
+                                            <th>Fecha liquidación</th>
+                                            <th>Nombre cliente</th>
+                                            <th>Ambiente</th>
                                             <th>Estado</th>
+                                            <th>Factura</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -127,7 +158,7 @@
                         <div class="col-xl-12 mg-t-20 mg-xl-t-0">
                             <div class="form-layout form-layout-5 bd-info">
                                 {{ Form::open(array(
-                                    'id'=>'form-categories',
+                                    'id'=>'form-liquidations',
                                     'autocomplete'=>'off',
                                     'onsubmit' => 'return false;'
                                 )) }}

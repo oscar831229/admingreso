@@ -31,12 +31,12 @@
                             </td>
                             <td>
                                 <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Menús rol</h4>
-                                <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
+                                <span class='titulos'>&nbsp;</span>
                             </td>
                         </tr>
                     </table>
-    
-    
+
+
                     <div class="card card-success" style="overflow-y: scroll; height: 600px;">
                         <div class="card-body table-responsive p-0">
                             @csrf

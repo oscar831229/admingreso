@@ -97,7 +97,7 @@
               </td>
               <td>
                   <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Parametrización empresas</h4>
-                  <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
+                  <span class='titulos'>&nbsp;</span>
               </td>
           </tr>
         </table>
@@ -109,23 +109,30 @@
             </button>
           </div>
         </div>
-
-        <table class="table table-hover" id="tbl-companies" style="width: 100% !important;">
-            <thead>
-                <tr>
-                    <th class="search-disabled" style="width: 2%">#</th>
-                    <th>Tipo documento</th>
-                    <th>Número documento</th>
-                    <th>Nombre</th>
-                    <th>Teléfono</th>
-                    <th>U. crea</th>
-                    <th>Estado</th>
-                    <th class="text-center"></th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div class="row text-center mt-2">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="rounded table-responsive">
+                        <table class="table table-hover" id="tbl-companies" style="width: 100% !important;">
+                            <thead>
+                                <tr>
+                                    <th class="search-disabled" style="width: 2%">#</th>
+                                    <th>Tipo documento</th>
+                                    <th>Número documento</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>U. crea</th>
+                                    <th>Estado</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   </div>

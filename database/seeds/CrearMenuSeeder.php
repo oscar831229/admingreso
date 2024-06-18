@@ -33,8 +33,9 @@ class CrearMenuSeeder extends Seeder
             array('id' => '15' , 'menu_id'  => '7' , 'nombre' => 'Convenios'  , 'url' => 'income/parameterization-agreements'  , 'orden' => '16'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '16' , 'menu_id'  => '0' , 'nombre' => 'Ingreso a sedes'            , 'url' => '#'                                   , 'orden' => '7'  , 'icono' => 'fa fa-arrow-right', 'created_at' => $now, 'updated_at' => $now),
             array('id' => '17' , 'menu_id'  => '16' , 'nombre' => 'Facturación y ingreso'      , 'url' => 'income/billing-incomes'              , 'orden' => '17' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-           // array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'            , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Liquidaciones'              , 'url' => 'income/liquidations'               , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '19' , 'menu_id'  => '16' , 'nombre' => 'Reportes'                   , 'url' => 'income/income-reports'               , 'orden' => '19' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            // array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'            , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
         ];
 
         foreach ($menus as $key => $menu) {

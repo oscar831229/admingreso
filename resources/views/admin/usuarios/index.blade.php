@@ -18,10 +18,10 @@
     }
     .text-u {
       text-transform: uppercase !important;
-    } 
+    }
     .text-l {
       text-transform: lowercase !important;
-    } 
+    }
   </style>
 @endsection
 
@@ -49,7 +49,7 @@
       <div class="x_content">
         <div class="br-section-wrapper">
 
-        
+
         </div><!-- br-section-wrapper -->
         <table width='100%' style="margin-bottom: 40px;">
           <tr>
@@ -58,7 +58,7 @@
               </td>
               <td>
                   <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Usuarios</h4>
-                  <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
+                  <span class='titulos'>&nbsp;</span>
               </td>
           </tr>
         </table>
@@ -113,7 +113,7 @@
             @endforeach
           </tbody>
         </table><!-- table-wrapper -->
-        
+
       </div>
       </div>
     </div>

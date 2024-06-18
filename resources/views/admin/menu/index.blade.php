@@ -32,13 +32,13 @@
                 </td>
                 <td>
                     <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Menus</h4>
-                    <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
+                    <span class='titulos'>&nbsp;</span>
                 </td>
             </tr>
           </table>
 
       </div>
-      
+
       <div class="br-pagebody">
         <div class="row">
             <div class="col-lg-12">
@@ -58,7 +58,7 @@
                     </div>
                 </div>
             </div>
-        </div>          
+        </div>
       </div><!-- br-pagebody -->
       <footer class="br-footer">
         <div class="footer-left">

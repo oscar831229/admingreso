@@ -103,8 +103,8 @@ class TablasProcessInvoice extends Migration
             $table->decimal('impoconsumo', 20, 2)->default(0);
             $table->decimal('total', 20, 2)->default(0);
             $table->decimal('total_subsidy', 20, 2)->default(0);
+            $table->date('liquidation_date');
             $table->string('state', 1)->default('P')->comment('Estado de liquidación P:Pendiente, F:Facturado, B: Anulado');
-
             $table->unsignedBigInteger('icm_resolution_id')->nullable();
             $table->string('billing_prefix', 10)->nullable();
             $table->unsignedBigInteger('consecutive_billing')->nullable();
@@ -143,6 +143,7 @@ class TablasProcessInvoice extends Migration
                 ->onDelete('restrict')
                 ->onUpdate('restrict');
             $table->integer('number_places');
+            $table->unsignedBigInteger('icm_rate_type_id')->nullable();
             $table->string('applied_rate_code', 50)->nullable();
             $table->decimal('general_price', 20, 2)->comment('Precio general del servicio iva incluido');
             $table->decimal('discount', 20, 2)->default(0);

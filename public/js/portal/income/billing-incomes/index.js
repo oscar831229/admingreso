@@ -568,12 +568,15 @@ invoice = {
                     var impoconsumo   = formatearNumero(response.data.impoconsumo);
                     var total         = formatearNumero(response.data.total);
                     var total_subsidy = formatearNumero(response.data.total_subsidy)
-
                     $('#subtotal').html(subtotal);
                     $('#iva').html(iva);
                     $('#impoconsumo').html(impoconsumo);
                     $('#total').html(total);
                     $('#total_subsidy').html(total_subsidy);
+
+                    if(response.data.state == 'F'){
+                        window.location.href = '/income/billing-incomes';
+                    }
 
                 }
             },
@@ -1460,6 +1463,16 @@ payment = {
             }
         });
 
+
+        // Ejemplo de uso: Obtener y mostrar los parámetros de consulta
+        var environment        = getQueryParam('environment');
+        var icm_liquidation_id = getQueryParam('icm_liquidation_id');
+        if(environment != null && icm_liquidation_id != null){
+            invoice.icm_liquidation_id = icm_liquidation_id;
+            invoice.loadLiquidationDetail();
+            $(`a:contains("${environment}")`).trigger('click');
+        }
+
     }
 }
 
@@ -1624,6 +1637,27 @@ function completarConCeros(numero, longitud) {
         numeroString = '0' + numeroString;
     }
     return numeroString;
+}
+
+
+// Función para obtener el valor de un parámetro de consulta por su nombre
+function getQueryParam(name) {
+    // Obtener la parte de la URL que contiene los parámetros de consulta
+    var queryString = window.location.search.substring(1);
+    // Separar los diferentes parámetros de consulta en un array
+    var queryParams = queryString.split('&');
+
+    // Iterar sobre los parámetros y buscar el que coincida con el nombre dado
+    for (var i = 0; i < queryParams.length; i++) {
+        var pair = queryParams[i].split('=');
+        if (decodeURIComponent(pair[0]) === name) {
+            // Devolver el valor del parámetro de consulta
+            return decodeURIComponent(pair[1]);
+        }
+    }
+
+    // Si no se encuentra el parámetro, devolver null
+    return null;
 }
 
 

@@ -50,6 +50,10 @@ Route::group([
         # Sincronización procesos
         Route::apiResource('synchronization', 'income\SynchronizationController');
 
+        Route::get('token-validation', 'income\SynchronizationController@tokenValidation');
+
+
+
     });
 
 

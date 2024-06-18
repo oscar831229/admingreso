@@ -5,9 +5,7 @@
             <a id="menu_toggle"><i class="fa fa-bars"></i></a>
         </div>
         <nav class="nav navbar-nav" style="float: left; margin: 0; width: 600px !important;">
-            <ul class=" navbar-right">
-            <div><i class="fa fa-calendar" aria-hidden="true"></i> Fecha sistema : {{ formatDate(getSystemDate(), 'Y-m-d') }}  :  {!! obtenerTemporadaNameDate(getSystemDate()) !!}</div>
-            </ul>
+            <div style="margin-top: 13px;"><h6><i class="fa fa-calendar" aria-hidden="true"></i> Fecha sistema : {{ formatDate(getSystemDate(), 'Y-m-d') }}  :  {!! obtenerTemporadaNameDate(getSystemDate()) !!}</h6></div>
         </nav>
         <nav class="nav navbar-nav">
 

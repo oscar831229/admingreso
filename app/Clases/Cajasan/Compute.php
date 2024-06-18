@@ -32,26 +32,30 @@ class Compute
 
         $tempodada_alta = obtenerTemporadaDate($date);
 
+        $temporada = IcmRateType::where(['code' => $tempodada_alta])->first();
+
         if($tempodada_alta == 'V'){
             # Tarifa general
             $service_value[] = [
-                'value'   => $income_items->value,
-                'class'   => 'default',
-                'code'    => 'GENERAL_'.$tempodada_alta,
-                'alterno' => 'GEN',
-                'subsidy' => 0
+                'value'            => $income_items->value,
+                'class'            => 'default',
+                'code'             => 'GENERAL_'.$tempodada_alta,
+                'alterno'          => 'GEN',
+                'subsidy'          => 0,
+                'icm_rate_type_id' => $temporada->id
             ];
         }else{
             $service_value[] = [
-                'value'   => $income_items->value_high,
-                'class'   => 'default',
-                'code'    => 'GENERAL_'.$tempodada_alta,
-                'alterno' => 'GEN',
-                'subsidy' => 0
+                'value'            => $income_items->value_high,
+                'class'            => 'default',
+                'code'             => 'GENERAL_'.$tempodada_alta,
+                'alterno'          => 'GEN',
+                'subsidy'          => 0,
+                'icm_rate_type_id' => $temporada->id
             ];
         }
 
-        $temporada = IcmRateType::where(['code' => $tempodada_alta])->first();
+
 
         # TARIFA POR PARAMETRIZACIÓN DE VALORES
         $items_details = $income_items->icm_income_item_details()->where([
@@ -68,11 +72,12 @@ class Compute
             $subsidy     = $income_type == 'AFI' ? $items_details->subsidy : 0;
 
             $service_value[] = [
-                'value'   => $items_details->value,
-                'class'   => 'parametrizacion',
-                'code'    => $code,
-                'alterno' => $income_type,
-                'subsidy' => $subsidy
+                'value'            => $items_details->value,
+                'class'            => 'parametrizacion',
+                'code'             => $code,
+                'alterno'          => $income_type,
+                'subsidy'          => $subsidy,
+                'icm_rate_type_id' => $temporada->id
             ];
         }
 
@@ -92,12 +97,12 @@ class Compute
 
             if($detail && $detail->state == 'A'){
                 $service_value[] = [
-                    'value'   =>  $detail->value,
-                    'class'   => 'convenio',
-                    'code'    => 'CONVENIO_'.$icm_agreement->code,
-                    'alterno' => 'CONV',
-                    'subsidy' => $subsidy
-
+                    'value'            =>  $detail->value,
+                    'class'            => 'convenio',
+                    'code'             => 'CONVENIO_'.$icm_agreement->code,
+                    'alterno'          => 'CONV',
+                    'subsidy'          => 0,
+                    'icm_rate_type_id' => $temporada->id
                 ];
             }
 

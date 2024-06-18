@@ -33,7 +33,7 @@
                     </td>
                     <td>
                         <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Calendario días temporada alta</h4>
-                        <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
+                        <span class='titulos'>&nbsp;</span>
                     </td>
                 </tr>
                 </table>

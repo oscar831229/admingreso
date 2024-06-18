@@ -12,6 +12,7 @@ class IcmLiquidationService extends Model
         'icm_environment_id',
         'icm_environment_icm_menu_item_id',
         'number_places',
+        'icm_rate_type_id',
         'applied_rate_code',
         'base',
         'percentage_iva',

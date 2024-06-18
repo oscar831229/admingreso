@@ -1,7 +1,7 @@
 @extends('layouts.portal.principal')
 
 @section('css_custom')
-  
+
   <link href="{{ asset('js/plugins/bootstrap-select/bootstrap-select.css') }}" rel="stylesheet">
   <link href="{{ asset('js/plugins/bootstrap-fileinput/css/fileinput.min.css') }}" rel="stylesheet">
   <link href="{{ asset('js/plugins/multi-select/bootstrap-multiselect.css') }}" rel="stylesheet">
@@ -38,13 +38,13 @@
     }
     .text-u {
       text-transform: uppercase !important;
-    } 
+    }
     .text-l {
       text-transform: lowercase !important;
-    } 
+    }
   </style>
 
-  
+
 @endsection
 
 @section('scripts_content')
@@ -52,7 +52,7 @@
   <script src="{{ asset('js/portal/entity/schedule-availabilities/index.js') }}"></script>
   <script>
     $(function () {
-      
+
       $('#md-specialty').on('hidden.bs.modal', function () {
 
         var specialties = calendario.getSpecialtiesSelected();
@@ -86,15 +86,15 @@
               specialties : specialties,
 							_token: $('input[name=_token]').val(),
               schedule_id : 0
-            },		
+            },
             beforeSend: function(objeto){
-                
-            },        
+
+            },
             complete: function(objeto, exito){
               btn.reset($('#btn-especiality'));
                 if(exito != "success"){
                     alert("No se completo el proceso!");
-                }            
+                }
             },
             contentType: "application/x-www-form-urlencoded",
             dataType: "json",
@@ -105,7 +105,7 @@
             ifModified: false,
             processData:true,
             success: function(response){
-                
+
                 if(!response.success){
                     Biblioteca.notificaciones(response.message, 'Disponibilidad por especialidades', 'error');
                     return false;
@@ -121,7 +121,7 @@
         });
         },80)
 
-        
+
       });
 
       $('body').on('click', '.li-check', function(){
@@ -142,7 +142,7 @@
         consolidado.specialty_name = $(this).data('name');
         consolidado.specialty_text = $(this).data('text');
         consolidado.specialty_available = parseInt($(this).data('disponible'));
-        
+
 
         swal({
           title: 'Consultar estadistica de especialidad',
@@ -166,15 +166,15 @@
                   $.ajax({
                     url: 'statistics-specialty-period/' + date + '/'  + specialty_code,
                     async: false,
-                    data: {},		
+                    data: {},
                     beforeSend: function(objeto){
-                        
-                    },        
+
+                    },
                     complete: function(objeto, exito){
                       btn.reset(btnaction);
                         if(exito != "success"){
                             alert("No se completo el proceso!");
-                        }            
+                        }
                     },
                     contentType: "application/x-www-form-urlencoded",
                     dataType: "json",
@@ -185,7 +185,7 @@
                     ifModified: false,
                     processData:true,
                     success: function(response){
-                        
+
                         if(!response.success){
                             Biblioteca.notificaciones(response.message, 'Estadisticas especialidad', 'error');
                             return false;
@@ -202,16 +202,16 @@
                 });
               },80)
 
-            } 
+            }
         });
      })
-      
+
 
 
     });
 
     consolidado = {
-      
+
       periods_name : ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'],
 
       data : [],
@@ -311,7 +311,7 @@
       },
 
       generateBody(){
-        
+
         if(this.data.length > 0){
           var number = 1;
           var tr = '';
@@ -324,11 +324,11 @@
                 var disponibilidad = parseInt(subspec.minutes_available) - parseInt(subspec.scheduled_minutes);
 
                 html_sub = '&nbsp;';
-                
+
                 if(subspec.minutes_available != 0){
 
                   var text = `${spec.specialty_name} - ${subspec.period}  Disponibilidad[ ${disponibilidad} ] (${subspec.minutes_available} Agenda - ${subspec.scheduled_minutes} Citas)`;
-                  
+
                   html_sub = `<label class="tx-12 mg-b-10">Disponibilidad (${subspec.minutes_available} Agen - ${subspec.scheduled_minutes} Cita)
                     <span class="li-check text-primary" data-day="${subspec.period}01" data-specialty_code="${spec.specialty_code}">
                       <i class="fa fa-calendar ml-2" aria-hidden="true" title="Consultar detalle especialidad"></i>
@@ -370,12 +370,12 @@
               $(element).prop( "disabled", true );
           }
       },
-  
+
       reset : function(element){
           $(element).html($(element).data('original-text'));
           $(element).prop( "disabled", false );
       }
-  
+
     }
   </script>
 @endsection
@@ -404,7 +404,7 @@
               </td>
               <td>
                   <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Consolidado disponibilidad agendas</h4>
-                  <span class='titulos'><?php echo date('Y-m-d h:m'); ?></span>
+                  <span class='titulos'>&nbsp;</span>
               </td>
           </tr>
         </table>
@@ -420,7 +420,7 @@
               </div>
               <div class="col-sm-2">
                 <div class="form-group">
-                  <label for="specialties"><i class="fa fa-modx mr-2" aria-hidden="true"></i>Especialidades</label> 
+                  <label for="specialties"><i class="fa fa-modx mr-2" aria-hidden="true"></i>Especialidades</label>
                   <a href="javascript:void(0)" id="btn-especiality" class="btn btn-block btn-outline-primary btn-sm"><i class="fa fa-plus-square-o mr-2" aria-hidden="true"></i>Seleccionar..</a>
                 </div>
               </div>
@@ -432,7 +432,7 @@
               </div>
               <div class="col-sm-2" style="display: none;">
                 <div class="form-group">
-                  <label for="cost_center_erp_id">&nbsp;</label> 
+                  <label for="cost_center_erp_id">&nbsp;</label>
                   <a href="javascript:void(0)" id="btn-refresh" class="btn btn-block btn-outline-secondary btn-sm"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>refrescar</a>
                 </div>
               </div>
@@ -575,7 +575,7 @@
                 </ul>
               </div>
             </div>
-          </div> 
+          </div>
         </div>
       </div>
     </div>

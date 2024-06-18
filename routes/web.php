@@ -70,10 +70,6 @@
         Route::post('pay-billing-incomes', 'BillingIncomeController@payBillingIncomes');
         Route::get('billing-incomes-print/{icm_liquidation_id}', 'BillingIncomeController@billingIncomesPrint');
 
-
-
-
-
         Route::resource('incomes','IncomeController');
         Route::get('incomes-dowload/{directory}','IncomeController@dowload')->name('downloadFiles');
 
@@ -91,6 +87,13 @@
         Route::post('datatable-affiliate-categories', 'AffiliateCategoryController@datatableAffiliateCategories');
 
         Route::resource('special-rates','SpecialRateController');
+
+        Route::resource('liquidations','liquidationController');
+        Route::post('datatable-liquidations','liquidationController@datatableLiquidations');
+
+
+
+
 
     });
 

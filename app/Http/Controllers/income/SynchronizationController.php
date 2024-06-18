@@ -48,8 +48,21 @@ class SynchronizationController extends Controller
             SynchronizationTask::dispatch($component);
         }
 
-
         \Log::info("Programada sincronización sistema POS {$component}");
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trabajo en cola programado con exito',
+            'data'    => []
+        ]);
+    }
+
+    public function tokenValidation(){
+        return response()->json([
+            'success' => true,
+            'message' => 'Token valido',
+            'data'    => []
+        ]);
     }
 
     /**

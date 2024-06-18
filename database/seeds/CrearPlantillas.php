@@ -15,18 +15,9 @@ class CrearPlantillas extends Seeder
     public function run()
     {
 
-        #Plantillas 
+        #Plantillas
         $procesos = [
-            [
-                'codigo' => 'send_new_token', 
-                'nombre' => 'Plantilla utilizada para notificar token usuario tiquetera electrónica'
-            ], [
-                'codigo' => 'notify_movement', 
-                'nombre' => 'Plantilla para notificar movimientos generados, abono, consumos, reversos etc'
-            ], [
-                'codigo' => 'send_account_statement', 
-                'nombre' => 'Plantilla para enviar el extracto de la cuenta del usuario'
-            ]                
+
         ];
 
 
@@ -39,6 +30,6 @@ class CrearPlantillas extends Seeder
                 Plantillas::create($proceso);
             }
         }
-       
+
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models\Income;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Clases\DataTable\SSP;
 
 class IcmLiquidation extends Model
 {
@@ -19,6 +20,7 @@ class IcmLiquidation extends Model
         /*'birthday_date',
         'gender', */
         'total',
+        'liquidation_date',
         'state',
         'icm_resolution_id',
         'billing_prefix',
@@ -26,6 +28,168 @@ class IcmLiquidation extends Model
         'user_created',
         'user_updated'
     ];
+
+    private $columnsdatatable = array(
+        array( 'db' => "il.id" , 'dt' => 0),
+        array( 'db' => "LPAD(il.id, 10, '0')" , 'dt' => 1),
+        array( 'db' => "il.liquidation_date" , 'dt' => 2),
+        array( 'db' => "CONCAT(IFNULL(ic.first_name, ''), ' ', IFNULL(ic.second_name, ''), ' ', IFNULL(ic.first_surname, ''), ' ', IFNULL(ic.second_surname, '') )" , 'dt' => 3),
+        array( 'db' => "ie.name" , 'dt' => 4),
+        array( 'db' => "il.state" , 'dt' => 5),
+        array( 'db' => "CONCAT(IFNULL(il.billing_prefix, ''), IFNULL(il.consecutive_billing, ''))" , 'dt' => 6),
+    );
+
+    public function getDataTable($param){
+
+        $asset = \DB::table('icm_liquidations AS il')
+        ->selectRaw("
+            il.id,
+            LPAD(il.id, 10, '0') AS number_liquidation,
+            il.liquidation_date,
+            CONCAT(IFNULL(ic.first_name, ''), ' ', IFNULL(ic.second_name, ''), ' ', IFNULL(ic.first_surname, ''), ' ', IFNULL(ic.second_surname, '') ) AS customer_name,
+            ie.name AS environment_name,
+            il.state,
+            CONCAT(IFNULL(il.billing_prefix, ''), IFNULL(il.consecutive_billing, '')) AS invoice,
+            '' as action
+        ")
+        ->join('icm_customers AS ic', 'ic.document_number', '=','il.document_number')
+        ->join('icm_environments AS ie', 'ie.id', '=','il.sales_icm_environment_id')
+        ->orderBy('il.id', 'ASC');
+
+
+        if(isset($param['extradata']['state'])){
+            $asset->where(['il.state' => $param['extradata']['state']]);
+        }
+
+        if(isset($param['extradata']['date_from']) && isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_from'], $param['extradata']['date_to']]);
+        }
+
+        if(isset($param['extradata']['date_from']) && !isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_from'], $param['extradata']['date_from']]);
+        }
+
+        if(!isset($param['extradata']['date_from']) && isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_to'], $param['extradata']['date_to']]);
+        }
+
+
+        $where = '';
+        $bindings = array();
+		$wheretable = SSP::filter( $_POST, $this->columnsdatatable, $bindings );
+
+        if($wheretable != ''){
+            $where = $wheretable;
+        }
+
+        if(!empty($where)){
+            $data = $asset->whereRaw($where)
+                ->offset($param['start'])
+                ->limit($param['length'])
+                ->get();
+        }else{
+            $data = $asset
+                ->offset($param['start'])
+                ->limit($param['length'])
+                ->get();
+        }
+
+        $datares = array();
+        $number = $param['start'] + 1 ;
+        foreach ($data as $key => $value) {
+            $value->number = $number;
+            $datares[] = $value;
+            $number++;
+        }
+
+        return $datares;
+
+    }
+
+    public function getCountDatatable($param) {
+
+        $asset = \DB::table('icm_liquidations AS il')
+        ->selectRaw("
+            il.id,
+            LPAD(il.id, 10, '0') AS number_liquidation,
+            il.liquidation_date,
+            CONCAT(IFNULL(ic.first_name, ''), ' ', IFNULL(ic.second_name, ''), ' ', IFNULL(ic.first_surname, ''), ' ', IFNULL(ic.second_surname, '') ) AS customer_name,
+            ie.name AS environment_name,
+            il.state,
+            CONCAT(IFNULL(il.billing_prefix, ''), IFNULL(il.consecutive_billing, '')) AS invoice
+            '' as action
+        ")
+        ->join('icm_customers AS ic', 'ic.document_number', '=','il.document_number')
+        ->join('icm_environments AS ie', 'ie.id', '=','il.sales_icm_environment_id')
+        ->orderBy('iac.name', 'ASC');
+
+        if(isset($param['extradata']['state'])){
+            $asset->where(['il.state' => $param['extradata']['state']]);
+        }
+
+        if(isset($param['extradata']['date_from']) && isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_from'], $param['extradata']['date_to']]);
+        }
+
+        if(isset($param['extradata']['date_from']) && !isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_from'], $param['extradata']['date_from']]);
+        }
+
+        if(!isset($param['extradata']['date_from']) && isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_to'], $param['extradata']['date_to']]);
+        }
+
+        $bindings = array();
+        $wheretable = SSP::filter( $_POST, $this->columnsdatatable, $bindings );
+
+        $where = '';
+        if($wheretable != ''){
+            $where = $wheretable;
+        }
+
+        if(!empty($where)){
+            $asset->whereRaw($where);
+        }
+
+        $datares['canfiltered'] = $asset->count();
+
+        # CANTIDAD TOTAL
+        $asset = \DB::table('icm_liquidations AS il')
+        ->selectRaw("
+            il.id,
+            LPAD(il.id, 10, '0') AS number_liquidation,
+            il.liquidation_date,
+            CONCAT(IFNULL(ic.first_name, ''), ' ', IFNULL(ic.second_name, ''), ' ', IFNULL(ic.first_surname, ''), ' ', IFNULL(ic.second_surname, '') ) AS customer_name,
+            ie.name AS environment_name,
+            il.state,
+            CONCAT(IFNULL(il.billing_prefix, ''), IFNULL(il.consecutive_billing, '')) AS invoice
+            '' as action
+        ")
+        ->join('icm_customers AS ic', 'ic.document_number', '=','il.document_number')
+        ->join('icm_environments AS ie', 'ie.id', '=','il.sales_icm_environment_id')
+        ->orderBy('iac.name', 'ASC');
+
+        if(isset($param['extradata']['state'])){
+            $asset->where(['il.state' => $param['extradata']['state']]);
+        }
+
+        if(isset($param['extradata']['date_from']) && isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_from'], $param['extradata']['date_to']]);
+        }
+
+        if(isset($param['extradata']['date_from']) && !isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_from'], $param['extradata']['date_from']]);
+        }
+
+        if(!isset($param['extradata']['date_from']) && isset($param['extradata']['date_to'])){
+            $asset->whereBetween('il.liquidation_date', [$param['extradata']['date_to'], $param['extradata']['date_to']]);
+        }
+
+        $datares['cantotal'] = $asset->count();
+
+        return $datares;
+
+    }
 
     public static function getDetailsServices($icm_liquidacion_id){
         $querySQL = "SELECT
@@ -61,5 +225,11 @@ class IcmLiquidation extends Model
     public function icm_customer(){
         return $this->belongsTo('App\Models\Income\IcmCustomer', 'document_number', 'document_number');
     }
+
+
+
+
+
+
 
 }

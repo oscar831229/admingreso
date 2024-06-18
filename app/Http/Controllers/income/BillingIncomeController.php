@@ -282,6 +282,7 @@ class BillingIncomeController extends Controller
 
             # UUID identificación unica para facturación.
             $uuid = Uuid::uuid4()->toString();
+            $liquidation_date = getSystemDate();
 
             $icmliquidation = IcmLiquidation::create([
                 'uuid'                     => $uuid,
@@ -296,6 +297,7 @@ class BillingIncomeController extends Controller
                 'birthday_date'            => $client_liquidation['birthday_date'],
                 'gender'                   => $client_liquidation['gender'],
                 'total'                    => 0,
+                'liquidation_date'         => $liquidation_date,
                 'state'                    => 'P',
                 'user_created'             => $user_id
             ]);
@@ -387,6 +389,7 @@ class BillingIncomeController extends Controller
                     'icm_environment_id'               => $income_item->icm_environment_id,  // PENDIENTE
                     'icm_environment_icm_menu_item_id' => $icm_environment_icm_menu_item_id,
                     'number_places'                    => $income_item->number_places,
+                    'icm_rate_type_id'                 => $valorservicio[0]['icm_rate_type_id'],
                     'applied_rate_code'                => $valorservicio[0]['code'],
                     'base'                             => $discriminated_value->base,
                     'percentage_iva'                   => $icm_menu_items->percentage_iva,
@@ -855,13 +858,13 @@ class BillingIncomeController extends Controller
             INNER JOIN (
                 SELECT
                     il.id,
-                    SUM(ils.base) AS base,
-                    SUM(ils.iva) AS iva,
-                    SUM(ils.impoconsumo) AS impoconsumo,
-                    SUM(ils.total) AS total,
-                    SUM(ils.subsidy) AS total_subsidy
+                    SUM(IFNULL(ils.base, 0)) AS base,
+                    SUM(IFNULL(ils.iva, 0)) AS iva,
+                    SUM(IFNULL(ils.impoconsumo, 0)) AS impoconsumo,
+                    SUM(IFNULL(ils.total, 0)) AS total,
+                    SUM(IFNULL(ils.subsidy, 0)) AS total_subsidy
                 FROM `icm_liquidations` AS il
-                INNER JOIN `icm_liquidation_services` AS ils ON ils.icm_liquidation_id = il.id
+                LEFT JOIN `icm_liquidation_services` AS ils ON ils.icm_liquidation_id = il.id
                 WHERE il.id = ?
                 GROUP BY il.id
             ) AS subconsulta ON subconsulta.id = icm_liquidations.id
