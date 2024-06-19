@@ -41,6 +41,11 @@
         # PLANTILLAS
         Route::resource('plantillas','PlantillasController');
 
+        Route::resource('system-configuration','SystemConfigurationController');
+        Route::post('datatable-configuration','SystemConfigurationController@datatableConfiguration');
+
+
+
     });
 
     Route::group(['middleware' => ['auth'],'prefix' => 'income', 'namespace' => 'income'], function() {

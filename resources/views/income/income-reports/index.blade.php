@@ -20,10 +20,10 @@
     }
     .text-u {
       text-transform: uppercase !important;
-    } 
+    }
     .text-l {
       text-transform: lowercase !important;
-    } 
+    }
   </style>
 @endsection
 
@@ -34,9 +34,9 @@
     <script src="{{ asset('theme/lib/datatables-plugins/Buttons-1.4.2/js/buttons.colVis.min.js') }}"></script>
     <script src="{{ asset('theme/lib/datatables-plugins/Buttons-1.4.2/js/jszip.min.js') }}"></script>
     <script src="{{ asset('theme/lib/datatables-plugins/Buttons-1.4.2/js/buttons.html5.min.js') }}"></script>
-    <script src= "{{ asset('js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script> 
-    <script src= "{{ asset('js/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js') }}"></script> 
-    <script src="{{ asset('js/portal/wallet/wallet-reports/index.js') }}"></script>
+    <script src= "{{ asset('js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src= "{{ asset('js/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js') }}"></script>
+    <script src="{{ asset('js/portal/income/income-reports/index.js') }}"></script>
 @endsection
 
 
@@ -85,7 +85,7 @@
                       <td class="text-center">
                         <a href="javascript:void(0)" class="btn-accion-tabla tooltipsC view-form-report" title="" data-original-title="Generar reporte" data-code="{{ $report->code }}">
                           <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                        </a>  
+                        </a>
                       </td>
                     </tr>
                   @endforeach

@@ -14,23 +14,17 @@ class reportManagementSeeder extends Seeder
      */
     public function run()
     {
-        
+
 
         $reports = [
             [
-                'module'=>'electronic-wallet-module',
-                'code'=>'electronic-wallet-transactions',
-                'description'=>'Reportes transacciones tiquetera electrónica'
-            ],
-            [
-                'module'=>'electronic-wallet-module',
-                'code'=>'balance-report-wallet-users',
-                'description'=>'Reportes saldos usuario tiquetera'
-            ],
-            [
-                'module'=>'electronic-wallet-module',
-                'code'=>'ticket-office-report',
-                'description'=>'Reportes estados tiquetera'
+                'module'=>'headquarters-entrance',
+                'code'=>'report-liquidations',
+                'description'=>'Reportes de liquidaciones'
+            ],[
+                'module'=>'headquarters-entrance',
+                'code'=>'report-liquidation-details',
+                'description'=>'Reportes detalle de liquidaciones'
             ]
         ];
 

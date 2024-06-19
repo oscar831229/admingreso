@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\Admin\IcmSystemConfiguration;
 
 class AmadeusPosApiService
 {
@@ -14,7 +15,11 @@ class AmadeusPosApiService
 
     public function __construct()
     {
-        $this->baseUrl = env('AMADEUS_POS_API_BASE_URL');
+        $configuracion = IcmSystemConfiguration::first();
+        if(!$configuracion)
+            throw new Exception("Error no se ha parametrizado la url del POS BAMBOO", 1);
+
+        $this->baseUrl = $configuracion->url_pos_system;
     }
 
     public function setHeader($header){

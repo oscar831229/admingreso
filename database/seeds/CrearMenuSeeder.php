@@ -36,6 +36,7 @@ class CrearMenuSeeder extends Seeder
             array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Liquidaciones'              , 'url' => 'income/liquidations'               , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '19' , 'menu_id'  => '16' , 'nombre' => 'Reportes'                   , 'url' => 'income/income-reports'               , 'orden' => '19' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             // array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'            , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '20'  , 'menu_id'  => '1' , 'nombre' => 'Configuración sistema'      , 'url' => 'Admin/system-configuration'                    , 'orden' => '15'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
         ];
 
         foreach ($menus as $key => $menu) {

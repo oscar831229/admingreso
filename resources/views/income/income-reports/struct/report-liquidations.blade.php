@@ -4,7 +4,7 @@
 @section('content')
     @php
         $stylecab = "text-align:center; font-weight: bold;font-size: 14px; vertical-align: middle; color:#f7fafc;";
-        $stylebgp = "background-color: #80bf60;";    
+        $stylebgp = "background-color: #80bf60;";
         $stylebgc = "background-color: #f3bb6b;";
         $stylebge = "background-color: #75a7d2;";
     @endphp
@@ -12,7 +12,7 @@
     <thead>
     		<tr>
         		<td colspan="8" style="text-align:center; font-weight: bold;font-size: 15px; height: 20px; vertical-align: middle;">
-        			REPORTE DE TICKETS TIQUETERA ELECTRONICA
+        			REPORTE LIQUIDACIONES FACTURADAS INGRESOS A SEDE
         		</td>
         	</tr>
             <tr>
@@ -25,14 +25,14 @@
     <tbody>
         <tr>
             @foreach ($columns as $index => $column)
-                <td>{{ $column }}</td>   
+                <td>{{ $column }}</td>
             @endforeach
         </tr>
         @foreach ($data as $key => $row)
-        <tr>  
+        <tr>
             @foreach ($row as $column)
-                <td>{{ strip_tags($column)  }}</td>  
-            @endforeach  
+                <td>{{ strip_tags($column)  }}</td>
+            @endforeach
         </tr>
 		@endforeach
 	</table>

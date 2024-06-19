@@ -22,78 +22,41 @@ class IncomeReportController extends Controller
     {
         $module_name = 'Reportes módulo ingreso a sedes';
         $reports = [];
-        foreach (ReportManagement::where(['state'=>'A', 'module'=>'electronic-wallet-module'])->get() as $key => $report) {
+        foreach (ReportManagement::where(['state'=>'A', 'module'=>'headquarters-entrance'])->get() as $key => $report) {
             if(auth()->user()->can($report->code)){
                 $reports[] = $report;
             }
         }
 
-        return view('wallet.wallet-reports.index', compact('module_name','reports'));
+        return view('income.income-reports.index', compact('module_name','reports'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function show($code)
     {
-        //
+
+        # OBTENER CLASE PRINCIPAL
+        $request = request();
+        $request->merge(array( 'report' => $code) );
+
+        // RETURN VIEW FORM REPORT
+        $classreport = new MaestroReport($request);
+        return $classreport->view();
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        # OBTENER CLASE PRINCIPAL
+        $classreport = new MaestroReport($request);
+
+        # GENERAR REPORTE EXCEL
+        $report = new DriverReport;
+        $report->setData($classreport->getData());
+        $report->setColumns($classreport->getColumns());
+        $report->setReport($classreport->getEstructView());
+
+        return \Excel::download($report, $classreport->getFileName());
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
