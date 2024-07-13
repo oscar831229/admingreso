@@ -63,20 +63,24 @@ class CreateAdminUserSeeder extends Seeder
             $user->active   = 1;
             $user->save();
 
+            Artisan::call('passport:install');
+
+            // Revocar todos los tokens de acceso existentes del usuario
+            $user->tokens()->delete();
+
+            // Crear un nuevo token de acceso
+            $token = $user->createToken('Tokenintegracion', ['*'])->accessToken;
+            \Log::info("Token usurio {$user->name} : {$token}");
+
+            # Permisos usuario de sincronización
+            $role->syncPermissions([]);
+            $permissions = Permission::whereIn('name',['dictionary-synchronization', 'rate-synchronization'])->get()->pluck('id','id');
+            $role->syncPermissions($permissions);
+            $user->assignRole([$role->id]);
+
         }
 
-        // Revocar todos los tokens de acceso existentes del usuario
-        $user->tokens()->delete();
 
-        // Crear un nuevo token de acceso
-        $token = $user->createToken('Tokenintegracion', ['*'])->accessToken;
-        \Log::info("Token usurio {$user->name} : {$token}");
-
-        # Permisos usuario de sincronización
-        $role->syncPermissions([]);
-        $permissions = Permission::whereIn('name',['dictionary-synchronization', 'rate-synchronization'])->get()->pluck('id','id');
-        $role->syncPermissions($permissions);
-        $user->assignRole([$role->id]);
 
     }
 }

@@ -1,75 +1,86 @@
 @extends('layouts.belectronica.principal')
 
 @section('css_custom')
+
     <link href="{{ asset('css/portal/style-datetable.css') }}" rel="stylesheet">
     <link href="{{ asset('theme/lib/datatables/jquery.dataTables.css') }}" rel="stylesheet">
     <link href="{{ asset('js/plugins/bootstrap-select/bootstrap-select.css') }}" rel="stylesheet">
-  <style>
-    /*
-    Full screen Modal
-    */
-    .modal-dialog {
-      max-width: 10000px;
-    }
+    <link rel="stylesheet" type="text/css" href="{{ asset('js/plugins/jquery-tree/css/jquery.tree.css') }}"/>
+    <link href="{{ asset('js/plugins/jquery.autocomplete/css/autocomplete.css') }}" rel="stylesheet">
+    <style>
+      /*
+      Full screen Modal
+      */
+      .modal-dialog {
+        max-width: 10000px;
+      }
 
-    .fullscreen-modal .modal-dialog {
-      margin: 0;
-      margin-right: auto;
-      margin-left: auto;
-      width: 100%;
-    }
-    @media (min-width: 768px) {
       .fullscreen-modal .modal-dialog {
-        width: 750px;
+        margin: 0;
+        margin-right: auto;
+        margin-left: auto;
+        width: 100%;
       }
-    }
-    @media (min-width: 992px) {
-      .fullscreen-modal .modal-dialog {
-        width: 970px;
+      @media (min-width: 768px) {
+        .fullscreen-modal .modal-dialog {
+          width: 750px;
+        }
       }
-    }
-    @media (min-width: 1200px) {
-      .fullscreen-modal .modal-dialog {
-        width: 1170px;
+      @media (min-width: 992px) {
+        .fullscreen-modal .modal-dialog {
+          width: 970px;
+        }
       }
-    }
-  </style>
-  <style>
-    #morecsspure-trigger-toggle { cursor: pointer; }
-    #morecsspure-element-toggle { display:none; }
-    #morecsspure-element-toggle:not(:checked) ~ #morecsspure-toggled-element { display:none; }
-    #morecsspure-element-toggle:not(:checked) ~ #morecsspure-trigger-toggle .morecsspure-lesslink { display:none; }
-    #morecsspure-element-toggle:checked ~ #morecsspure-abstract { display:none; }
-    #morecsspure-element-toggle:checked ~ #morecsspure-trigger-toggle .morecsspure-morelink { display:none; }
-    #morecsspure .morecsspure-morelink, #morecsspure .morecsspure-lesslink { display: block; cursor: pointer; color:#2196f3; }
-    #morecsspure .morecsspure-morelink:hover, #morecsspure .morecsspure-lesslink:hover { text-decoration:underline; }
-  </style>
+      @media (min-width: 1200px) {
+        .fullscreen-modal .modal-dialog {
+          width: 1170px;
+        }
+      }
+    </style>
+    <style>
+      #morecsspure-trigger-toggle { cursor: pointer; }
+      #morecsspure-element-toggle { display:none; }
+      #morecsspure-element-toggle:not(:checked) ~ #morecsspure-toggled-element { display:none; }
+      #morecsspure-element-toggle:not(:checked) ~ #morecsspure-trigger-toggle .morecsspure-lesslink { display:none; }
+      #morecsspure-element-toggle:checked ~ #morecsspure-abstract { display:none; }
+      #morecsspure-element-toggle:checked ~ #morecsspure-trigger-toggle .morecsspure-morelink { display:none; }
+      #morecsspure .morecsspure-morelink, #morecsspure .morecsspure-lesslink { display: block; cursor: pointer; color:#2196f3; }
+      #morecsspure .morecsspure-morelink:hover, #morecsspure .morecsspure-lesslink:hover { text-decoration:underline; }
+    </style>
 
-  <style>
-    .table td {
-      padding: 0.25rem !important;
-    }
-    .table {
-      font-size: 11px;
-    }
-    .font-head {
-      font-weight: 700;
-      font-size: 12px;
-      text-transform: uppercase;
-      color: #343a40;
-      letter-spacing: 0.5px;
-    }
-    .text-u {
-      text-transform: uppercase !important;
-    }
-    .text-l {
-      text-transform: lowercase !important;
-    }
-    .form-control {
-        color: #010101 !important;
-    }
-  </style>
-  <link href="{{ asset('js/plugins/jquery.autocomplete/css/autocomplete.css') }}" rel="stylesheet">
+    <style>
+      .table td {
+        padding: 0.25rem !important;
+      }
+      .table th{
+        padding: 0.25rem !important;
+      }
+      .table {
+        font-size: 11px;
+      }
+      .font-head {
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #343a40;
+        letter-spacing: 0.5px;
+      }
+      .text-u {
+        text-transform: uppercase !important;
+      }
+      .text-l {
+        text-transform: lowercase !important;
+      }
+      .form-control {
+          color: #010101 !important;
+      }
+
+      .daredevel-tree li span.daredevel-tree-label {
+        cursor: default;
+        z-index: 1;
+        font-size: 10px;
+      }
+    </style>
 @endsection
 
 @section('scripts_content')
@@ -78,7 +89,18 @@
     <script src="{{ asset('theme/lib/datatables/jquery.dataTables.js') }}"></script>
     <script src="{{ asset('theme/lib/datatables-responsive/dataTables.responsive.js') }}"></script>
     <script src= "{{ asset('js/plugins/jquery.autocomplete/js/jquery.autocomplete.min.js') }}"></script>
+
+    <!-- jquery.tree.js -->
+    <script type="text/javascript" src="{{ asset('js/plugins/jquery-tree/js/jquery.tree.js') }}"></script>
+
     <script src="{{ asset('js/portal/income/parameterization-agreements/index.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example-0 div').tree({
+            });
+        });
+    </script>
+
 @endsection
 
 
@@ -232,16 +254,28 @@
                                 </div>
                             </div>
 
-                            <hr class="mt-4">
-                            <h6><i class="fa fa-money text-primary" aria-hidden="true"></i> SERVICIOS Y TARIFAS CONVENIOS</h6>
-                            <form id="form-income-item-rate">
-                            <table class="table table-bordered" id="tbl-income-items" style="width: 100% !important;">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                            </form>
+                            <div class="row">
+                              <div class="col-sm-3">
+                                <h6><i class="fa fa-check-circle-o text-primary" aria-hidden="true"></i> Aplicar convenio en:</h6>
+                                <div id="example-0">
+                                  <div>
+                                    {!! getIncomeCategoryHtml() !!}
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-sm-9">
+                                <h6><i class="fa fa-money text-primary" aria-hidden="true"></i> Servicios y tarifas convenio</h6>
+                                <form id="form-income-item-rate">
+                                <table class="table table-bordered" id="tbl-income-items" style="width: 100% !important;">
+                                    <thead>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                </form>
+                              </div>
+                            </div>
+
                         </div><!-- form-layout -->
                     </div>
                 </div>

@@ -43,6 +43,8 @@ invoice = {
 
     family_group : [],
 
+    company_agreements : [],
+
     initServices : function(environment){
         this.environment = environment;
         this.loadIncomeServices();
@@ -175,6 +177,8 @@ invoice = {
                         if(response.grupo_afilaido.length > 0){
                             invoice.family_group = response.grupo_afilaido;
                             invoice.seeFamilyGroup(response.grupo_afilaido, document_number);
+                            invoice.company_agreements = response.agreements
+                            invoice.loadAgreements();
                         }else if(response.client){
                             loadDataForm('form-billing-incomes', response.client);
                             $('#form-billing-incomes').validate().resetForm();
@@ -197,6 +201,32 @@ invoice = {
                 type: 'GET'
             });
         }
+    },
+
+    loadAgreements : function(){
+
+        var tr = '';
+        var number = 1;
+        $('#tbl-company-agreements tbody').empty();
+        $.each(invoice.company_agreements, function(index, value){
+
+            tr += `<tr>
+                <td class=" ">${number}</td>
+                <td class=" ">${value.code}</td>
+                <td class=" ">${value.name}</td>
+                <td class=" ">${value.date_from}</td>
+                <td class=" ">${value.date_to}</td>
+                <td class=" ">
+                    <input type="checkbox" class="check-agreements" data-index='${index}'>
+                    <a href="javaScript:void(0)" class="ml-2" data-icm_agreement_id="${value.id}" id="edit-agreement" title="Consultar información convenio"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                </td>
+                </td>
+            </tr>`;
+            number++;
+        });
+
+        $('#tbl-company-agreements tbody').html(tr);
+
     },
 
     disableFields : function(disabled = true, parent = 'body'){
@@ -344,6 +374,13 @@ invoice = {
                 a[z.name] = z.value;
                 return a;
             }, {});
+
+        client.icm_agreements = [];
+        if($('#form-billing-incomes').find('#icm_agreement_id').val() != ''){
+            client.icm_agreements.push({
+                icm_agreement_id : $('#form-billing-incomes').find('#icm_agreement_id').val()
+            });
+        }
         service.clients.push(client);
 
         swal({
@@ -486,7 +523,7 @@ invoice = {
 
                     });
                     $('#tbl-details tbody').html(tr);
-                    invoice.loadTablePeople();
+                    // invoice.loadTablePeople();
                     invoice.getPeopleService();
                 }
             },
@@ -635,14 +672,30 @@ invoice = {
         service.icm_liquidation_id = invoice.icm_liquidation_id;
         service._token = $('input[name=_token]').val();
         service.clients = [];
+
         $('input.check-affiliate[type="checkbox"]:checked').each(function(key, element){
-            var index = $(element).data('index');
-            affiliate = invoice.family_group[index];
-            affiliate.icm_companies_agreement_id = $('#icm_companies_agreement_affiliate_id').val();
+
+            var index                              = $(element).data('index');
+            affiliate                              = invoice.family_group[index];
+
+            // Cargar convenios seleccionados
+            affiliate.icm_agreements = [];
+            $('.check-agreements:checked').each(function(key, checkbox){
+                var index     = $(checkbox).data('index');
+                var agreement = invoice.company_agreements[index];
+                affiliate.icm_agreements.push({
+                    icm_agreement_id             : agreement.id,
+                });
+            });
+
+            /*affiliate.icm_companies_agreement_id   = $('#icm_companies_agreement_affiliate_id').val();
             affiliate.icm_companies_agreement_name = $('#icm_companies_agreement_affiliate_name').val();
-            affiliate.icm_agreement_id = $('#icm_agreement_affiliate_id').val();
+            affiliate.icm_agreement_id             = $('#icm_agreement_affiliate_id').val();*/
             service.clients.push(affiliate);
+
         });
+
+        service.family_group = invoice.family_group;
 
         swal({
             title: 'Ingreso a sedes',
@@ -1533,10 +1586,10 @@ services = {
         // head
         var head = ` <tr>
             <th class="text-left" style="width:5%">#</th>
-            <th class="text-left" style="width:15%">SUCURSAL O SEDE</th>
-            <th class="text-left" style="width:50%">SERVICIO INGRESO</th>`;
+            <th class="text-left" style="width:10%">Ambiente</th>
+            <th class="text-left" style="width:50%">Servicio ingreso</th>`;
         $.each(incomeservices.rate_types, function(index, rate_type){
-            head += `<th class="text-center" style="width:10%">${rate_type.name}</th>`;
+            head += `<th class="text-center" style="width:15%">${rate_type.name}</th>`;
         });
         head += `</tr>`
         $('#tbl-income-items thead').html(head);

@@ -104,7 +104,9 @@
 
         <!-- Scripts generales -->
         <!-- jQuery -->
-        <script src="{{ asset('Gentelella/vendor/jquery/dist/jquery.min.js') }}"></script>
+        {{--  <script src="{{ asset('Gentelella/vendor/jquery/dist/jquery.min.js') }}"></script>  --}}
+        <script src="{{ asset('theme/lib/jquery/jquery.js') }}"></script>
+        <script src="{{ asset('theme/lib/jquery-ui/jquery-ui.js') }}"></script>
         <!-- Bootstrap -->
         <script src="{{ asset('Gentelella/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
         <!-- FastClick -->
@@ -162,6 +164,7 @@
         @yield("scriptsPlugins")
 
         @yield('scripts_content')
+
 
     </body>
 </html>

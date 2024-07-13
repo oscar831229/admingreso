@@ -54,6 +54,7 @@ class IcmLiquidation extends Model
         ")
         ->join('icm_customers AS ic', 'ic.document_number', '=','il.document_number')
         ->join('icm_environments AS ie', 'ie.id', '=','il.sales_icm_environment_id')
+        ->where(['is_deleted' => 0])
         ->orderBy('il.id', 'ASC');
 
 
@@ -121,6 +122,7 @@ class IcmLiquidation extends Model
         ")
         ->join('icm_customers AS ic', 'ic.document_number', '=','il.document_number')
         ->join('icm_environments AS ie', 'ie.id', '=','il.sales_icm_environment_id')
+        ->where(['is_deleted' => 0])
         ->orderBy('iac.name', 'ASC');
 
         if(isset($param['extradata']['state'])){
@@ -167,6 +169,7 @@ class IcmLiquidation extends Model
         ")
         ->join('icm_customers AS ic', 'ic.document_number', '=','il.document_number')
         ->join('icm_environments AS ie', 'ie.id', '=','il.sales_icm_environment_id')
+        ->where(['is_deleted' => 0])
         ->orderBy('iac.name', 'ASC');
 
         if(isset($param['extradata']['state'])){
@@ -208,7 +211,7 @@ class IcmLiquidation extends Model
             INNER JOIN icm_income_items AS ieii ON ieii.id = ils.icm_income_item_id
             INNER JOIN icm_environment_icm_menu_items AS ieimi ON ieimi.id = ils.icm_environment_icm_menu_item_id
             INNER JOIN icm_menu_items AS imi ON imi.id = ieimi.icm_menu_item_id
-            WHERE ils.icm_liquidation_id = ? ";
+            WHERE ils.icm_liquidation_id = ? AND ils.is_deleted = 0";
 
         return \DB::select($querySQL, [$icm_liquidacion_id]);
 

@@ -45,10 +45,11 @@ typerates = {
             initComplete : function(settings, json){
             },
             createdRow: function (row, data, index) {
-                var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-edit-form-typerates" title="Editar entidad"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>'
-                $('td', row).eq(5).html(btnaction).addClass('dt-center');
+                //var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-edit-form-typerates" title="Editar entidad"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>'
+                var btnaction = '';
+                $('td', row).eq(6).html(btnaction).addClass('dt-center');
                 $('td', row).eq(0).html(data[6]).addClass('dt-center');
-                $('td', row).eq(4).html(setLabelState(data[4])).addClass('dt-center');
+                $('td', row).eq(5).html(setLabelState(data[4])).addClass('dt-center');
             }
         });
 
@@ -146,7 +147,7 @@ typerates = {
     edittyperates : function(){
 
         let typerates_id = $(this).data('id');
-        var btnedit =$(this);
+        var btnedit = $(this);
         var element = $(this);
         btn.loading(element);
 

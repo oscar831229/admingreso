@@ -28,7 +28,8 @@
         "ramsey/uuid": "^4.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^3.11",
-        "webpatser/laravel-uuid": "^4.0"
+        "webpatser/laravel-uuid": "^4.0",
+        "yajra/laravel-oci8": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Amadeus\Datos;
+use App\Models\Amadeus\DatosHotel;
 use App\Models\Amadeus\Menu;
 use App\Models\Amadeus\MenuItem;
 use App\Models\Amadeus\SalonMenuItem;
@@ -20,10 +21,15 @@ use App\Models\Income\IcmPaymentMethod;
 use App\Models\Income\CommonCity;
 use App\Models\Income\IcmResolution;
 use App\Models\Income\IcmCustomer;
+use App\Models\Admin\IcmSystemConfiguration;
 
 use Carbon\Carbon;
 use App\Models\Income\IcmRateType;
 use App\Models\Income\IcmSpecialRate;
+use App\Models\Income\IcmTypesIncome;
+
+use Illuminate\Support\Facades\DB;
+use App\Jobs\ExecuteCoverage;
 
 
 if (!function_exists('synchronizePOSSystem')) {
@@ -402,6 +408,89 @@ if (!function_exists('obtenerTemporadaNameDate')) {
             return $tempodada_alta;
         }
 
+
+    }
+}
+
+
+if (!function_exists('getIncomeCategoryHtml')) {
+    function getIncomeCategoryHtml()
+    {
+        $types_of_incomes = IcmTypesIncome::where(['code' => 'AFI'])->orderBy('order', 'asc')->get();
+        $html_item = '<ul>';
+        foreach ($types_of_incomes as $types_of_income) {
+            $name_type_income = ucwords($types_of_income['name']);
+            $html_item .= "<li><input type='checkbox'><span>&nbsp;&nbsp;{$name_type_income}</span>";
+            $categories  = $types_of_income->icm_affiliate_categories()->orderBy('code', 'asc')->get();
+            foreach ($categories as $category) {
+                $html_item .= "    <ul>";
+                $html_item .= "        <li><input type='checkbox' class='capture' data-type_income_id='{$types_of_income['id']}' data-category_id='{$category['id']}'><span>&nbsp;&nbsp;{$category['name']}</span>";
+                $html_item .= "        </li>";
+                $html_item .= "    </ul>";
+            }
+            $html_item .= "</li>";
+        }
+        return $html_item.'</ul>';
+
+    }
+}
+
+if (!function_exists('validateClosure')) {
+    function validateClosure()
+    {
+        # Obtener informacion del hotel
+        $hotel = DatosHotel::first();
+
+        # Obtener informacion del pos
+        $pos   = Datos::first();
+
+        if($hotel->fecha != $pos->fecha){
+            return [
+                'success' => false,
+                'message' => "No estan sincronizadas las fecha de sistema HOTEL({$hotel->fecha}) Y POS({$pos->fecha})"
+            ];
+        }
+
+        $system = IcmSystemConfiguration::first();
+
+        if(empty($system->system_date) || (!empty($system->system_date) && $system->system_date < $pos->fecha) ){
+
+            try {
+
+                $coverage_date = $system->system_date;
+
+                DB::beginTransaction();
+
+                # Cancelar liquidaciones
+                $affected = DB::update('UPDATE icm_liquidations SET is_deleted = 1 WHERE liquidation_date < ?', [$pos->fecha]);
+
+                # Actualizar fecha sistema
+                $system->system_date = $pos->fecha;
+                $system->update();
+
+                // Ejecutar covertura en segundo plano
+                ExecuteCoverage::dispatch($coverage_date);
+
+                DB::commit();
+
+                Session::forget('fecha_pos');
+                getSystemDate();
+
+            } catch (\Exception $e) {
+                DB::rollback();
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+
+
+        }
+
+        return [
+            'success' => true,
+            'message' => ''
+        ];
 
     }
 }

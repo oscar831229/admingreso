@@ -198,7 +198,7 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                     {!! Form::label('number_places','Número cupos <span class="text-danger">*</span>',[],false) !!}
-                                    {!! Form::text('number_places', null, array('placeholder' => 'Número cupos','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    {!! Form::text('number_places', null, array('placeholder' => 'Número cupos','class' => 'form-control form-control-sm numeric','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -219,7 +219,19 @@
                                         {!! Form::select('state',['A'=>'Activo', 'I' => 'Inactivo'],null, array('class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        {!! Form::label('code_seac','Código SEAC cobertura <span class="text-danger">*</span>', [], false) !!}
+                                        {!! Form::text('code_seac', null, array('placeholder' => 'Coódigo SEAC','class' => 'form-control form-control-sm numeric','required' => 'required', 'style' => 'height: 25px;', 'maxlength' => 12)) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        {!! Form::label('icm_type_subsidy_id','Tipo subsidio <span class="text-danger">*</span>', [], false) !!}
+                                        {!! Form::select('icm_type_subsidy_id',$subsidies,null, array('class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
                                     <div class="form-group">
                                         {!! Form::label('observations','Observaciones', [], false) !!}
                                         {!! Form::textarea('observations', null, ['class'=>'form-control','rows' => '2']) !!}

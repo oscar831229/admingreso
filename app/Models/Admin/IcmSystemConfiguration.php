@@ -9,7 +9,16 @@ use App\Clases\DataTable\SSP;
 class IcmSystemConfiguration extends Model
 {
 
-    protected $fillable = ['url_pos_system', 'pos_system_token', 'state', 'user_created', 'user_updated'];
+    protected $fillable = [
+        'url_pos_system',
+        'pos_system_token',
+        'state',
+        'user_created',
+        'user_updated',
+        'policy_enabled',
+        'infrastructure_code',
+        'system_names'
+    ];
 
     private $columnsdatatable = array(
         array( 'db' => 'isc.id' , 'dt' => 0),
@@ -22,6 +31,7 @@ class IcmSystemConfiguration extends Model
         ->selectRaw("
             isc.id,
             isc.url_pos_system,
+            isc.policy_enabled,
             '' as action
         ")
         ->join('users AS u', 'u.id', '=','isc.user_created')

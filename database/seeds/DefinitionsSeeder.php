@@ -11,6 +11,9 @@ use App\Models\Income\IcmRateType;
 use App\Models\Income\IcmFamilyCompensationFund;
 use App\Models\Income\IcmTypesIncome;
 
+use App\Models\Amadeus\Room;
+use App\Models\Income\IcmEnvironment;
+
 class DefinitionsSeeder extends Seeder
 {
     /**
@@ -29,14 +32,14 @@ class DefinitionsSeeder extends Seeder
                 'name' => 'Tipos de documento de identificación',
                 'details' => 'Tipos de documento de identificación',
                 'detaildefinitions' => [
-                    ['code' => '13', 'name' => 'CEDULA CIUDADANIA', 'details' => 'CEDULA CIUDADANIA'],
-                    ['code' => '22', 'name' => 'CEDULA EXTRANJERIA', 'details' => 'CEDULA EXTRANJERIA'],
-                    ['code' => '21', 'name' => 'TARJETA EXTRANJERIA', 'details' => 'TARJETA EXTRANJERIA'],
-                    ['code' => '12', 'name' => 'TARJETA IDENTIDAD', 'details' => 'TARJETA IDENTIDAD'],
-                    ['code' => '41', 'name' => 'PASAPORTE', 'details' => 'PASAPORTE'],
-                    ['code' => '11', 'name' => 'REGISTRO CIVIL', 'details' => 'REGISTRO CIVIL'],
-                    ['code' => '31', 'name' => 'NIT', 'details' => 'NIT'],
-                    ['code' => '91', 'name' => 'NUIP', 'details' => 'NUIP']
+                    ['code' => '13', 'alternative_code' => 'CC', 'name' => 'CEDULA CIUDADANIA', 'details' => 'CEDULA CIUDADANIA'],
+                    ['code' => '22', 'alternative_code' => 'CE', 'name' => 'CEDULA EXTRANJERIA', 'details' => 'CEDULA EXTRANJERIA'],
+                    ['code' => '21', 'alternative_code' => '',   'name' => 'TARJETA EXTRANJERIA', 'details' => 'TARJETA EXTRANJERIA'],
+                    ['code' => '12', 'alternative_code' => 'TI', 'name' => 'TARJETA IDENTIDAD', 'details' => 'TARJETA IDENTIDAD'],
+                    ['code' => '41', 'alternative_code' => 'PA', 'name' => 'PASAPORTE', 'details' => 'PASAPORTE'],
+                    ['code' => '11', 'alternative_code' => 'RC', 'name' => 'REGISTRO CIVIL', 'details' => 'REGISTRO CIVIL'],
+                    ['code' => '31', 'alternative_code' => 'NI', 'name' => 'NIT', 'details' => 'NIT'],
+                    ['code' => '91', 'alternative_code' => 'NU', 'name' => 'NUIP', 'details' => 'NUIP']
                 ]
                 ], [
                     'code' => 'gender',
@@ -62,7 +65,17 @@ class DefinitionsSeeder extends Seeder
                 $detailexist = DetailDefinition::where(['code' => $detaildefinition['code'], 'definition_id' => $definition->id])->first();;
 
                 if(!$detailexist){
-                    DetailDefinition::create(['code' => $detaildefinition['code'], 'name' => $detaildefinition['name'], 'details' => $detaildefinition['details'], 'definition_id' => $definition->id, 'user_created' => $user->id]);
+
+                    $alternative_code = isset($detaildefinition['alternative_code']) ? $detaildefinition['alternative_code'] : NULL;
+
+                    DetailDefinition::create([
+                        'code'             => $detaildefinition['code'],
+                        'name'             => $detaildefinition['name'],
+                        'details'          => $detaildefinition['details'],
+                        'definition_id'    => $definition->id,
+                        'user_created'     => $user->id,
+                        'alternative_code' => $alternative_code
+                    ]);
                 }
 
             }
@@ -308,6 +321,28 @@ class DefinitionsSeeder extends Seeder
 
         }
 
+
+
+        $rooms = Room::all();
+        foreach ($rooms as $key => $room) {
+            $environment = IcmEnvironment::find($room->id);
+            if(!$environment){
+                $envinroment = new IcmEnvironment;
+                $envinroment->id = $room->id;
+                $envinroment->name = $room->nombre;
+                $envinroment->state = $room->estado;
+                $envinroment->user_created = 1;
+                $envinroment->save();
+            }else{
+                $environment->update([
+                    'name' => $room->nombre,
+                    'state' => $room->estado
+                ]);
+            }
+
+        }
+
+        synchronizePOSSystem('all');
 
     }
 }

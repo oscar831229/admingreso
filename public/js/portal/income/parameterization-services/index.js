@@ -239,8 +239,18 @@ services = {
     confirmSaveIncomeItem : function(){
 
         if(!$('#form-environment-income-items').valid()){
-            Biblioteca.notificaciones('Existen datos pendientes de diligenciar.', 'Comercios aliados', 'warning');
+            Biblioteca.notificaciones('Existen datos pendientes de diligenciar.', 'Ingresos a sedes', 'warning');
             return false;
+        }
+
+        var decimalValue = $('#code_seac').val();
+
+        // Validación con expresión regular para verificar el formato decimal (12,0)
+        var decimalRegex = /^\d{1,12}$/; // Acepta de 1 a 12 dígitos numéricos
+
+        if (!decimalRegex.test(decimalValue)) {
+            Biblioteca.notificaciones('Código seac incorrecto, debe ser númerico maximo de 12 números', 'Ingresos a sedes', 'warning');
+            return false; // Detiene el envío del formulario si la validación falla
         }
 
         $("#code").prop("disabled", false);
@@ -298,11 +308,11 @@ services = {
                         success: function(response){
                             btn.reset(element);
                             if(response.success){
-                                Biblioteca.notificaciones('Proceso exitoso.', 'Comercios aliados', 'success');
+                                Biblioteca.notificaciones('Proceso exitoso.', 'Ingresos a sedes', 'success');
                                 $('#md-icm_environment_income_items').modal('hide')
                                 tblenvironmentservices.ajax.reload();
                             }else{
-                                Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
+                                Biblioteca.notificaciones(response.message, 'Ingresos a sedes', 'error');
                             }
                         },
                         timeout: 30000,
@@ -381,11 +391,11 @@ services = {
                         success: function(response){
                             btn.reset(element);
                             if(response.success){
-                                Biblioteca.notificaciones('Proceso exitoso.', 'Comercios aliados', 'success');
+                                Biblioteca.notificaciones('Proceso exitoso.', 'Ingresos a sedes', 'success');
                                 $('#md-icm_environment_income_items').modal('hide')
                                 tblenvironmentservices.ajax.reload();
                             }else{
-                                Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
+                                Biblioteca.notificaciones(response.message, 'Ingresos a sedes', 'error');
                             }
                         },
                         timeout: 30000,

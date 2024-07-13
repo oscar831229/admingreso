@@ -96,11 +96,11 @@ services = {
 
         // head
         var head = ` <tr>
-            <th class="text-left">#</th>
-            <th class="text-left" style="width:40%">SUCURSAL O SEDE</th>
-            <th class="text-left" style="width:70%">SERVICIO INGRESO</th>`;
+            <th class="text-left" style="width:5%">#</th>
+            <th class="text-left" style="width:10%">Ambiente</th>
+            <th class="text-left" style="width:40%">Servicio ingreso</th>`;
         $.each(incomeservices.rate_types, function(index, rate_type){
-            head += `<th class="text-center" style="width:10%">${rate_type.name}</th>`;
+            head += `<th class="text-center" style="width:15%">${rate_type.name}</th>`;
         });
         head += `</tr>`
         $('#tbl-income-items thead').html(head);
@@ -232,6 +232,8 @@ services = {
         $('#md-icm_environment_income_items').modal()
         $('#form-agreement').find('#name').attr('disabled', false);
         $('#form-agreement').find('#code').attr('disabled', false);
+        $('#example-0').find('input:checkbox:checked').prop('checked', false).change();
+        // $('#example-0').find('input:checkbox:eq(2)').click();
 
     },
 
@@ -242,6 +244,14 @@ services = {
             return false;
         }
 
+        var type_income_check = [];
+        $('#example-0').find('input.capture:checkbox:checked').each(function(index, element){
+            var check = {};
+            check.icm_types_income_id       = $(element).data('type_income_id');
+            check.icm_affiliate_category_id = $(element).data('category_id');
+            type_income_check.push(check);
+        });
+
         const element = $(this);
         var jsonData=$('#form-agreement').serializeArray()
             .reduce(function(a, z) {
@@ -249,8 +259,9 @@ services = {
                 return a;
             }, {});
 
-        var income_item_rate = services.getIncomeItemRate();
-        jsonData.income_rates = income_item_rate;
+        var income_item_rate       = services.getIncomeItemRate();
+        jsonData.income_rates      = income_item_rate;
+        jsonData.type_income_check = type_income_check
 
         swal({
             title: 'Convenios empresariales',
@@ -357,6 +368,8 @@ services = {
                         loadDataForm('form-agreement', response.data);
                         $('#value').trigger('change');
                         loadIncomeRates('body', response.income_item_detail);
+                        checkIncomeTypes('#example-0', response.agreement_typeincomes);
+
                         $('#icm_environment_icm_menu_item_id').selectpicker('refresh');
                         $('#form-agreement').find('#name').attr('disabled', true);
                         $('#form-agreement').find('#code').attr('disabled', true);
@@ -416,6 +429,12 @@ loadDataForm = function(idform, data){
 loadIncomeRates = function(idform, data){
     $.each(data, function(index, value){
         $(`input[data-income_item_id=${value.icm_environment_income_item_id}][data-rate_type_id=${value.icm_rate_type_id}]`).val(value.value).trigger('change');
+    });
+}
+
+checkIncomeTypes = function(element_id, data){
+    $.each(data, function(index, value){
+        $(`input[data-type_income_id=${value.icm_types_income_id}][data-category_id=${value.icm_affiliate_category_id}]`).click();
     });
 }
 

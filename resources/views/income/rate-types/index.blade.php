@@ -91,6 +91,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Código</th>
                                             <th>Nombre tarifa</th>
                                             <th>Tipo tarifa</th>
                                             <th>Usuario crea</th>
@@ -137,8 +138,11 @@
                                         {!! Form::hidden('id') !!}
                                     </div>
                                     <div class="form-group">
-                                        {!! Form::label('rate_type','Tipo de tarifa', [], false) !!}
-                                        {!! Form::select('rate_type',['V'=>'TARIFA VALLE', 'A' => 'TARIFA ALTA', 'E' => 'TARIFA ESPECIAL'],null, array('id' => 'state','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                        {!! Form::label('code','Tipo de tarifa', [], false) !!}
+                                        {!! Form::select('code',[
+                                            'V'=>'TARIFA VALLE',
+                                            'A' => 'TARIFA ALTA',
+                                        ],null, array('id' => 'state','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                     <div class="form-group">
                                         {!! Form::label('state','Estado', [], false) !!}

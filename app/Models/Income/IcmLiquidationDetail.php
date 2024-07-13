@@ -20,12 +20,16 @@ class IcmLiquidationDetail extends Model
         'icm_family_compensation_fund_id',
         'nit_company_affiliates',
         'name_company_affiliates',
-        'nit_company_agreement',
-        'name_company_agreement',
-        'icm_agreement_id',
         'icm_liquidation_id',
-        'state',
         'user_created',
+        'is_deleted',
+        'is_processed_affiliate',
+        'type_register',
+        'relationship',
+        'type_link',
+        'affiliated_type_document',
+        'affiliated_document',
+        'affiliated_name'
     ];
 
     public function icm_liquidation_services(){

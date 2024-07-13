@@ -17,6 +17,7 @@ use App\Models\Income\IcmAffiliateCategory;
 use App\Models\Income\IcmIncomeItemDetail;
 use App\Models\Income\IcmEnvironment;
 use App\Models\Income\IcmRateType;
+use App\Models\Income\IcmTypeSubsidy;
 use App\Models\Income\IcmTypesIncome;
 use App\Models\Income\IcmEnvirontmentIcmIncomeItem;
 use App\Models\Income\IcmResolution;
@@ -36,7 +37,7 @@ class ParameterizationServiceController extends Controller
         $icm_environments = IcmEnvironment::all();
 
         # Sincronizar sistema POS REST
-        // synchronizePOSSystem('initialization');
+        // synchronizePOSSystem('all');
 
         $types_of_income     = IcmTypesIncome::where(['state' => 'A'])->get();
         $affiliatecategories = IcmAffiliateCategory::where(['state' => 'A'])->orderby('code', 'asc')->get();
@@ -58,7 +59,9 @@ class ParameterizationServiceController extends Controller
         }
 
         $rate_types = IcmRateType::where(['state' => 'A'])->get();
-        return view('income.parameterization-services.index', compact('icm_environments', 'income_rates', 'affiliatecategories', 'rate_types'));
+        $subsidies  = IcmTypeSubsidy::where(['state' => 'A'])->get()->pluck('name', 'id');
+
+        return view('income.parameterization-services.index', compact('icm_environments', 'income_rates', 'affiliatecategories', 'rate_types', 'subsidies'));
 
     }
 

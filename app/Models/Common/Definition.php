@@ -38,6 +38,19 @@ class Definition extends Model
 
     }
 
+    public function getDetailHomologationAlternativeDefinitions($code){
+        $detail = Definition::where(['code' => $code])->first();
+
+        if(!$detail){
+            return [];
+        }else{
+            return $detail->detaildefinitions->pluck('id','alternative_code');
+        }
+
+    }
+
+
+
 
 
 

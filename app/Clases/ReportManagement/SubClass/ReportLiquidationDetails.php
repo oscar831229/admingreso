@@ -102,11 +102,15 @@ class ReportLiquidationDetails
             ia.name AS icm_agreement_name
         ")
         ->join('icm_environments AS ie', 'ie.id', '=', 'il.icm_environment_id')
-        ->join('icm_liquidation_services AS ils', 'ils.icm_liquidation_id', '=', 'il.id')
+        ->join('icm_liquidation_services AS ils', function ($join) {
+            $join->on('ils.icm_liquidation_id', '=', 'il.id')->where('ils.is_deleted', '=', 0);
+        })
         ->join('icm_income_items AS iii', 'iii.id', '=', 'ils.icm_income_item_id')
         ->join('icm_environment_icm_menu_items AS ieimi', 'ieimi.id', '=', 'ils.icm_environment_icm_menu_item_id')
         ->join('icm_menu_items AS imi', 'imi.id', '=', 'ieimi.icm_menu_item_id')
-        ->join('icm_liquidation_details AS ild', 'ild.icm_liquidation_service_id', '=', 'ils.id')
+        ->join('icm_liquidation_details AS ild', function ($join) {
+            $join->on('ild.icm_liquidation_service_id', '=', 'ils.id')->where('ild.is_deleted', '=', 0);
+        })
         ->join('icm_types_incomes AS iti', 'iti.id', '=', 'ild.icm_types_income_id')
         ->join('icm_affiliate_categories AS iac', 'iac.id', '=', 'ild.icm_affiliate_category_id')
         ->leftJoin('icm_family_compensation_funds AS ifc', 'ifc.id', '=', 'ild.icm_family_compensation_fund_id')

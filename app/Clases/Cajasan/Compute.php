@@ -37,25 +37,28 @@ class Compute
         if($tempodada_alta == 'V'){
             # Tarifa general
             $service_value[] = [
-                'value'            => $income_items->value,
-                'class'            => 'default',
-                'code'             => 'GENERAL_'.$tempodada_alta,
-                'alterno'          => 'GEN',
-                'subsidy'          => 0,
-                'icm_rate_type_id' => $temporada->id
+                'value'              => $income_items->value,
+                'class'              => 'default',
+                'code'               => 'GENERAL_'.$tempodada_alta,
+                'alterno'            => 'GEN',
+                'subsidy'            => 0,
+                'icm_rate_type_id'   => $temporada->id,
+                'icm_rate_type_code' => $tempodada_alta,
             ];
+
         }else{
+
             $service_value[] = [
-                'value'            => $income_items->value_high,
-                'class'            => 'default',
-                'code'             => 'GENERAL_'.$tempodada_alta,
-                'alterno'          => 'GEN',
-                'subsidy'          => 0,
-                'icm_rate_type_id' => $temporada->id
+                'value'              => $income_items->value_high,
+                'class'              => 'default',
+                'code'               => 'GENERAL_'.$tempodada_alta,
+                'alterno'            => 'GEN',
+                'subsidy'            => 0,
+                'icm_rate_type_id'   => $temporada->id,
+                'icm_rate_type_code' => $tempodada_alta,
             ];
+
         }
-
-
 
         # TARIFA POR PARAMETRIZACIÓN DE VALORES
         $items_details = $income_items->icm_income_item_details()->where([
@@ -72,38 +75,46 @@ class Compute
             $subsidy     = $income_type == 'AFI' ? $items_details->subsidy : 0;
 
             $service_value[] = [
-                'value'            => $items_details->value,
-                'class'            => 'parametrizacion',
-                'code'             => $code,
-                'alterno'          => $income_type,
-                'subsidy'          => $subsidy,
-                'icm_rate_type_id' => $temporada->id
+                'value'              => $items_details->value,
+                'class'              => 'parametrizacion',
+                'code'               => $code,
+                'alterno'            => $income_type,
+                'subsidy'            => $subsidy,
+                'icm_rate_type_id'   => $temporada->id,
+                'icm_rate_type_code' => $tempodada_alta,
             ];
+
         }
 
-        # TARIFA POR CONVENIO
-        if(isset($client->icm_agreement_id) && !empty($client->icm_agreement_id)){
+        # TARIFA POR CONVENIO PROVENIENTES FORMULARIO AFILIADO
+        if(isset($client->icm_agreements) && is_array($client->icm_agreements) && count($client->icm_agreements) > 0 ){
 
-            # Convenio enviado
-            $icm_agreement = IcmAgreement::find($client->icm_agreement_id);
+            foreach ($client->icm_agreements as $key => $agreement) {
 
-            # Consulta servicio de ingreso en la temporada
-            $detail        = $icm_agreement->icm_agreement_details()
-                ->where([
-                    'icm_rate_type_id'               => $temporada->id,
-                    'icm_environment_income_item_id' => $income_items->id
-                ])
-                ->first();
+                # Convenio enviado
+                $icm_agreement = IcmAgreement::find($agreement['icm_agreement_id']);
 
-            if($detail && $detail->state == 'A'){
-                $service_value[] = [
-                    'value'            =>  $detail->value,
-                    'class'            => 'convenio',
-                    'code'             => 'CONVENIO_'.$icm_agreement->code,
-                    'alterno'          => 'CONV',
-                    'subsidy'          => 0,
-                    'icm_rate_type_id' => $temporada->id
-                ];
+                # Consulta servicio de ingreso en la temporada
+                $detail        = $icm_agreement->icm_agreement_details()
+                    ->where([
+                        'icm_rate_type_id'               => $temporada->id,
+                        'icm_environment_income_item_id' => $income_items->id
+                    ])
+                    ->first();
+
+                if($detail && $detail->state == 'A'){
+                    $service_value[] = [
+                        'value'              =>  $detail->value,
+                        'class'              => 'convenio',
+                        'code'               => 'CONVENIO_'.$tempodada_alta.'_'.$icm_agreement->code,
+                        'alterno'            => 'CONV',
+                        'subsidy'            => 0,
+                        'icm_rate_type_id'   => $temporada->id,
+                        'icm_rate_type_code' => $tempodada_alta,
+                        'icm_agreement'      => $icm_agreement
+                    ];
+                }
+
             }
 
         }

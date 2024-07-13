@@ -96,8 +96,14 @@
         Route::resource('liquidations','liquidationController');
         Route::post('datatable-liquidations','liquidationController@datatableLiquidations');
 
+        Route::resource('customers','CustomerController');
+        Route::post('datatable-customers','CustomerController@datatableCustomers');
 
+        Route::resource('subsidies','SubsidyController');
+        Route::post('datatable-subsidies','SubsidyController@datatableSubsidies');
 
+        Route::resource('coverages','CoverageController');
+        Route::post('datatable-coverages','CoverageController@datatableCoverages');
 
 
     });

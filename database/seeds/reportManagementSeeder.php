@@ -25,6 +25,10 @@ class reportManagementSeeder extends Seeder
                 'module'=>'headquarters-entrance',
                 'code'=>'report-liquidation-details',
                 'description'=>'Reportes detalle de liquidaciones'
+            ],[
+                'module'=>'headquarters-entrance',
+                'code'=>'coverage-report',
+                'description'=>'Reporte de coberturas'
             ]
         ];
 

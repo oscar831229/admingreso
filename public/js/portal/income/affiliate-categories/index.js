@@ -46,6 +46,7 @@ categories = {
             },
             createdRow: function (row, data, index) {
                 var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-edit-form-categories" title="Editar entidad"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>'
+                btnaction = '';
                 $('td', row).eq(5).html(btnaction).addClass('dt-center');
                 $('td', row).eq(0).html(data[6]).addClass('dt-center');
                 $('td', row).eq(4).html(setLabelState(data[4])).addClass('dt-center');

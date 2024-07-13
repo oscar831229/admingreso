@@ -96,6 +96,16 @@ class TableIncomeGenerate extends Migration
             $table->timestamps();
         });
 
+        Schema::create('icm_type_subsidies', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 3);
+            $table->string('name', 150);
+            $table->string('state', 1)->default('A')->comment('Estado del subsidio A activo, I inactivo');
+            $table->unsignedBigInteger('user_created');
+            $table->unsignedBigInteger('user_updated')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('icm_income_items', function (Blueprint $table) {
             $table->id();
             $table->string('name', 150);
@@ -103,6 +113,14 @@ class TableIncomeGenerate extends Migration
             $table->integer('number_places');
             $table->decimal('value', 20, 2);
             $table->decimal('value_high', 20, 2);
+            $table->decimal('code_seac', 12, 0);
+            $table->unsignedBigInteger('icm_type_subsidy_id');
+            $table->foreign('icm_type_subsidy_id','fk_subsidies_incomeitem_id')
+                ->references('id')
+                ->on('icm_type_subsidies')
+                ->onDelete('restrict')
+                ->onUpdate('restrict');
+
             $table->text('observations')->nullable();
 
             $table->unsignedBigInteger('icm_environment_id');

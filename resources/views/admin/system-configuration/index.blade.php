@@ -94,6 +94,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Url pos bamboo</th>
+                                            <th>Politica grupo familiar</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -136,8 +137,20 @@
                                         {!! Form::hidden('id') !!}
                                     </div>
                                     <div class="form-group">
+                                        {!! Form::label('policy_enabled','Politica reportar grupo familiar', [], false) !!}
+                                        {!! Form::select('policy_enabled',['0'=>'Inactiva', '1' => 'Activa'],null, array('id' => 'state','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                    <div class="form-group">
                                         {!! Form::label('state','Estado', [], false) !!}
                                         {!! Form::select('state',['A'=>'Activa', 'I' => 'Inactiva'],null, array('id' => 'state','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('infrastructure_code','Código infraestructura', [], false) !!}
+                                        {!! Form::text('infrastructure_code', null, array('placeholder' => 'Código infraestructura','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('system_names','Nombre sistema', [], false) !!}
+                                        {!! Form::text('system_names', null, array('placeholder' => 'Nombre sistema','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                     </div>
                                 {{ Form::close() }}
                                 <div class="row">

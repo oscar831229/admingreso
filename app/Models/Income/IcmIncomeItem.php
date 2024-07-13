@@ -16,6 +16,8 @@ class IcmIncomeItem extends Model
         'observations',
         'icm_environment_id',
         'icm_environment_icm_menu_item_id',
+        'code_seac',
+        'icm_type_subsidy_id',
         'state',
         'user_created',
         'user_updated'
@@ -160,5 +162,9 @@ class IcmIncomeItem extends Model
 
     public function icm_environment(){
         return $this->belongsTo('App\Models\Income\IcmEnvironment');
+    }
+
+    public function icm_type_subsidy(){
+        return $this->belongsTo('App\Models\Income\IcmTypeSubsidy');
     }
 }

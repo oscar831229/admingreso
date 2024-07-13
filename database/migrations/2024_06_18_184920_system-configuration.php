@@ -17,6 +17,10 @@ class SystemConfiguration extends Migration
             $table->id();
             $table->string('url_pos_system', 255)->nullable();
             $table->string('pos_system_token', 255)->nullable();
+            $table->date('system_date')->nullable();
+            $table->tinyInteger('policy_enabled')->default(0)->comment('Campo que identifica si la politica de reportar todo el grupo esta activa coberturas');
+            $table->string('infrastructure_code', 100)->comment('Código de infraestructura');
+            $table->string('system_names')->comment('Nombre del sistema');
             $table->string('state', 1)->default('A');
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();

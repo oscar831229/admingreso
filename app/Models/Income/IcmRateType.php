@@ -22,7 +22,6 @@ class IcmRateType extends Model
         array( 'db' => "CASE
                     WHEN irt.code = 'V' THEN 'TEMPORADA BAJA'
                     WHEN irt.code = 'A' THEN 'TEMPORADA ALTA'
-                    WHEN irt.code = 'E' THEN 'TEMPORADA ESPECIAL'
                 END" , 'dt' => 2),
         array( 'db' => 'u.name' , 'dt' => 3),
         array( 'db' => 'irt.state' , 'dt' => 4)
@@ -37,7 +36,6 @@ class IcmRateType extends Model
             CASE
                 WHEN irt.code = 'V' THEN 'TEMPORADA BAJA'
                 WHEN irt.code = 'A' THEN 'TEMPORADA ALTA'
-                WHEN irt.code = 'E' THEN 'TEMPODARA ESPECIAL'
             END AS code_name,
             u.name as user_created,
             irt.state,
@@ -83,11 +81,11 @@ class IcmRateType extends Model
         $asset = \DB::table('icm_rate_types as irt')
         ->selectRaw("
             irt.id,
+            irt.cod,
             irt.name,
             CASE
                 WHEN irt.code = 'V' THEN 'TARIFA BAJA'
                 WHEN irt.code = 'A' THEN 'TARIFA ALTA'
-                WHEN irt.code = 'E' THEN 'TARIFA ESPECIAL'
             END AS code_name,
             u.name as user_created,
             irt.state,
@@ -118,7 +116,6 @@ class IcmRateType extends Model
             CASE
                 WHEN irt.code = 'V' THEN 'TEMPORADA BAJA'
                 WHEN irt.code = 'A' THEN 'TEMPORADA ALTA'
-                WHEN irt.code = 'E' THEN 'TEMPORADA ESPECIAL'
             END AS code_name,
             u.name as user_created,
             irt.state,

@@ -43,9 +43,10 @@ class Definitions extends Migration
 
             $table->id();
             $table->string('code', 30);
+            $table->string('alternative_code', 30)->nullable()->comment('Se utiliza como alterno con el fin de realizar homologacion del tipo de documento');
             $table->string('name');
             $table->string('details');
-            
+
             $table->unsignedBigInteger('definition_id');
             $table->foreign('definition_id', 'fk_detaildefinitions_definitions_id')
                 ->references('id')

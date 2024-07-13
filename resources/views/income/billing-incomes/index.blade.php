@@ -253,7 +253,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div id="div-apply-to-agreement">
-                                    <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> Aplicación de convenio</h6>
+                                    <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i>Convenidos vigentes</h6>
                                     <hr style="color: blue; margin-top: 0rem !important;">
                                     <div class="row">
                                         <div class="col-sm-6">
@@ -343,7 +343,7 @@
     <div class="modal-dialog modal-lg" role="document" style="width: 1000px;">
         <div class="modal-content">
             <div class="modal-header text-white bg-primary">
-                <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Registro grupo afiliados masivo</span></h6>
+                <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Grupo familiar afiliado</span></h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -376,9 +376,23 @@
                     <div class="table-responsive">
                         <div class="col-sm-12">
                             <div id="div-apply-to-agreement-affiliate">
-                                <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> Aplicación de convenio</h6>
+                                <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i> Convenidos activos</h6>
                                 <hr style="color: blue; margin-top: 0rem !important;">
-                                <div class="row">
+                                <table class="table table-striped" id="tbl-company-agreements">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Código</th>
+                                            <th>Nombre</th>
+                                            <th>Fecha incial</th>
+                                            <th>Fecha final</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                {{--  <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                         {!! Form::label('name_company_agreement_affiliate','Empresa convenio',[],false) !!}
@@ -393,7 +407,7 @@
                                         {!! Form::select('icm_agreement_affiliate_id', [], null, array('id' => 'icm_agreement_affiliate_id', 'class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;')) !!}
                                         </div>
                                     </div>
-                                </div>
+                                </div>  --}}
                             </div>
                         </div>
                     </div>

@@ -63,6 +63,18 @@ return [
             ]) : [],
         ],
 
+        'oracle_second' => [
+            'driver' => 'oracle',
+            'tns' => env('DB_TNS_SECOND', ''),
+            'host' => env('DB_HOST_SECOND', ''),
+            'port' => env('DB_PORT_SECOND', '1521'),
+            'database' => env('DB_DATABASE_SECOND', ''),
+            'username' => env('DB_USERNAME_SECOND', ''),
+            'password' => env('DB_PASSWORD_SECOND', ''),
+            'charset' => env('DB_CHARSET', 'AL32UTF8'),
+            'prefix' => env('DB_PREFIX', ''),
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

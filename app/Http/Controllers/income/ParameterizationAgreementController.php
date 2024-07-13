@@ -10,6 +10,7 @@ use App\Models\Income\IcmAgreement;
 use App\Models\Income\IcmAgreementDetail;
 use App\Models\Income\IcmCompaniesAgreement;
 use App\Models\Income\IcmRateType;
+use App\Models\Income\IcmAgreementTypeIncome;
 
 use App\Clases\DataTable\TableServer;
 
@@ -101,13 +102,15 @@ class ParameterizationAgreementController extends Controller
 
             $data['user_created'] = auth()->user()->id;
             $agreement = IcmAgreement::create($data);
+
+
         }else{
             $data['user_updated'] = auth()->user()->id;
             $agreement->update($data);
         }
 
         # REGISTRO DE TARIAS
-        $user_id = auth()->user()->id;
+        $user_id           = auth()->user()->id;
         $agreement_details = $agreement->icm_agreement_details()->get()->pluck('value', 'id')->toArray();
 
         if($request->has('income_rates')){
@@ -141,8 +144,34 @@ class ParameterizationAgreementController extends Controller
                     ]);
                 }
             }
-
         }
+
+        # Registar tipo de ingresos sobre el cual aplica el convenio.
+        IcmAgreementTypeIncome::where(['icm_agreement_id' => $agreement->id])->update(['state' => 'I']);
+        if($request->has('type_income_check')){
+
+            foreach ($request->type_income_check as $key => $type_income) {
+
+                $icm_agreement_type_incomes = IcmAgreementTypeIncome::where([
+                    'icm_types_income_id'       => $type_income['icm_types_income_id'],
+                    'icm_affiliate_category_id' => $type_income['icm_affiliate_category_id']
+                ])->first();
+
+                if(!$icm_agreement_type_incomes){
+                    IcmAgreementTypeIncome::create([
+                        'icm_agreement_id'          => $agreement->id,
+                        'icm_types_income_id'       => $type_income['icm_types_income_id'],
+                        'icm_affiliate_category_id' => $type_income['icm_affiliate_category_id'],
+                        'user_created'              => $user_id
+                    ]);
+                }else{
+                    $icm_agreement_type_incomes->update([
+                        'state' => 'A'
+                    ]);
+                }
+            }
+        }
+
 
         # Inactivar tarifas por no información
         if(count($agreement_details) > 0){
@@ -171,13 +200,18 @@ class ParameterizationAgreementController extends Controller
         $company   = IcmCompaniesAgreement::find($agreement['icm_companies_agreement_id']);
         $agreement['icm_companies_agreement_name'] = $company->name;
 
+        # Detalle de tarifas convenios
         $agreementdetail = $agreement->icm_agreement_details()->where(['state' => 'A'])->get();
 
+        # Tipos ingreso aplicación convenio.
+        $agreement_typeincomes = $agreement->icm_agreement_type_incomes()->where(['state' => 'A'])->get();
+
         return response()->json([
-            'success'            => true,
-            'message'            => '',
-            'data'               => $agreement->toArray(),
-            'income_item_detail' => $agreementdetail
+            'success'               => true,
+            'message'               => '',
+            'data'                  => $agreement->toArray(),
+            'income_item_detail'    => $agreementdetail,
+            'agreement_typeincomes' => $agreement_typeincomes
         ]);
     }
 

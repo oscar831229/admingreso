@@ -46,8 +46,9 @@ configuration = {
             },
             createdRow: function (row, data, index) {
                 var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-edit-form-configuration" title="Editar entidad"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>'
-                $('td', row).eq(2).html(btnaction).addClass('dt-center');
-                $('td', row).eq(0).html(data[3]).addClass('dt-center');
+                $('td', row).eq(3).html(btnaction).addClass('dt-center');
+                $('td', row).eq(2).html(setLabelEnabled(data[2])).addClass('dt-center');
+                $('td', row).eq(0).html(data[4]).addClass('dt-center');
             }
         });
 
@@ -224,6 +225,21 @@ setLabelState = function(state){
             return '<label class="badge badge-success">Activo</label>';
             break;
         case 'I':
+            return '<label class="badge badge-warning">Inactivo</label>';
+            break;
+
+        default:
+            return '';
+            break;
+    }
+}
+
+setLabelEnabled = function(state){
+    switch (state) {
+        case 1:
+            return '<label class="badge badge-success">Activo</label>';
+            break;
+        case 0:
             return '<label class="badge badge-warning">Inactivo</label>';
             break;
 

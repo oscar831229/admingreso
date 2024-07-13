@@ -266,6 +266,15 @@ if (!function_exists('getDetailHomologationDefinitions')) {
     }
 }
 
+
+if (!function_exists('getDetailHomologationAlternativeDefinitions')) {
+    function getDetailHomologationAlternativeDefinitions($code)
+    {
+        $defintion = new Definition;
+        return $defintion->getDetailHomologationAlternativeDefinitions($code);
+    }
+}
+
 if (!function_exists('getDetailDefinition')) {
     function getDetailDefinition($codedefinition, $codedetail)
     {
@@ -508,9 +517,6 @@ if (!function_exists('homologacionDatosAfiliado')) {
     function homologacionDatosAfiliado($grupo_data, $dato_original)
     {
 
-
-
-
         $homologacion = [
             'genero'  => [
                 'F'       => 'F',
@@ -530,6 +536,7 @@ if (!function_exists('homologacionDatosAfiliado')) {
         }else{
             $response = $homologacion[$grupo_data]['default'];
         }
+
         return  $response;
     }
 }

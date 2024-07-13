@@ -17,7 +17,7 @@ class AmadeusPosApiService
     {
         $configuracion = IcmSystemConfiguration::first();
         if(!$configuracion)
-            throw new Exception("Error no se ha parametrizado la url del POS BAMBOO", 1);
+            throw new \Exception("Error no se ha parametrizado la url del POS BAMBOO", 1);
 
         $this->baseUrl = $configuracion->url_pos_system;
     }

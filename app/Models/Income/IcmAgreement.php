@@ -150,5 +150,14 @@ class IcmAgreement extends Model
         return $this->hasMany('App\Models\Income\IcmAgreementDetail');
     }
 
+    public function icm_agreement_type_incomes(){
+        return $this->hasMany('App\Models\Income\IcmAgreementTypeIncome');
+    }
+
+    public function icm_companies_agreement(){
+        return $this->belongsTo('App\Models\Income\IcmCompaniesAgreement');
+    }
+
+
 
 }

@@ -66,10 +66,12 @@ class TablasProcessInvoice extends Migration
             $table->string('phone', 150)->nullable();
             $table->string('email', 150)->nullable();
             $table->unsignedBigInteger('type_regime_id')->nullable();
-            $table->unsignedBigInteger('type_liability_id')->nullable();
+            /*$table->unsignedBigInteger('type_liability_id')->nullable();
             $table->unsignedBigInteger('tax_detail_id')->nullable();
-            $table->unsignedBigInteger('type_organization_id')->nullable();
-            $table->unsignedBigInteger('icm_affiliate_category_id')->nullable();
+            $table->unsignedBigInteger('type_organization_id')->nullable();*/
+            $table->datetime('last_liquidation_date')->nullable()->comment('Fecha ultima liquidación');
+            $table->unsignedBigInteger('icm_types_income_id')->nullable()->comment('Ultimo tipo de ingreso');
+            $table->unsignedBigInteger('icm_affiliate_category_id')->nullable('Ultima categoria tipo ingreso');
             $table->string('state', 1)->default('A');
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
@@ -104,12 +106,11 @@ class TablasProcessInvoice extends Migration
             $table->decimal('total', 20, 2)->default(0);
             $table->decimal('total_subsidy', 20, 2)->default(0);
             $table->date('liquidation_date');
-            $table->string('state', 1)->default('P')->comment('Estado de liquidación P:Pendiente, F:Facturado, B: Anulado');
+            $table->string('state', 1)->default('P')->comment('Estado de liquidación P:Pendiente, F:Facturado');
             $table->unsignedBigInteger('icm_resolution_id')->nullable();
             $table->string('billing_prefix', 10)->nullable();
             $table->unsignedBigInteger('consecutive_billing')->nullable();
-
-
+            $table->tinyInteger('is_deleted')->default(0);
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
@@ -127,7 +128,7 @@ class TablasProcessInvoice extends Migration
             $table->unsignedBigInteger('icm_income_item_id');
             $table->foreign('icm_income_item_id','fk_icmincomeitem_icmliquidationservice')
                 ->references('id')
-                ->on('icm_liquidations')
+                ->on('icm_income_items')
                 ->onDelete('restrict')
                 ->onUpdate('restrict');
             $table->unsignedBigInteger('icm_environment_id');
@@ -145,6 +146,9 @@ class TablasProcessInvoice extends Migration
             $table->integer('number_places');
             $table->unsignedBigInteger('icm_rate_type_id')->nullable();
             $table->string('applied_rate_code', 50)->nullable();
+            $table->string('nit_company_agreement', 25)->nullable();
+            $table->string('name_company_agreement', 150)->nullable();
+            $table->unsignedBigInteger('icm_agreement_id')->nullable();
             $table->decimal('general_price', 20, 2)->comment('Precio general del servicio iva incluido');
             $table->decimal('discount', 20, 2)->default(0);
             $table->decimal('subsidy', 20, 2)->default(0);
@@ -155,7 +159,7 @@ class TablasProcessInvoice extends Migration
             $table->decimal('percentage_impoconsumo', 20, 2);
             $table->decimal('impoconsumo', 20, 2);
             $table->decimal('total', 20, 2);
-            $table->string('state', 1)->default('A');
+            $table->tinyInteger('is_deleted')->default(0);
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
@@ -176,17 +180,21 @@ class TablasProcessInvoice extends Migration
             $table->string('second_name', 150)->nullable();
             $table->string('first_surname', 150);
             $table->string('second_surname', 150)->nullable();
+            $table->tinyInteger('is_processed_affiliate')->default(0)->comment('Identifica si los datos se completaron con sisafi, aplica solo para afilaidos coberturas');
             $table->unsignedBigInteger('icm_types_income_id');
             $table->unsignedBigInteger('icm_affiliate_category_id');
             $table->string('category_presented_code');
             $table->unsignedBigInteger('icm_family_compensation_fund_id')->nullable();
             $table->string('nit_company_affiliates', 25)->nullable();
             $table->string('name_company_affiliates', 150)->nullable();
-            $table->string('nit_company_agreement', 25)->nullable();
-            $table->string('name_company_agreement', 150)->nullable();
-            $table->unsignedBigInteger('icm_agreement_id')->nullable();
+            $table->string('type_register', 2)->nullable();
+            $table->string('relationship', 4)->nullable();
+            $table->string('type_link', 4)->nullable();
+            $table->unsignedBigInteger('affiliated_type_document')->nullable();
+            $table->string('affiliated_document', 45)->nullable();
+            $table->string('affiliated_name', 255)->nullable();
             $table->unsignedBigInteger('icm_liquidation_id');
-            $table->string('state', 1)->default('A');
+            $table->tinyInteger('is_deleted')->default(0);
             $table->date('admission_date')->nullable();
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();

@@ -81,7 +81,7 @@
                     </tr>
                 </table>
 
-                <button class="btn btn-warning btn-sm btn-block mg-b-10" id="btn-new-categories"><i class="fa fa-plus-square-o mg-r-10"></i> NUEVA CATEGORIA AFILIADOS</button>
+                {{--  <button class="btn btn-warning btn-sm btn-block mg-b-10" id="btn-new-categories"><i class="fa fa-plus-square-o mg-r-10"></i> NUEVA CATEGORIA AFILIADOS</button>  --}}
 
                 <div class="row text-center mt-2">
                     <div class="col-sm-12">
