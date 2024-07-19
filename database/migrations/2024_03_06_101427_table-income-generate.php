@@ -195,7 +195,7 @@ class TableIncomeGenerate extends Migration
                 ->onUpdate('restrict');
             $table->date('date_from');
             $table->date('date_to');
-            $table->text('observations');
+            $table->text('observations')->nullable();
             $table->string('state', 1  )->default('A');
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();

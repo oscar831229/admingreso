@@ -706,7 +706,6 @@ class BillingIncomeController extends Controller
                 $password = \Session::get('auth_amadeus_pos'.$user_id);
             }
 
-
             // Llamar al servicio REST con los datos de la factura
             $this->AmadeusPosApiService->setHeader([
                 'autorization'  => $password,

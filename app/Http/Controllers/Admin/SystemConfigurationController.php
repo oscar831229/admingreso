@@ -20,7 +20,7 @@ class SystemConfigurationController extends Controller
     {
         $configuracion = IcmSystemConfiguration::count();
         $create = $configuracion == 0 ? true : false;
-        return view('Admin.system-configuration.index', compact('create'));
+        return view('admin.system-configuration.index', compact('create'));
     }
 
     public function datatableConfiguration(Request $request){

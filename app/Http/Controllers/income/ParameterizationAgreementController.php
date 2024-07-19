@@ -153,6 +153,7 @@ class ParameterizationAgreementController extends Controller
             foreach ($request->type_income_check as $key => $type_income) {
 
                 $icm_agreement_type_incomes = IcmAgreementTypeIncome::where([
+                    'icm_agreement_id'          => $agreement->id,
                     'icm_types_income_id'       => $type_income['icm_types_income_id'],
                     'icm_affiliate_category_id' => $type_income['icm_affiliate_category_id']
                 ])->first();
