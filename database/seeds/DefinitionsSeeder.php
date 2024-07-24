@@ -14,6 +14,8 @@ use App\Models\Income\IcmTypesIncome;
 use App\Models\Amadeus\Room;
 use App\Models\Income\IcmEnvironment;
 
+use App\Jobs\SynchronizationTask;
+
 class DefinitionsSeeder extends Seeder
 {
     /**
@@ -340,7 +342,7 @@ class DefinitionsSeeder extends Seeder
 
         }
 
-        synchronizePOSSystem('all');
+        SynchronizationTask::dispatch('all');
 
     }
 }

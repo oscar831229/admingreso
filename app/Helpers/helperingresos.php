@@ -33,6 +33,8 @@ use App\Models\Income\IcmTypesIncome;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\ExecuteCoverage;
 
+use App\Jobs\SynchronizationTask;
+
 
 if (!function_exists('synchronizePOSSystem')) {
 
