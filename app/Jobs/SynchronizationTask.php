@@ -14,6 +14,9 @@ class SynchronizationTask implements ShouldQueue
 
     private $component;
     private $document_number;
+
+    public $timeout = null; // Establece el tiempo de ejecución a null para que sea ilimitado
+
     /**
      * Create a new job instance.
      *

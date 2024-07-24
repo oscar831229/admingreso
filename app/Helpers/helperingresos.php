@@ -237,14 +237,17 @@ if (!function_exists('synchronizePOSSystem')) {
 
         }
 
+
         # Sincronizar base de datos SISAFI
         if($component == 'all' || $component == 'initialization'){
 
             $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
 
+            $generos          = getDetailHomologationDefinitions('gender');
+
             $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
 
-            ClientesSeac::cursor()->each(function ($cliente) use ($codetypedocument, $ciudades){
+            ClientesSeac::cursor()->each(function ($cliente) use ($codetypedocument, $ciudades, $generos){
 
                 if($cliente->identificacion == 1)
                     return; // Salta esta iteración y pasa al siguiente cliente
@@ -258,6 +261,7 @@ if (!function_exists('synchronizePOSSystem')) {
 
                 $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
                 $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
+                $gender        = isset($generos[$cliente->genero]) ? $generos[$cliente->genero] : NULL;
 
                 $clientenew = IcmCustomer::create([
                     'document_type'       => $document_type,
@@ -271,6 +275,7 @@ if (!function_exists('synchronizePOSSystem')) {
                     'email'               => $cliente->correo,
                     'icm_municipality_id' => $ciudades_dian,
                     'address'             => $cliente->direccion,
+                    'gender'              => $gender,
                     'type_regime_id'      => 49,
                     'user_created'        => 1
                 ]);
@@ -292,7 +297,7 @@ if (!function_exists('synchronizePOSSystem')) {
 
             $fecha_proceso = $fechaActual->format('Y-m-d');  // Formato de salida: YYYY-MM-DD
 
-            ClientesSeac::whereDate('fecha_creacion', '>=', $fecha_proceso)->cursor()->each(function ($cliente) use ($codetypedocument, $ciudades){
+            ClientesSeac::whereDate('fecha_creacion', '>=', $fecha_proceso)->cursor()->each(function ($cliente) use ($codetypedocument, $ciudades,  $generos){
 
                 if($cliente->identificacion == 1)
                     return; // Salta esta iteración y pasa al siguiente cliente
