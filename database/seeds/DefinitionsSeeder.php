@@ -321,8 +321,6 @@ class DefinitionsSeeder extends Seeder
 
         }
 
-
-
         $rooms = Room::all();
         foreach ($rooms as $key => $room) {
             $environment = IcmEnvironment::find($room->id);

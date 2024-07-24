@@ -90,12 +90,7 @@ class IcmCustomer extends Model
 
         $asset = \DB::table('icm_customers as c')
         ->selectRaw("
-            c.id,
-            c.document_number,
-            CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.second_name, ''), ' ', IFNULL(c.first_surname, ''), ' ', IFNULL(c.second_surname, ''), ' ') as name,
-            c.phone,
-            c.email,
-            '' as action
+            c.id
         ")
         ->join('users AS u', 'u.id', '=','c.user_created')
         ->orderByRaw("CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.second_name, ''), ' ', IFNULL(c.first_surname, ''), ' ', IFNULL(c.second_surname, ''), ' ') asc");
@@ -117,12 +112,7 @@ class IcmCustomer extends Model
         # CANTIDAD TOTAL
         $asset = \DB::table('icm_customers as c')
         ->selectRaw("
-            c.id,
-            c.document_number,
-            CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.second_name, ''), ' ', IFNULL(c.first_surname, ''), ' ', IFNULL(c.second_surname, ''), ' ') as name,
-            c.phone,
-            c.email,
-            '' as action
+            c.id
         ")
         ->join('users AS u', 'u.id', '=','c.user_created')
         ->orderByRaw("CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.second_name, ''), ' ', IFNULL(c.first_surname, ''), ' ', IFNULL(c.second_surname, ''), ' ') asc");

@@ -23,6 +23,8 @@ use App\Models\Income\IcmResolution;
 use App\Models\Income\IcmCustomer;
 use App\Models\Admin\IcmSystemConfiguration;
 
+use App\Models\Seac\ClientesSeac;
+
 use Carbon\Carbon;
 use App\Models\Income\IcmRateType;
 use App\Models\Income\IcmSpecialRate;
@@ -233,59 +235,152 @@ if (!function_exists('synchronizePOSSystem')) {
 
         }
 
-        if($component == 'customers' || $component == 'initialization'){
+        # Sincronizar base de datos SISAFI
+        if($component == 'all' || $component == 'initialization'){
 
-            $codetypedocument = getDetailHomologationDefinitions('identification_document_types');
+            $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
 
-            $clientes = Clientes::selectRaw("
-                    cedula,
-                    tipdoc,
-                    digitov,
-                    nombre,
-                    primer_nombre,
-                    segundo_nombre,
-                    primer_apellido,
-                    segundo_apellido,
-                    direccion,
-                    IFNULL(telefono1, telefono2) AS telefono,
-                    IFNULL(emailfe, email) AS email,
-                    ciudades_dian,
-                    regimen_fiscal"
-                )
-                ->whereRaw("primer_nombre IS NOT NULL AND primer_apellido IS NOT  NULL")
-                ->get();
+            $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
 
-            foreach ($clientes as $key => $cliente) {
+            ClientesSeac::cursor()->each(function ($cliente) use ($codetypedocument, $ciudades){
 
-                $cliente->cedula = trim($cliente->cedula);
-                $customer = IcmCustomer::where(['document_number' => $cliente->cedula])->first();
+                if($cliente->identificacion == 1)
+                    return; // Salta esta iteración y pasa al siguiente cliente
 
-                if(!$customer){
+                $customer = IcmCustomer::where(['document_number' => $cliente->identificacion])->first();
+                if($customer)
+                    return; // Salta esta iteración y pasa al siguiente cliente
 
-                    $document_type = isset($codetypedocument[$cliente->tipdoc]) ?  $codetypedocument[$cliente->tipdoc] : $codetypedocument[13];
+                if(empty($cliente->primer_nombre) || empty($cliente->primer_apellido))
+                    return;
 
-                    IcmCustomer::create([
-                        'document_type'             => $document_type,
-                        'document_number'           => $cliente->cedula,
-                        'first_name'                => $cliente->primer_nombre,
-                        'second_name'               => $cliente->segundo_nombre,
-                        'first_surname'             => $cliente->primer_apellido,
-                        'second_surname'            => $cliente->segundo_apellido,
-                        'phone'                     => $cliente->telefono,
-                        'email'                     => $cliente->email,
-                        'icm_municipality_id'       => $cliente->ciudades_dian,
-                        'address'                   => $cliente->direccion,
-                        'type_regime_id'            => $cliente->regimen_fiscal,
-                        'user_created'              => 1
-                    ]);
+                $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
+                $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
 
-                }
+                $clientenew = IcmCustomer::create([
+                    'document_type'       => $document_type,
+                    'document_number'     => $cliente->identificacion,
+                    'first_name'          => $cliente->primer_nombre,
+                    'second_name'         => $cliente->segundo_nombre,
+                    'first_surname'       => $cliente->primer_apellido,
+                    'second_surname'      => $cliente->segundo_apellido,
+                    'birthday_date'       => $cliente->fecha_nacimiento,
+                    'phone'               => $cliente->celular,
+                    'email'               => $cliente->correo,
+                    'icm_municipality_id' => $ciudades_dian,
+                    'address'             => $cliente->direccion,
+                    'type_regime_id'      => 49,
+                    'user_created'        => 1
+                ]);
 
-            }
-
-            \Log::info("finalizdo sincronización cliente {$component}");
+            });
 
         }
+
+        if($component == 'clientes-sisafi'){
+
+            $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
+
+            $generos          = getDetailHomologationDefinitions('gender');
+
+            $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
+
+            $fechaActual = new DateTime();  // Fecha y hora actual
+            $fechaActual->sub(new DateInterval('P2D'));  // Restar 2 días
+
+            $fecha_proceso = $fechaActual->format('Y-m-d');  // Formato de salida: YYYY-MM-DD
+
+            ClientesSeac::whereDate('fecha_creacion', '>=', $fecha_proceso)->cursor()->each(function ($cliente) use ($codetypedocument, $ciudades){
+
+                if($cliente->identificacion == 1)
+                    return; // Salta esta iteración y pasa al siguiente cliente
+
+                $customer = IcmCustomer::where(['document_number' => $cliente->identificacion])->first();
+                if($customer)
+                    return; // Salta esta iteración y pasa al siguiente cliente
+
+                if(empty($cliente->primer_nombre) || empty($cliente->primer_apellido))
+                    return;
+
+                $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
+                $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
+                $gender        = isset($generos[$cliente->genero]) ? $generos[$cliente->genero] : NULL;
+
+                $clientenew = IcmCustomer::create([
+                    'document_type'       => $document_type,
+                    'document_number'     => $cliente->identificacion,
+                    'first_name'          => $cliente->primer_nombre,
+                    'second_name'         => $cliente->segundo_nombre,
+                    'first_surname'       => $cliente->primer_apellido,
+                    'second_surname'      => $cliente->segundo_apellido,
+                    'birthday_date'       => $cliente->fecha_nacimiento,
+                    'phone'               => $cliente->celular,
+                    'email'               => $cliente->correo,
+                    'icm_municipality_id' => $ciudades_dian,
+                    'address'             => $cliente->direccion,
+                    'gender'              => $gender,
+                    'type_regime_id'      => 49,
+                    'user_created'        => 1
+                ]);
+
+            });
+
+        }
+
+
+        // if($component == 'customers' || $component == 'initialization'){
+
+        //     $codetypedocument = getDetailHomologationDefinitions('identification_document_types');
+
+        //     $clientes = Clientes::selectRaw("
+        //             cedula,
+        //             tipdoc,
+        //             digitov,
+        //             nombre,
+        //             primer_nombre,
+        //             segundo_nombre,
+        //             primer_apellido,
+        //             segundo_apellido,
+        //             direccion,
+        //             IFNULL(telefono1, telefono2) AS telefono,
+        //             IFNULL(emailfe, email) AS email,
+        //             ciudades_dian,
+        //             regimen_fiscal"
+        //         )
+        //         ->whereRaw("primer_nombre IS NOT NULL AND primer_apellido IS NOT  NULL")
+        //         ->get();
+
+        //     foreach ($clientes as $key => $cliente) {
+
+        //         $cliente->cedula = trim($cliente->cedula);
+        //         $customer = IcmCustomer::where(['document_number' => $cliente->cedula])->first();
+
+        //         if(!$customer){
+
+        //             $document_type = isset($codetypedocument[$cliente->tipdoc]) ?  $codetypedocument[$cliente->tipdoc] : $codetypedocument[13];
+
+        //             IcmCustomer::create([
+        //                 'document_type'             => $document_type,
+        //                 'document_number'           => $cliente->cedula,
+        //                 'first_name'                => $cliente->primer_nombre,
+        //                 'second_name'               => $cliente->segundo_nombre,
+        //                 'first_surname'             => $cliente->primer_apellido,
+        //                 'second_surname'            => $cliente->segundo_apellido,
+        //                 'phone'                     => $cliente->telefono,
+        //                 'email'                     => $cliente->email,
+        //                 'icm_municipality_id'       => $cliente->ciudades_dian,
+        //                 'address'                   => $cliente->direccion,
+        //                 'type_regime_id'            => $cliente->regimen_fiscal,
+        //                 'user_created'              => 1
+        //             ]);
+
+        //         }
+
+        //     }
+
+        //     \Log::info("finalizdo sincronización cliente {$component}");
+
+        // }
 
         # Debe venir identificación;
         if($component == 'customer' && !empty($document_number)){
@@ -340,7 +435,6 @@ if (!function_exists('synchronizePOSSystem')) {
 
             \Log::info("finalizdo sincronización cliente {$component}  cedula: $document_number");
         }
-
 
 
         \Log::info("finalizdo proceso");
@@ -470,6 +564,9 @@ if (!function_exists('validateClosure')) {
 
                 // Ejecutar covertura en segundo plano
                 ExecuteCoverage::dispatch($coverage_date);
+
+                # Ejecutar creacion de usuarios sisafi
+                SynchronizationTask::dispatch('clientes-sisafi');
 
                 DB::commit();
 
