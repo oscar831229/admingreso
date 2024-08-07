@@ -24,22 +24,14 @@ class IcmIncomeItem extends Model
     ];
 
     private $columnsdatatable = array(
-        array( 'db' => 'ic.id' , 'dt' => 0),
-        array( 'db' => 'icie.lot_number' , 'dt' => 1),
-        array( 'db' => 'icie.invima_registration' , 'dt' => 2),
-        array( 'db' => 'icie.box_number' , 'dt' => 3),
-        array( 'db' => 'icie.expiration_date' , 'dt' => 4),
-        array( 'db' => 'ic.date_in' , 'dt' => 5),
-        array( 'db' => 'ic.date_use' , 'dt' => 5),
-        array( 'db' => 'ic.date_end' , 'dt' => 5),
-        array( 'db' => 'u.name' , 'dt' => 5),
-        array( 'db' => "RTRIM(LTRIM(CONCAT(IFNULL(p.first_name, ''), ' ', IFNULL(p.second_name, ''), ' ', IFNULL(p.first_surname, ''), ' ', IFNULL(p.second_surname, ''))))" , 'dt' => 5),
-        array( 'db' => "CASE
-                    WHEN IFNULL(ic.date_use, '') = '' AND IFNULL(ic.date_end, '') = '' THEN 'P'
-                    WHEN IFNULL(ic.date_use, '') <> '' AND IFNULL(ic.date_end, '') = '' THEN 'U'
-                    WHEN IFNULL(ic.date_use, '') <> '' AND IFNULL(ic.date_end, '') <> '' THEN 'T'
-                    ELSE 'DESCONOCIDO'
-                END" , 'dt' => 5)
+        array( 'db' => 'ieii.id' , 'dt' => 0),
+        array( 'db' => 'ieii.code' , 'dt' => 1),
+        array( 'db' => 'ieii.name' , 'dt' => 2),
+        array( 'db' => 'ieii.value' , 'dt' => 3),
+        array( 'db' => 'ieii.value_high' , 'dt' => 4),
+        array( 'db' => 'ieii.number_places' , 'dt' => 5),
+        array( 'db' => 'u.name' , 'dt' => 6),
+        array( 'db' => "CASE WHEN ieii.state = 'A' THEN 'Activo' ELSE 'Inactivo' END" , 'dt' => 7)
     );
 
     public function getDataTable($param){
@@ -50,6 +42,7 @@ class IcmIncomeItem extends Model
             ieii.code,
             ieii.name,
             ieii.value,
+            ieii.value_high,
             ieii.number_places,
             u.name as user_created,
             ieii.state,

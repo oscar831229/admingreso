@@ -18,6 +18,8 @@ company = {
 
   newcompany : function(){
     this.resetForm()
+    $('#form-icm-companies-agreements').find('#document_number').attr('disabled', false);
+    $('#form-icm-companies-agreements').find('#name').attr('disabled', false);
     $('#md-new-company').modal();
   },
 
@@ -246,6 +248,8 @@ company = {
             if(response.success){
                 company.data = response.data;
                 company.loadDatacompany();
+                $('#form-icm-companies-agreements').find('#document_number').attr('disabled', true);
+                $('#form-icm-companies-agreements').find('#name').attr('disabled', true);
             }else{
                 Biblioteca.notificaciones(response.message, 'Comercios aliados', 'error');
             }

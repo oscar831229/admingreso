@@ -12,13 +12,10 @@ class IcmCompaniesAgreement extends Model
     private $columnsdatatable = array(
         array( 'db' => 'ica.id' , 'dt' => 0),
         array( 'db' => 'dd.name' , 'dt' => 1),
-        array( 'db' => 'ica.document_number' , 'dt' => 1),
-        array( 'db' => 'ica.name' , 'dt' => 1),
-        array( 'db' => 'ica.phone' , 'dt' => 1),
-        array( 'db' => 'ica.address' , 'dt' => 1),
-        array( 'db' => 'ica.email' , 'dt' => 1),
-        array( 'db' => 'u.name' , 'dt' => 1),
-        array( 'db' => 'ica.state' , 'dt' => 1),
+        array( 'db' => 'ica.document_number' , 'dt' => 2),
+        array( 'db' => 'ica.name' , 'dt' => 3),
+        array( 'db' => 'ica.phone' , 'dt' => 4),
+        array( 'db' => "CASE WHEN ica.state = 'A' THEN 'Activa' ELSE 'Inactiva' END", 'dt' => 4),
     );
 
     public function getDataTable($param){

@@ -18,6 +18,7 @@ class IcmLiquidationDetail extends Model
         'icm_affiliate_category_id',
         'category_presented_code',
         'icm_family_compensation_fund_id',
+        'fidelidad',
         'nit_company_affiliates',
         'name_company_affiliates',
         'icm_liquidation_id',

@@ -144,7 +144,8 @@
                             <th class="search-disabled">#</th>
                             <th>Código</th>
                             <th>Nombre</th>
-                            <th>Valor</th>
+                            <th>Venta tem. Baja</th>
+                            <th>Venta tem. Alta</th>
                             <th>Cupos</th>
                             <th>U. creacion</th>
                             <th>Estado</th>
@@ -228,7 +229,7 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         {!! Form::label('icm_type_subsidy_id','Tipo subsidio <span class="text-danger">*</span>', [], false) !!}
-                                        {!! Form::select('icm_type_subsidy_id',$subsidies,null, array('class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
+                                        {!! Form::select('icm_type_subsidy_id',$subsidies,null, array('class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'style' => 'height: 25px;', 'data-live-search'=>'true')) !!}
                                     </div>
                                 </div>
                                 <div class="col-sm-12">

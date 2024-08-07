@@ -184,7 +184,8 @@ services = {
                 url: '/income/datatable-parameterization-agreements',
                 type: "POST",
                 data: {
-                    '_token' : $('input[name=_token]').val()
+                    '_token' : $('input[name=_token]').val(),
+                    state    : $('#state').val()
                 },
                 "dataSrc": function (json) {
                     return json.data;
@@ -194,18 +195,22 @@ services = {
             columnDefs: [{
                 targets: "_all",
                 orderable: false,
-            },{ "width": "150px", "targets": 1 }],
+            },{ "width": "150px", "targets": 1 },{ "width": "50px", "targets": 8 }],
 
             initComplete: function () {
             },
             createdRow: function (row, data, index) {
 
-                btnedit = '<a href="javaScript:void(0)" data-id="'+data[0]+'" class="mr-2 edit-agreement" title="Editar servicio de ingreso">'
+                btnedit = data[7] == 'A' ? '<a href="javaScript:void(0)" data-id="'+data[0]+'" class="mr-2 edit-agreement" title="Editar información del convenio">'
                     + '<i class="fa fa-edit text-success"></i>'
-                    + '</a>';
+                    + '</a>' : '';
+
+                btnview = `<a href="javaScript:void(0)" data-id="${data[0]}" class="mr-2 view-agreement" title="Ver información del convenio">
+                    <i class="fa fa-eye text-primary"></i>
+                </a>`;
 
                 $('td', row).eq(7).html(getLableState(data[7])).addClass('dt-center');
-                $('td', row).eq(8).html(btnedit).addClass('dt-center');
+                $('td', row).eq(8).html(btnview + btnedit).addClass('dt-center');
                 $('td', row).eq(0).html(data[9]).addClass('dt-center');
             }
         });
@@ -335,6 +340,15 @@ services = {
     },
 
     ediAgreement : function(){
+
+        $('#form-agreement').find('#name').attr('disabled', false);
+        $('#form-agreement').find('#code').attr('disabled', false);
+        $('#form-agreement').find('#icm_companies_agreement_name').attr('disabled', false);
+        $('#form-agreement').find('#date_from').attr('disabled', false);
+        $('#form-agreement').find('#date_to').attr('disabled', false);
+        $('#form-agreement').find('#observations').attr('disabled', false);
+        $('#btn-save-agreement').show()
+
         const icm_agreement_id = $(this).data('id');
         var element = $(this);
         btn.loading(element);
@@ -382,6 +396,65 @@ services = {
         },100)
     },
 
+    viewAgreement : function(){
+
+        const icm_agreement_id = $(this).data('id');
+
+        var element = $(this);
+        btn.loading(element);
+        setTimeout(function(){
+            $.ajax({
+                url: '/income/parameterization-agreements/' + icm_agreement_id,
+                async: true,
+                data: {},
+                beforeSend: function(objeto){
+
+                },
+                complete: function(objeto, exito){
+                    btn.reset(element);
+                    if(exito != "success"){
+                        alert("No se completo el proceso!");
+                    }
+                },
+                contentType: "application/x-www-form-urlencoded",
+                dataType: "json",
+                error: function(objeto, quepaso, otroobj){
+                    alert("Ocurrio el siguiente error: "+quepaso);
+                    btn.reset(element);
+                },
+                global: true,
+                ifModified: false,
+                processData:true,
+                success: function(response){
+                    btn.reset(element);
+                    if(response.success){
+
+                        services.viewFormNewEnvironmentService();
+                        loadDataForm('form-agreement', response.data);
+                        $('#value').trigger('change');
+                        loadIncomeRates('body', response.income_item_detail);
+                        checkIncomeTypes('#example-0', response.agreement_typeincomes);
+
+                        $('#icm_environment_icm_menu_item_id').selectpicker('refresh');
+
+                        $('#form-agreement').find('#name').attr('disabled', true);
+                        $('#form-agreement').find('#code').attr('disabled', true);
+                        $('#form-agreement').find('#icm_companies_agreement_name').attr('disabled', true);
+                        $('#form-agreement').find('#date_from').attr('disabled', true);
+                        $('#form-agreement').find('#date_to').attr('disabled', true);
+                        $('#form-agreement').find('#observations').attr('disabled', true);
+                        $('#btn-save-agreement').hide()
+
+
+                    }else{
+                    }
+                },
+                timeout: 30000,
+                type: 'GET'
+            });
+        },100)
+    },
+
     init : function(){
 
         $("body").on('change click keyup input paste', '.monto' ,(function (event) {
@@ -394,6 +467,8 @@ services = {
         $('body').on('click', '#btn-new-environment-service', this.viewFormNewEnvironmentService);
         $('body').on('click', '.edit-agreement', this.ediAgreement);
         $('body').on('click', '#btn-save-agreement', this.confirmSaveAgreement);
+        $('body').on('change', '#state', this.loadTableServices);
+        $('body').on('click', '.view-agreement', this.viewAgreement);
 
         this.loadTableServices();
 

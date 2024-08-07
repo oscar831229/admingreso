@@ -37,6 +37,7 @@ class IcmLiquidationService extends Model
             ild.id,
             ild.document_number,
             CONCAT(IFNULL(ild.first_name, ''), ' ', IFNULL(ild.second_name, ''), ' ', IFNULL(ild.first_surname, ''), ' ', IFNULL(ild.second_surname,'')) AS person_name,
+            ild.fidelidad,
             iti.name AS icm_types_income_name,
             iac.name AS icm_affiliate_category_name,
             IFNULL(ifcf.name, '') AS icm_family_compensation_fund_name

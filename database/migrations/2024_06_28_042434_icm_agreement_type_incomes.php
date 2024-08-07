@@ -37,6 +37,7 @@ class IcmAgreementTypeIncomes extends Migration
             $table->unsignedBigInteger('user_created');
             $table->unsignedBigInteger('user_updated')->nullable();
             $table->timestamps();
+            $table->unique(['icm_agreement_id', 'icm_types_income_id', 'icm_affiliate_category_id']);
         });
     }
 

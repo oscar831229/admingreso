@@ -48,10 +48,10 @@ class IcmAgreement extends Model
         ->orderBy('ica.name', 'ASC')
         ->orderBy('ig.date_from', 'ASC');
 
-        # Estado del consumible
-        // if(isset($param['extradata']['icm_environment_id'])) {
-        //     $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
-        // }
+        # Filtrando por estados del convenio
+        if(isset($param['extradata']['state'])) {
+            $asset->whereRaw("ig.state = '{$param['extradata']['state']}'");
+        }
 
         $where = '';
         $bindings = array();
@@ -100,11 +100,10 @@ class IcmAgreement extends Model
         // ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
         ->join('icm_companies_agreements AS ica', 'ica.id', '=','ig.icm_companies_agreement_id');
 
-        # Estado del consumible
-        // if(isset($param['extradata']['icm_environment_id'])) {
-        //     $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
-        // }
-
+        # Filtrando por estados del convenio
+        if(isset($param['extradata']['state'])) {
+            $asset->whereRaw("ig.state = '{$param['extradata']['state']}'");
+        }
 
         $bindings = array();
         $wheretable = SSP::filter( $_POST, $this->columnsdatatable, $bindings );
@@ -135,10 +134,10 @@ class IcmAgreement extends Model
         // ->join('icm_environments AS ie', 'ie.id', '=','ig.icm_environment_id')
         ->join('icm_companies_agreements AS ica', 'ica.id', '=','ig.icm_companies_agreement_id');
 
-        # Estado del consumible
-        // if(isset($param['extradata']['icm_environment_id'])) {
-        //     $asset->whereRaw("ig.icm_environment_id = '{$param['extradata']['icm_environment_id']}'");
-        // }
+        # Filtrando por estados del convenio
+        if(isset($param['extradata']['state'])) {
+            $asset->whereRaw("ig.state = '{$param['extradata']['state']}'");
+        }
 
         $datares['cantotal'] = $asset->count();
 

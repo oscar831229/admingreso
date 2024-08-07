@@ -114,12 +114,12 @@ class TableIncomeGenerate extends Migration
             $table->decimal('value', 20, 2);
             $table->decimal('value_high', 20, 2);
             $table->decimal('code_seac', 12, 0);
-            $table->unsignedBigInteger('icm_type_subsidy_id');
-            $table->foreign('icm_type_subsidy_id','fk_subsidies_incomeitem_id')
-                ->references('id')
-                ->on('icm_type_subsidies')
-                ->onDelete('restrict')
-                ->onUpdate('restrict');
+            $table->unsignedBigInteger('icm_type_subsidy_id')->nullable();
+            // $table->foreign('icm_type_subsidy_id','fk_subsidies_incomeitem_id')
+            //     ->references('id')
+            //     ->on('icm_type_subsidies')
+            //     ->onDelete('restrict')
+            //     ->onUpdate('restrict');
 
             $table->text('observations')->nullable();
 

@@ -159,6 +159,30 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <div class="col-sm-4">
+                          <h6 class="tx-inverse tx-uppercase tx-bold tx-14 mg-t-80 mg-b-10 mt-4">
+                            <i class="fa fa-play-circle text-success" aria-hidden="true"></i> Estado convenios
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-2 mb-4">
+                            <select class="form-control form-control-sm" style="height: 25px;margin-left: 10px;" id="state" required="required" name="state">
+                                <option value="">Seleccione .. </option>
+                                <option value="A" selected="selected">Activo</option>
+                                <option value="I">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4 col-md-3 mg-t-20 mg-sm-t-0" id="div-new-consumable" style="display:none;">
+                            <button class="btn btn-warning btn-block mg-b-10 btn-sm" id="btn-new-product"><i class="fa fa-shopping-cart mg-r-10"></i> Nuevo consumible</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
                 <table class="table table-hover" id="tbl-agreements" style="width: 100% !important;">
                     <thead>
                         <tr>

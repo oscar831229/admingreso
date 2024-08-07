@@ -23,7 +23,7 @@ class CrearMenuSeeder extends Seeder
             array('id' => '5'  , 'menu_id'  => '1' , 'nombre' => 'Emails'                     , 'url' => 'Admin/emails'                        , 'orden' => '5'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '6'  , 'menu_id'  => '1' , 'nombre' => 'Plantillas'                 , 'url' => 'Admin/plantillas'                    , 'orden' => '6'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '7'  , 'menu_id'  => '0' , 'nombre' => 'Parametros ingresos' , 'url' => '#'                                   , 'orden' => '7'  , 'icono' => 'fa fa-arrow-right', 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '8'  , 'menu_id'  => '7' , 'nombre' => 'Ambientes'                  , 'url' => 'income/environments'                 , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '8'  , 'menu_id'  => '7' , 'nombre' => 'Ambientes POS'                  , 'url' => 'income/environments'                 , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '9'  , 'menu_id'  => '7' , 'nombre' => 'Tipos de tarifa'            , 'url' => 'income/rate-types'                   , 'orden' => '9'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '10' , 'menu_id'  => '7' , 'nombre' => 'Categorias cajasan'         , 'url' => 'income/affiliate-categories'         , 'orden' => '11'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '11' , 'menu_id'  => '7' , 'nombre' => 'Calendario temporada'       , 'url' => 'income/special-rates'                , 'orden' => '12'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
@@ -38,7 +38,7 @@ class CrearMenuSeeder extends Seeder
             array('id' => '20' , 'menu_id'  => '16' , 'nombre' => 'Reportes'                  , 'url' => 'income/income-reports'               , 'orden' => '21' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             // array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'        , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '21'  , 'menu_id'  => '1' , 'nombre' => 'Configuración sistema'     , 'url' => 'Admin/system-configuration'                    , 'orden' => '15'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '22'  , 'menu_id'  => '7' , 'nombre' => 'Subsidios'                 , 'url' => 'income/subsidies'                    , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '22'  , 'menu_id'  => '7' , 'nombre' => 'Tipos de subsidios'                 , 'url' => 'income/subsidies'                    , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '23' , 'menu_id'  => '16' , 'nombre' => 'Coberturas'                , 'url' => 'income/coverages'                    , 'orden' => '20' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
         ];
 

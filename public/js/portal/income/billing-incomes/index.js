@@ -143,12 +143,15 @@ invoice = {
     },
 
     searchForClient : function(){
+
         invoice.disableFields(false);
-        let document_number = $('#document_number').val();
+        let document_number    = $('#document_number').val();
+        let icm_liquidation_id = invoice.icm_liquidation_id;
+
         if(document_number.trim() != ''){
             $("#loading").css("display", "block");
             $.ajax({
-                url: '/income/search-client-document/' + document_number,
+                url: '/income/search-client-document/' + document_number  + '?icm_liquidation_id=' + icm_liquidation_id,
                 async: true,
                 data: {},
                 beforeSend: function(objeto){
@@ -186,7 +189,14 @@ invoice = {
                         }
 
                         if(response.grupo_afilaido.length == 0){
-                            $("#icm_types_income_id option:contains('PARTICULAR')").prop('selected', true).trigger('change');
+
+                            $('#icm_types_income_id').val(response.type_income_people).trigger('change');
+
+                            setTimeout(() => {
+                                $('#icm_affiliate_category_id').val(response.category_income_people);
+                            }, 600);
+                            // $("#icm_types_income_id option:contains('PARTICULAR')").prop('selected', true).trigger('change');
+
                         }
 
                         if(!response.control_service){
@@ -245,16 +255,20 @@ invoice = {
             let check = document_number == value.document_number ? 'check-selected' : '';
             let fecha_nacimiento = formatearFecha(value.birthday_date);
 
+            var fidelidad = value.fidelidad == 'NO' ? 'NO' : '<label class="badge badge-success">SI</label>';
+
             tr += `<tr class="even pointer">
                 <td class="a-center ">
                     <input type="checkbox" class="flat check-affiliate ${check}" data-index="${index}">
                 </td>
                 <td class=" ">${value.document_number}</td>
                 <td class=" ">${value.first_name} ${value.second_name} ${value.first_surname} ${value.second_surname}</td>
+                <td class=" ">${fidelidad}</td>
                 <td class=" ">${value.icm_affiliate_category_code}</td>
                 <td class=" ">${value.gender_code}</td>
                 <td class=" ">${fecha_nacimiento}</td>
                 <td class="a-right a-right ">${value.number_years}</td>
+                <td class="a-right a-right ">${value.nit_company_affiliates}</td>
                 <td class="a-right a-right ">${value.name_company_affiliates}</td>
                 </td>
             </tr>`;
@@ -506,6 +520,7 @@ invoice = {
                                                 <th>#</th>
                                                 <th style="width: 20%">Número identificación</th>
                                                 <th style="width: 30%">Nombre usuario</th>
+                                                <th>Fidelidad</th>
                                                 <th>Tipo ingreso</th>
                                                 <th>Categoria</th>
                                                 <th>Caja sin fronteras</th>
@@ -645,6 +660,7 @@ invoice = {
                     +'    <td>'+ number +'</td>'
                     +'    <td>'+ detail.document_number +'</td>'
                     +'    <td>'+ detail.person_name +'</td>'
+                    +'    <td>'+ detail.fidelidad +'</td>'
                     +'    <td>'+ detail.icm_types_income_name +'</td>'
                     +'    <td>'+ detail.icm_affiliate_category_name +'</td>'
                     +'    <td>'+ detail.icm_family_compensation_fund_name +'</td>'

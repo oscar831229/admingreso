@@ -127,7 +127,7 @@ class Compute
     public static function calculateTaxes($icm_menu_items, $total_value){
 
         $response = new \stdClass();
-        $response->base        = 0;
+        $response->base        = $total_value;
         $response->iva         = 0;
         $response->impoconsumo = 0;
 

@@ -31,9 +31,11 @@ use App\Models\Income\IcmSpecialRate;
 use App\Models\Income\IcmTypesIncome;
 
 use Illuminate\Support\Facades\DB;
-use App\Jobs\ExecuteCoverage;
 
 use App\Jobs\SynchronizationTask;
+use App\Jobs\ClosingTasks;
+use App\Jobs\ExecuteCoverage;
+
 
 
 if (!function_exists('synchronizePOSSystem')) {
@@ -562,12 +564,12 @@ if (!function_exists('validateClosure')) {
 
                 DB::beginTransaction();
 
-                # Cancelar liquidaciones
-                $affected = DB::update('UPDATE icm_liquidations SET is_deleted = 1 WHERE liquidation_date < ?', [$pos->fecha]);
-
                 # Actualizar fecha sistema
                 $system->system_date = $pos->fecha;
                 $system->update();
+
+                # Ejecutar tareas de mantenimiento de cierre
+                ClosingTasks::dispatch($system->system_date);
 
                 // Ejecutar covertura en segundo plano
                 ExecuteCoverage::dispatch($coverage_date);
@@ -576,6 +578,8 @@ if (!function_exists('validateClosure')) {
                 SynchronizationTask::dispatch('clientes-sisafi');
 
                 DB::commit();
+
+
 
                 Session::forget('fecha_pos');
                 getSystemDate();

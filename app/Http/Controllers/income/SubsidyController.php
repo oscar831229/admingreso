@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Income\IcmTypeSubsidy;
 use App\Clases\DataTable\TableServer;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Amadeus\TiposSubsidio;
 
 
 class SubsidyController extends Controller
@@ -57,9 +58,26 @@ class SubsidyController extends Controller
         $data = $request->all();
         $user = auth()->user();
         if(isset($data['id']) && !empty($data['id'])){
-            IcmTypeSubsidy::find($data['id'])->update(array_merge($request->all(), ['user_updated' => $user->id ]));
+            $type_subsidy = IcmTypeSubsidy::find($data['id']);
+            $type_subsidy->update(array_merge($request->all(), ['user_updated' => $user->id ]));
         }else{
-            IcmTypeSubsidy::create(array_merge($request->all(), ['user_created' => $user->id ]));
+            $type_subsidy = IcmTypeSubsidy::create(array_merge($request->all(), ['user_created' => $user->id ]));
+        }
+
+        # Registrar en tabla del POS
+        $subsidio = TiposSubsidio::find($type_subsidy->id);
+        if(!$subsidio){
+            $subsidio = new TiposSubsidio;
+            $subsidio->id = $type_subsidy->id;
+            $subsidio->codigo = $type_subsidy->code;
+            $subsidio->nombre = $type_subsidy->name;
+            $subsidio->estado = $type_subsidy->state;
+            $subsidio->save();
+        }else{
+            $subsidio->codigo = $type_subsidy->code;
+            $subsidio->nombre = $type_subsidy->name;
+            $subsidio->estado = $type_subsidy->state;
+            $subsidio->update();
         }
 
         return response()->json([

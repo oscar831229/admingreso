@@ -162,9 +162,10 @@ services = {
                     + '<i class="fa fa-assistive-listening-systems text-primary"></i>'
                     + '</a>';
 
-                $('td', row).eq(6).html(getLableState(data[6])).addClass('dt-center');
-                $('td', row).eq(7).html(btnedit + btnassign).addClass('dt-center');
-                $('td', row).eq(0).html(data[8]).addClass('dt-center');
+                $('td', row).eq(7).html(getLableState(data[7])).addClass('dt-center');
+                $('td', row).eq(8).html(btnedit + btnassign).addClass('dt-center');
+                $('td', row).eq(0).html(data[9]).addClass('dt-center');
+
             }
         });
 
@@ -237,6 +238,25 @@ services = {
     },
 
     confirmSaveIncomeItem : function(){
+
+        // Validar que el tipo de subsidio aplique en caso que existan tarifas diferenciales con subsidio
+        var is_subsidy = false;
+        $('.subsidio_venta').each(function(index, element){
+            if($(element).val() != '' && $(element).val() > 0){
+                is_subsidy = true;
+            }
+        });
+
+        $('#icm_type_subsidy_id').attr('required', false);
+        $('#icm_type_subsidy_id').removeClass('is-invalid');
+        if(is_subsidy){
+            $('#icm_type_subsidy_id').attr('required', true);
+        }
+
+        if($('#icm_type_subsidy_id').val() == '' && !is_subsidy){
+            Biblioteca.notificaciones('No se ha indicado los valores de subsidio aplicados', 'Ingresos a sedes', 'warning');
+            return false;
+        }
 
         if(!$('#form-environment-income-items').valid()){
             Biblioteca.notificaciones('Existen datos pendientes de diligenciar.', 'Ingresos a sedes', 'warning');

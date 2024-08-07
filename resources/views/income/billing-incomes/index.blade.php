@@ -253,7 +253,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div id="div-apply-to-agreement">
-                                    <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i>Convenidos vigentes</h6>
+                                    <h6 style="color:black;" class="mt-4"><i class="fa fa-chevron-right text-primary" aria-hidden="true"></i>Convenios vigentes</h6>
                                     <hr style="color: blue; margin-top: 0rem !important;">
                                     <div class="row">
                                         <div class="col-sm-6">
@@ -359,10 +359,12 @@
                               </th>
                               <th class="column-title">Documento</th>
                               <th class="column-title">Nombre</th>
+                              <th class="column-title">Fidelidad</th>
                               <th class="column-title">Categoria</th>
                               <th class="column-title">Sexo</th>
                               <th class="column-title">Fecha nacimiento</th>
                               <th class="column-title">Edad</th>
+                              <th class="column-title">Nit</th>
                               <th class="column-title">Empresa</th>
                               <th class="bulk-actions" colspan="7">
                                 <a class="antoo" style="color:#fff; font-weight:500;">Personas seleccionadas ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>

@@ -42,6 +42,35 @@
             text-transform: lowercase !important;
         }
 
+        /*
+      Full screen Modal
+      */
+      .modal-dialog {
+        max-width: 10000px;
+      }
+
+      .fullscreen-modal .modal-dialog {
+        margin: 0;
+        margin-right: auto;
+        margin-left: auto;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .fullscreen-modal .modal-dialog {
+          width: 750px;
+        }
+      }
+      @media (min-width: 992px) {
+        .fullscreen-modal .modal-dialog {
+          width: 970px;
+        }
+      }
+      @media (min-width: 1200px) {
+        .fullscreen-modal .modal-dialog {
+          width: 1170px;
+        }
+      }
+
     </style>
 @endsection
 
@@ -143,55 +172,75 @@
     </div>
   </div>
 
-    {{--  Modal nuevo o actualización producto --}}
-    <div class="modal fade" id="md-rate-type" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+
+    {{--  Modal detalle de liquidación --}}
+    <div class="modal fullscreen-modal fade show" id="md-liquidation-invoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" >
             <div class="modal-content">
                 <div class="modal-header text-white bg-primary">
-                    <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Categoria afiliados</span></h6>
+                    <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Liquidación</span></h6>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row mb-4">
-                        <div class="col-xl-12 mg-t-20 mg-xl-t-0">
-                            <div class="form-layout form-layout-5 bd-info">
-                                {{ Form::open(array(
-                                    'id'=>'form-liquidations',
-                                    'autocomplete'=>'off',
-                                    'onsubmit' => 'return false;'
-                                )) }}
-                                    <div class="form-group">
-                                        {!! Form::label('code','Código <span class="text-danger">*</span>', [], false) !!}
-                                        {!! Form::text('code', null, array('placeholder' => 'Código categoria','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
-                                        {!! Form::hidden('id') !!}
-                                    </div>
-                                    <div class="form-group">
-                                        {!! Form::label('name','Nombre <span class="text-danger">*</span>', [], false) !!}
-                                        {!! Form::text('name', null, array('placeholder' => 'Nombre categoria','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
-                                    </div>
-                                    <div class="form-group">
-                                        {!! Form::label('state','Estado <span class="text-danger">*</span>', [], false) !!}
-                                        {!! Form::select('state',['A'=>'Activa', 'I' => 'Inactiva'],null, array('id' => 'state','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
-                                    </div>
-                                {{ Form::close() }}
-                                <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <div class="form-group">
-                                            <br>
-                                            <button class="btn btn-success btn-sm" id="btn-save"><i class="fa fa-floppy-o mg-r-10"></i> Guardar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- form-layout -->
+                    <div class="row">
+                        <div class="col-sm-6 text-left">
+                            <h4><i class="fa fa-calculator text-primary mr-2" aria-hidden="true"></i> LIQUIDACIÓN: <span id="number-liquidation" style="font-weight: 900; color: #11239c;"></span></h4>
+                        </div>
+                        <div class="col-sm-6 text-left">
+                            <h4><i class="fa fa-money text-primary mr-2" aria-hidden="true"></i> FACTURA: <span id="number-invoice" style="font-weight: 900; color: #11239c;"></span></h4>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6><i class="fa fa-server text-primary" aria-hidden="true"></i> SERVICIO LIQUIDADOS</h6>
+                            <table class="table table-hover" id="tbl-details" style="width: 100% !important;">
+                                <thead>
+                                    <tr>
+                                        <th class="search-disabled" style="width: 5%">#</th>
+                                        <th>Nombre servicio</th>
+                                        <th>Código Tarifa</th>
+                                        <th>Subsidio</th>
+                                        <th>Valor</th>
+                                        <th>Iva</th>
+                                        <th>Impoconsumo</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="7" class="text-right">Subtotal</th>
+                                        <th id="subtotal" style="padding-left: 10px !important;">$0.00</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="7" class="text-right">Iva</th>
+                                        <th id="iva" style="padding-left: 10px !important;">$0.00</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="7" class="text-right">Impoconsumo</th>
+                                        <th id="impoconsumo" style="padding-left: 10px !important;">$0.00</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="7" class="text-right">Subsidio</th>
+                                        <th id="total_subsidy" style="padding-left: 10px !important;">$0.00</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="7" class="text-right" style="font-size: 16px;">Total</th>
+                                        <th id="total" style="padding-left: 10px !important; font-size: 16px;">$0.00</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                 </div>
             </div>
         </div>
     </div>
-    {{--  Fin modal nuevo o actualización producto  --}}
+    {{--  Fin modal detalle liquidacion facturada  --}}
+
 @endsection

@@ -57,8 +57,13 @@ class ParameterizationAgreementController extends Controller
 
         $icm_environment_id = 0;
         $request = request();
+
         if($request->has('icm_environment_id')){
             $icm_environment_id = $request->icm_environment_id;
+        }
+
+        if($request->has('state')){
+            $extradata['state'] = $request->state;
         }
 
         $extradata['icm_environment_id'] = $icm_environment_id;

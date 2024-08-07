@@ -221,6 +221,10 @@ class IcmLiquidation extends Model
         return $this->hasMany('App\Models\Income\IcmLiquidationService');
     }
 
+    public function icm_liquidation_details(){
+        return $this->hasMany('App\Models\Income\IcmLiquidationDetail');
+    }
+
     public function icm_liquidation_payments(){
         return $this->hasMany('App\Models\Income\IcmLiquidationPayment');
     }

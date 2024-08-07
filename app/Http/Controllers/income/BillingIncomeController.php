@@ -35,9 +35,6 @@ use App\Services\AmadeusPosApiService;
 use Ramsey\Uuid\Uuid;
 use App\Models\Admin\IcmSystemConfiguration;
 
-
-
-
 class BillingIncomeController extends Controller
 {
 
@@ -164,10 +161,14 @@ class BillingIncomeController extends Controller
             'client'  => $client
         ];
 
-        # Información para facturación
+        # Consultar información para la generación de la factura
         if($request->has('notcategory')){
             return response()->json($response_master);
         }
+
+        # Tipo de ingreso defecto
+        $type_income_people     = IcmTypesIncome::where(['code' => 'PAR'])->first()->id;
+        $category_income_people = IcmAffiliateCategory::where(['code' => 'D'])->first()->id;
 
         # Consultar afiliados CAJASAN
         $afiliacion = new Afiliacion();
@@ -220,9 +221,10 @@ class BillingIncomeController extends Controller
 
             foreach ($grupo_afiliado as $key => $afiliado) {
 
-                $gender             = isset($genders[$afiliado['genero']]) ? $genders[$afiliado['genero']]: $genders['M'];
-                $edad               = calcularEdad($afiliado['fecha_nacimiento']);
-                $document_type      = isset($document_types[$afiliado['tipo_dcto_beneficiario']]) ? $document_types[$afiliado['tipo_dcto_beneficiario']] : $document_types['CC'];
+                $gender        = isset($genders[$afiliado['genero']]) ? $genders[$afiliado['genero']]: $genders['M'];
+                $edad          = calcularEdad($afiliado['fecha_nacimiento']);
+                $document_type = isset($document_types[$afiliado['tipo_dcto_beneficiario']]) ? $document_types[$afiliado['tipo_dcto_beneficiario']] : $document_types['CC'];
+                $fidelidad     = isset($afiliado['fidelidad']) ? $afiliado['fidelidad'] : 'NO';
 
 
                 $affiliate_group[] = [
@@ -249,38 +251,74 @@ class BillingIncomeController extends Controller
                     'name_company_affiliates'         => $trabajador['razon_social'],
                     'icm_family_compensation_fund_id' => null,
                     'icm_agreement_id'                => null,
-                    'number_years'                    => $edad
+                    'number_years'                    => $edad,
+                    'fidelidad'                       => $fidelidad
                 ];
             }
 
             # Convenios disponibles para afiliado
             $companies_agreements = IcmCompaniesAgreement::where(['document_number' => $trabajador['nit_empresa']])->first();
             if($companies_agreements){
+
+                $system_date = getSystemDate();
+
                 $agreements = \DB::table('icm_agreements AS ia')
                     ->selectRaw("
                         DISTINCT icg.name AS companies_name,
                         icg.document_number AS companies_document_number,
                         ia.*
                     ")
-                    ->join('icm_agreement_type_incomes AS iati', 'iati.icm_agreement_id', '=', 'ia.id')
                     ->join('icm_companies_agreements AS icg', 'icg.id', '=', 'ia.icm_companies_agreement_id')
+                    ->join('icm_agreement_type_incomes AS iati', 'iati.icm_agreement_id', '=', 'ia.id')
                     ->join('icm_types_incomes AS iti', 'iti.id', '=', 'iati.icm_types_income_id')
                     ->join('icm_affiliate_categories AS iac', 'iac.id', '=', 'iati.icm_affiliate_category_id')
                     ->where([
                         'icg.document_number' => $trabajador['nit_empresa'],
                         'iti.code'            => 'AFI',
                         'iac.code'            => $trabajador['categoria'],
-                        'iati.state'          => 'A'
-                    ])->get();
+                        'iati.state'          => 'A',
+                        'ia.state'            => 'A'
+                    ])
+                    ->whereDate('ia.date_from', '<=', $system_date)
+                    ->whereDate('ia.date_to'  , '>=', $system_date)
+                    ->get();
             }
 
         };
 
-        $response_master['grupo_afilaido']   = $affiliate_group;
-        $response_master['agreements']       = $agreements;
-        $response_master['document_number']  = $document_number;
-        $response_master['control_service' ] = $response['success'];
-        $response_master['error_service']    = !$response['success'] ? $response['message'] : '';
+
+        # Si es un particular cargar el tipo de presentacion
+        $icm_liquidation_id = 0;
+        if(count($affiliate_group) == 0 && $request->has('icm_liquidation_id') && is_numeric($request->icm_liquidation_id) && !empty($request->icm_liquidation_id)){
+
+            # Verificar si ingresa como presentado
+            $icm_liquidation_id = $request->icm_liquidation_id;
+            $icm_liquidation   = IcmLiquidation::find($icm_liquidation_id);
+
+            $presentado = $icm_liquidation->icm_liquidation_details()
+                ->select('icm_liquidation_details.*')
+                ->join('icm_types_incomes', 'icm_types_incomes.id', '=', 'icm_liquidation_details.icm_types_income_id')
+                ->where([
+                    'icm_liquidation_details.is_deleted' => 0,
+                    'icm_types_incomes.code'             => 'AFI',
+                    'icm_liquidation_details.fidelidad'  => 'NO'
+                ])
+                ->first();
+
+            if($presentado){
+                $type_income_people     = IcmTypesIncome::where(['code' => 'PRE'])->first()->id;
+                $category_income_people = $presentado->icm_affiliate_category_id;
+            }
+
+        }
+
+        $response_master['grupo_afilaido']         = $affiliate_group;
+        $response_master['agreements']             = $agreements;
+        $response_master['document_number']        = $document_number;
+        $response_master['control_service' ]       = $response['success'];
+        $response_master['error_service']          = !$response['success'] ? $response['message'] : '';
+        $response_master['type_income_people']     = $type_income_people;
+        $response_master['category_income_people'] = $category_income_people;
 
         return response()->json($response_master);
 
@@ -297,8 +335,8 @@ class BillingIncomeController extends Controller
 
     public function billingCompanyAgreement($icm_companies_agreement_id){
         $company_agreement = IcmCompaniesAgreement::find($icm_companies_agreement_id);
-        $date_system = date_system();
-        $icm_agreements = $company_agreement->icm_agreements()->orderBy('id', 'asc')->whereRaw("{$date_system} Between date_from and date_to")->get()->pluck('name', 'id');
+        $date_system       = getSystemDate();
+        $icm_agreements = $company_agreement->icm_agreements()->orderBy('id', 'asc')->whereRaw("'{$date_system}' Between date_from and date_to")->get()->pluck('name', 'id');
         return response()->json($icm_agreements);
     }
 
@@ -538,6 +576,7 @@ class BillingIncomeController extends Controller
                     'icm_affiliate_category_id'       => $client['icm_affiliate_category_id'],
                     'category_presented_code'         => $icm_affiliate_category->code,
                     'icm_family_compensation_fund_id' => $client['icm_family_compensation_fund_id'],
+                    'fidelidad'                       => isset($client['fidelidad']) ? $client['fidelidad'] : 'NO',
                     'nit_company_affiliates'          => isset($client['nit_company_affiliates']) ? $client['nit_company_affiliates'] : NULL,
                     'name_company_affiliates'         => isset($client['name_company_affiliates']) ? $client['name_company_affiliates'] : NULL,
                     'nit_company_agreement'           => isset($client['nit_company_agreement']) ? $client['nit_company_agreement'] : NULL,
@@ -806,7 +845,7 @@ class BillingIncomeController extends Controller
         $liquidation_lines = $icm_liquidation->icm_liquidation_services()->where(['is_deleted' => 0])->get();
         foreach ($liquidation_lines as $key => $liquidation_line) {
 
-            $discount = $liquidation_line->icm_type_subsidy_id == 0 ? 0 : $liquidation_line->discount;
+            $discount = $liquidation_line->icm_type_subsidy_id == 0 ? $liquidation_line->discount : $liquidation_line->subsidy;
 
             $icm_environment_icm_menu_item = IcmEnvironmentIcmMenuItem::find($liquidation_line->icm_environment_icm_menu_item_id);
 
@@ -817,9 +856,10 @@ class BillingIncomeController extends Controller
                 "iva"            => $liquidation_line->iva,
                 "impo"           => $liquidation_line->impoconsumo,
                 "total"          => $liquidation_line->total,
-                "subsidy"        => $liquidation_line->subsidy,
-                "type_subsidy"   => $liquidation_line->icm_type_subsidy_id
+                "discount_type"  => $liquidation_line->icm_type_subsidy_id,
+                "discount"       => $discount
             ];
+
         }
 
         return $data;

@@ -182,6 +182,7 @@ class TablasProcessInvoice extends Migration
             $table->string('second_surname', 150)->nullable();
             $table->tinyInteger('is_processed_affiliate')->default(0)->comment('Identifica si los datos se completaron con sisafi, aplica solo para afilaidos coberturas');
             $table->unsignedBigInteger('icm_types_income_id');
+            $table->string('fidelidad', 2)->default('NO');
             $table->unsignedBigInteger('icm_affiliate_category_id');
             $table->string('category_presented_code');
             $table->unsignedBigInteger('icm_family_compensation_fund_id')->nullable();
