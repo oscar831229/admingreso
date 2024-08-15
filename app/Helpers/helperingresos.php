@@ -241,100 +241,100 @@ if (!function_exists('synchronizePOSSystem')) {
 
 
         # Sincronizar base de datos SISAFI
-        // if($component == 'all' || $component == 'initialization'){
+        if($component == 'all' || $component == 'initialization'){
 
-        //     $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
+            $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
 
-        //     $generos          = getDetailHomologationDefinitions('gender');
+            $generos          = getDetailHomologationDefinitions('gender');
 
-        //     $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
+            $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
 
-        //     ClientesSeac::cursor()->each(function ($cliente) use ($codetypedocument, $ciudades, $generos){
+            ClientesSeac::cursor()->each(function ($cliente) use ($codetypedocument, $ciudades, $generos){
 
-        //         if($cliente->identificacion == 1)
-        //             return; // Salta esta iteración y pasa al siguiente cliente
+                if($cliente->identificacion == 1)
+                    return; // Salta esta iteración y pasa al siguiente cliente
 
-        //         $customer = IcmCustomer::where(['document_number' => $cliente->identificacion])->first();
-        //         if($customer)
-        //             return; // Salta esta iteración y pasa al siguiente cliente
+                $customer = IcmCustomer::where(['document_number' => $cliente->identificacion])->first();
+                if($customer)
+                    return; // Salta esta iteración y pasa al siguiente cliente
 
-        //         if(empty($cliente->primer_nombre) || empty($cliente->primer_apellido))
-        //             return;
+                if(empty($cliente->primer_nombre) || empty($cliente->primer_apellido))
+                    return;
 
-        //         $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
-        //         $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
-        //         $gender        = isset($generos[$cliente->genero]) ? $generos[$cliente->genero] : NULL;
+                $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
+                $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
+                $gender        = isset($generos[$cliente->genero]) ? $generos[$cliente->genero] : NULL;
 
-        //         $clientenew = IcmCustomer::create([
-        //             'document_type'       => $document_type,
-        //             'document_number'     => $cliente->identificacion,
-        //             'first_name'          => $cliente->primer_nombre,
-        //             'second_name'         => $cliente->segundo_nombre,
-        //             'first_surname'       => $cliente->primer_apellido,
-        //             'second_surname'      => $cliente->segundo_apellido,
-        //             'birthday_date'       => $cliente->fecha_nacimiento,
-        //             'phone'               => $cliente->celular,
-        //             'email'               => $cliente->correo,
-        //             'icm_municipality_id' => $ciudades_dian,
-        //             'address'             => $cliente->direccion,
-        //             'gender'              => $gender,
-        //             'type_regime_id'      => 49,
-        //             'user_created'        => 1
-        //         ]);
+                $clientenew = IcmCustomer::create([
+                    'document_type'       => $document_type,
+                    'document_number'     => $cliente->identificacion,
+                    'first_name'          => $cliente->primer_nombre,
+                    'second_name'         => $cliente->segundo_nombre,
+                    'first_surname'       => $cliente->primer_apellido,
+                    'second_surname'      => $cliente->segundo_apellido,
+                    'birthday_date'       => $cliente->fecha_nacimiento,
+                    'phone'               => $cliente->celular,
+                    'email'               => $cliente->correo,
+                    'icm_municipality_id' => $ciudades_dian,
+                    'address'             => $cliente->direccion,
+                    'gender'              => $gender,
+                    'type_regime_id'      => 49,
+                    'user_created'        => 1
+                ]);
 
-        //     });
+            });
 
-        // }
+        }
 
-        // if($component == 'clientes-sisafi'){
+        if($component == 'clientes-sisafi'){
 
-        //     $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
+            $codetypedocument = getDetailHomologationAlternativeDefinitions('identification_document_types');
 
-        //     $generos          = getDetailHomologationDefinitions('gender');
+            $generos          = getDetailHomologationDefinitions('gender');
 
-        //     $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
+            $ciudades         = CommonCity::selectRaw("CONCAT(TRIM(LEADING '0' FROM department_code), city_code) as codigo, id")->get()->pluck('id', 'codigo')->toArray();
 
-        //     $fechaActual = new DateTime();  // Fecha y hora actual
-        //     $fechaActual->sub(new DateInterval('P2D'));  // Restar 2 días
+            $fechaActual = new DateTime();  // Fecha y hora actual
+            $fechaActual->sub(new DateInterval('P2D'));  // Restar 2 días
 
-        //     $fecha_proceso = $fechaActual->format('Y-m-d');  // Formato de salida: YYYY-MM-DD
+            $fecha_proceso = $fechaActual->format('Y-m-d');  // Formato de salida: YYYY-MM-DD
 
-        //     ClientesSeac::whereDate('fecha_creacion', '>=', $fecha_proceso)->cursor()->each(function ($cliente) use ($codetypedocument, $ciudades,  $generos){
+            ClientesSeac::whereDate('fecha_creacion', '>=', $fecha_proceso)->cursor()->each(function ($cliente) use ($codetypedocument, $ciudades,  $generos){
 
-        //         if($cliente->identificacion == 1)
-        //             return; // Salta esta iteración y pasa al siguiente cliente
+                if($cliente->identificacion == 1)
+                    return; // Salta esta iteración y pasa al siguiente cliente
 
-        //         $customer = IcmCustomer::where(['document_number' => $cliente->identificacion])->first();
-        //         if($customer)
-        //             return; // Salta esta iteración y pasa al siguiente cliente
+                $customer = IcmCustomer::where(['document_number' => $cliente->identificacion])->first();
+                if($customer)
+                    return; // Salta esta iteración y pasa al siguiente cliente
 
-        //         if(empty($cliente->primer_nombre) || empty($cliente->primer_apellido))
-        //             return;
+                if(empty($cliente->primer_nombre) || empty($cliente->primer_apellido))
+                    return;
 
-        //         $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
-        //         $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
-        //         $gender        = isset($generos[$cliente->genero]) ? $generos[$cliente->genero] : NULL;
+                $document_type = isset($codetypedocument[$cliente['tipo_id']]) ? $codetypedocument[$cliente['tipo_id']] : $codetypedocument['CC'];
+                $ciudades_dian = isset($ciudades[$cliente->cod_municipio]) ? $ciudades[$cliente->cod_municipio] : NULL;
+                $gender        = isset($generos[$cliente->genero]) ? $generos[$cliente->genero] : NULL;
 
-        //         $clientenew = IcmCustomer::create([
-        //             'document_type'       => $document_type,
-        //             'document_number'     => $cliente->identificacion,
-        //             'first_name'          => $cliente->primer_nombre,
-        //             'second_name'         => $cliente->segundo_nombre,
-        //             'first_surname'       => $cliente->primer_apellido,
-        //             'second_surname'      => $cliente->segundo_apellido,
-        //             'birthday_date'       => $cliente->fecha_nacimiento,
-        //             'phone'               => $cliente->celular,
-        //             'email'               => $cliente->correo,
-        //             'icm_municipality_id' => $ciudades_dian,
-        //             'address'             => $cliente->direccion,
-        //             'gender'              => $gender,
-        //             'type_regime_id'      => 49,
-        //             'user_created'        => 1
-        //         ]);
+                $clientenew = IcmCustomer::create([
+                    'document_type'       => $document_type,
+                    'document_number'     => $cliente->identificacion,
+                    'first_name'          => $cliente->primer_nombre,
+                    'second_name'         => $cliente->segundo_nombre,
+                    'first_surname'       => $cliente->primer_apellido,
+                    'second_surname'      => $cliente->segundo_apellido,
+                    'birthday_date'       => $cliente->fecha_nacimiento,
+                    'phone'               => $cliente->celular,
+                    'email'               => $cliente->correo,
+                    'icm_municipality_id' => $ciudades_dian,
+                    'address'             => $cliente->direccion,
+                    'gender'              => $gender,
+                    'type_regime_id'      => 49,
+                    'user_created'        => 1
+                ]);
 
-        //     });
+            });
 
-        // }
+        }
 
 
         // if($component == 'customers' || $component == 'initialization'){
