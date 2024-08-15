@@ -167,16 +167,16 @@
                             'onsubmit' => 'return false;'
                         )) }}
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="form-group">
-                                {!! Form::label('document_number','Número documento <span class="text-danger">*</span>',[],false) !!}
-                                {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                {!! Form::label('document_type','Tipo de documento <span class="text-danger">*</span>',[],false) !!}
+                                {!! Form::select('document_type', $identification_document_types, $tipo_documento_default->id, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                {!! Form::label('document_type','Tipo de documento <span class="text-danger">*</span>',[],false) !!}
-                                {!! Form::select('document_type', $identification_document_types, null, array('id' => 'document_type','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                {!! Form::label('document_number','Número documento <span class="text-danger">*</span>',[],false) !!}
+                                {!! Form::text('document_number', null, array('id' => 'document_number','placeholder' => 'Número documento','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                 </div>
                             </div>
                             <div class="col-sm-2">
@@ -357,6 +357,7 @@
                               <th>
                                 <input type="checkbox" id="check-all" class="flat">
                               </th>
+                              <th class="column-title">Tipo documento</th>
                               <th class="column-title">Documento</th>
                               <th class="column-title">Nombre</th>
                               <th class="column-title">Fidelidad</th>

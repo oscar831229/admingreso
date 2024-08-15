@@ -162,9 +162,9 @@ class Coberturas
             ildr.liquidation_date AS MDECOB_FECHA_SERVICIO,
             ildr.nit_company_affiliates AS MDECOB_NITEMP,
             'PX' AS MDECOB_ROL_CLIENTE,
-            ildr.type_register AS MDECOB_VINCULACION,
-            0 AS MDECOB_SUBVIN,
-            ildr.type_link AS MDECOB_RELACION,
+            ildr.relationship AS MDECOB_RELACION,
+            ildr.type_link AS MDECOB_VINCULACION,
+            ildr.type_sublink AS MDECOB_SUBVIN,
             CASE
                 WHEN iti.code IN ('AFI', 'CAJ', 'PAR') THEN iac.code
                 ELSE 'D'
@@ -226,8 +226,9 @@ class Coberturas
                 ildr.infrastructure_code,
                 ildr.liquidation_date,
                 ildr.nit_company_affiliates,
-                ildr.type_register,
+                ildr.relationship,
                 ildr.type_link ,
+                ildr.type_sublink ,
                 iti.code,
                 iac.code,
                 its.code,
@@ -287,9 +288,9 @@ class Coberturas
                             ipa.political_date AS MDECOB_FECHA_SERVICIO,
                             ipa.nit_company_affiliates AS MDECOB_NITEMP,
                             'PX' AS MDECOB_ROL_CLIENTE,
-                            ipa.type_register AS MDECOB_VINCULACION,
-                            1 AS MDECOB_SUBVIN,
-                            ipa.type_link AS MDECOB_RELACION,
+                            ipa.relationship AS MDECOB_RELACION,
+                            ipa.type_link AS MDECOB_VINCULACION,
+                            ipa.type_sublink AS MDECOB_SUBVIN,
                             iac.code AS MDECOB_CATEGORIA,
                             NULL AS MDECOB_VALOR_VENTA,
                             NULL AS MDECOB_TIPO_SUB,
@@ -421,6 +422,7 @@ class Coberturas
                         'type_register'                   => $afiliado['tipo_registro'],
                         'relationship'                    => $afiliado['parentesco'],
                         'type_link'                       => $afiliado['tipo_vinculacion'],
+                        'type_sublink'                    => $afiliado['tipo_subvinculacion'],
                         'document_number'                 => $afiliado['dcto_beneficiario'],
                         'document_type'                   => $document_types[$document_type_code],
                         'first_name'                      => $afiliado['primer_nombre'],
@@ -452,6 +454,7 @@ class Coberturas
                         $affiliate->type_register              = $afiliado['tipo_registro'];
                         $affiliate->relationship               = $afiliado['parentesco'];
                         $affiliate->type_link                  = $afiliado['tipo_vinculacion'];
+                        $affiliate->type_sublink               = $afiliado['tipo_subvinculacion'];
                         $affiliate->affiliated_type_document   = $document_types[$affiliated_type_document];
                         $affiliate->affiliated_document_number = $trabajador['dcto_beneficiario'];
                         $affiliate->affiliated_name            = $affiiliate_name;
@@ -586,6 +589,7 @@ class Coberturas
             ild.type_register,
             ild.relationship,
             ild.type_link,
+            ild.type_sublink,
             ild.affiliated_type_document,  /* PENDIENTE DE ALMACENAR */
             ild.affiliated_document AS affiliated_document_number,
             ild.affiliated_name,

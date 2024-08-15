@@ -12,6 +12,7 @@ class IcmPoliticalAffiliate extends Model
         'icm_income_item_id',
         'relationship',
         'type_link',
+        'type_sublink',
         'affiliated_type_document',
         'affiliated_document',
         'affiliated_name',
