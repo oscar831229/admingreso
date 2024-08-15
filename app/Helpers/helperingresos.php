@@ -23,7 +23,7 @@ use App\Models\Income\IcmResolution;
 use App\Models\Income\IcmCustomer;
 use App\Models\Admin\IcmSystemConfiguration;
 
-// use App\Models\Seac\ClientesSeac;
+use App\Models\Seac\ClientesSeac;
 
 use Carbon\Carbon;
 use App\Models\Income\IcmRateType;
