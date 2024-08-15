@@ -253,7 +253,7 @@ services = {
             $('#icm_type_subsidy_id').attr('required', true);
         }
 
-        if($('#icm_type_subsidy_id').val() == '' && !is_subsidy){
+        if($('#icm_type_subsidy_id').val() == '' && is_subsidy){
             Biblioteca.notificaciones('No se ha indicado los valores de subsidio aplicados', 'Ingresos a sedes', 'warning');
             return false;
         }
