@@ -1,4 +1,4 @@
-@extends('layouts.portal.principal')
+@extends('layouts.belectronica.principal')
 
 @section('content')
   @include('includes/mensaje')
@@ -17,45 +17,42 @@
         </div>
         <div class="x_content">
           <div class="table-wrapper">
-            
-            {!! Form::model($role, ['method' => 'PATCH','route' => ['roles.update', $role->id]]) !!}
-              <div class="row">
-                  <div class="col-xs-12 col-sm-12 col-md-12">
-                      <div class="form-group">
-                          <strong>Name:</strong>
-                          {!! Form::text('name', null, array('placeholder' => 'Name','class' => 'form-control','readonly' => 'readonly')) !!}
-                      </div>
-                  </div>
-                  <div class="col-xs-12 col-sm-12 col-md-12">
-                      <div class="form-group">
-                          <strong>Permission:</strong>
-                          @if(!empty($permission))
-                          <div class="row">
-                            @foreach($permission as $value)
-                              <div class="col-sm-4 col-xs-4 col-md-4 col-lg-4">
-                                <div class="card mt-4" style="width: 18rem;">
-                                  <div class="card-header">
-                                    <label>{{ Form::checkbox('permission[]', $value->id, in_array($value->id, $rolePermissions) ? true : false, array('class' => 'name')) }}
-                                      {{ $value->name }}</label>
-                                  </div>
-                                  <ul class="list-group list-group-flush">
-                                  <li class="list-group-item">{{ $value->descripcion }}</li>
-                                  </ul>
+           {!! Form::open(array('route' => 'roles.store','method'=>'POST')) !!}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong>Name:</strong>
+                            {!! Form::text('name', null, array('placeholder' => 'Name','class' => 'form-control')) !!}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <strong>Permission:</strong>
+                            @if(!empty($permission))
+                                <div class="row">
+                                @foreach($permission as $value)
+                                    <div class="col-sm-3 col-xs-3 col-md-3 col-lg-3">
+                                    <div class="card mt-4" style="width: 18rem;">
+                                        <div class="card-header">
+                                            <label>{{ Form::checkbox('permission[]', $value->id, false, array('class' => 'name')) }}
+                                                {{ $value->name }}</label>
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">{{ $value->descripcion }}</li>
+                                        </ul>
+                                    </div>
+                                    </div>
+                                @endforeach
                                 </div>
-                              </div>
-                            @endforeach
-                          </div>
-                          @endif
-                      </div>
-                  </div>
-                  <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                      <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
-                  </div>
-              </div>
-              {!! Form::close() !!}
-  
-            
-              </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                    </div>
+                </div>
+                {!! Form::close() !!} 
+          </div>
         </div>
       </div>
     </div>
