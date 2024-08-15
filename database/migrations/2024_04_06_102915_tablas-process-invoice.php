@@ -191,6 +191,7 @@ class TablasProcessInvoice extends Migration
             $table->string('type_register', 2)->nullable();
             $table->string('relationship', 4)->nullable();
             $table->string('type_link', 4)->nullable();
+            $table->string('type_sublink', 4)->nullable();
             $table->unsignedBigInteger('affiliated_type_document')->nullable();
             $table->string('affiliated_document', 45)->nullable();
             $table->string('affiliated_name', 255)->nullable();

@@ -146,12 +146,13 @@ invoice = {
 
         invoice.disableFields(false);
         let document_number    = $('#document_number').val();
+        let document_type      = $('#document_type').val();
         let icm_liquidation_id = invoice.icm_liquidation_id;
 
         if(document_number.trim() != ''){
             $("#loading").css("display", "block");
             $.ajax({
-                url: '/income/search-client-document/' + document_number  + '?icm_liquidation_id=' + icm_liquidation_id,
+                url: `/income/search-client-document/${document_number}?icm_liquidation_id=${icm_liquidation_id}&document_type=${document_type}` ,
                 async: true,
                 data: {},
                 beforeSend: function(objeto){
@@ -205,6 +206,8 @@ invoice = {
                             $('#icm_types_income_id option:contains("AFILIADO")').show()
                         }
 
+                    }else{
+                        Biblioteca.notificaciones(response.message, 'Ingresos a sede', 'error');
                     }
                 },
                 timeout: 30000,
@@ -261,6 +264,7 @@ invoice = {
                 <td class="a-center ">
                     <input type="checkbox" class="flat check-affiliate ${check}" data-index="${index}">
                 </td>
+                <td class=" ">${value.document_type_code}</td>
                 <td class=" ">${value.document_number}</td>
                 <td class=" ">${value.first_name} ${value.second_name} ${value.first_surname} ${value.second_surname}</td>
                 <td class=" ">${fidelidad}</td>
@@ -856,6 +860,12 @@ invoice = {
         });
     },
 
+    triggerSearchClient : function(){
+        if($(this).val() == '' && $('#document_number').val() != ''){
+            $('#document_number').trigger('blur');
+        }
+    },
+
     init : function(){
 
         Biblioteca.validacionGeneral('form-billing-incomes');
@@ -863,6 +873,8 @@ invoice = {
         $('body').on('change', '#icm_income_item_id', this.setIncomeServices);
         $('body').on('click', '#btn-change-income-service', this.changeIncomeServices);
         $('body').on('blur', '#document_number', this.searchForClient);
+        $('form-billing-incomes').on('change', '#document_type', this.triggerSearchClient);
+
         $('body').on('change', '#icm_types_income_id', this.displayProcessColumns);
         $('body').on('click', '#edit-agreement', this.ediAgreement);
         $('body').on('click', '#btn-save', this.confirmbBillingIncomes);

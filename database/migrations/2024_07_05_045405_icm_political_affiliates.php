@@ -20,6 +20,7 @@ class IcmPoliticalAffiliates extends Migration
             $table->string('type_register', 4);
             $table->string('relationship', 4);
             $table->string('type_link', 4);
+            $table->string('type_sublink', 4)->nullable();
             $table->unsignedBigInteger('document_type');
             $table->string('document_number', 20);
             $table->string('first_name', 100);

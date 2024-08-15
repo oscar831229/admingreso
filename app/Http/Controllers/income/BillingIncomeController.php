@@ -141,7 +141,9 @@ class BillingIncomeController extends Controller
             $auth_pos_amadeus = 1;
         }
 
-        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds', 'genders', 'types_person', 'tax_regime', 'icmpaymentmethod', 'common_cities', 'auth_pos_amadeus'));
+        $tipo_documento_default = getDetailDefinition('identification_document_types', '13');
+
+        return view('income.billing-incomes.index', compact('icm_environments', 'identification_document_types', 'types_of_income', 'icm_affiliate_categories', 'icm_family_compensation_funds', 'genders', 'types_person', 'tax_regime', 'icmpaymentmethod', 'common_cities', 'auth_pos_amadeus', 'tipo_documento_default'));
 
     }
 
@@ -166,13 +168,34 @@ class BillingIncomeController extends Controller
             return response()->json($response_master);
         }
 
+        # Tipo documento consulta nuevo servicio
+        if($request->has('document_type')){
+
+            $type_document = DetailDefinition::find($request->document_type);
+            if(!$type_document){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tipo de documento desconocido'
+                ]);
+            }
+
+            if(empty($type_document->alternative_code)){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tipo de documento sin homologación SISAFI'
+                ]);
+            }
+
+        }
+
+
         # Tipo de ingreso defecto
         $type_income_people     = IcmTypesIncome::where(['code' => 'PAR'])->first()->id;
         $category_income_people = IcmAffiliateCategory::where(['code' => 'D'])->first()->id;
 
         # Consultar afiliados CAJASAN
         $afiliacion = new Afiliacion();
-        $response   = $afiliacion->consultarCategoria($document_number);
+        $response   = $afiliacion->consultarCategoria($document_number, $type_document->alternative_code);
 
         $affiliate_group = [];
         $agreements      = [];
@@ -224,7 +247,7 @@ class BillingIncomeController extends Controller
                 $gender        = isset($genders[$afiliado['genero']]) ? $genders[$afiliado['genero']]: $genders['M'];
                 $edad          = calcularEdad($afiliado['fecha_nacimiento']);
                 $document_type = isset($document_types[$afiliado['tipo_dcto_beneficiario']]) ? $document_types[$afiliado['tipo_dcto_beneficiario']] : $document_types['CC'];
-                $fidelidad     = isset($afiliado['fidelidad']) ? $afiliado['fidelidad'] : 'NO';
+                $fidelidad     = $afiliado['tipo_vinculacion'] == 'T' ? 'NO' : 'SI';
 
 
                 $affiliate_group[] = [
@@ -232,13 +255,15 @@ class BillingIncomeController extends Controller
                     'type_register'                   => $afiliado['tipo_registro'],
                     'relationship'                    => $afiliado['parentesco'],
                     'type_link'                       => $afiliado['tipo_vinculacion'],
+                    'type_sublink'                    => $afiliado['tipo_subvinculacion'],
                     'document_number'                 => $afiliado['dcto_beneficiario'],
                     'document_type'                   => $document_type,
+                    'document_type_code'              => $afiliado['tipo_dcto_beneficiario'],
                     'first_name'                      => $afiliado['primer_nombre'],
                     'second_name'                     => isset($afiliado['segundo_nombre']) ? $afiliado['segundo_nombre'] : '',
                     'first_surname'                   => $afiliado['primer_apellido'],
                     'second_surname'                  => $afiliado['segundo_apellido'],
-                    'birthday_date'                   => $afiliado['fecha_nacimiento'],
+                    'birthday_date'                   => (string) $afiliado['fecha_nacimiento'],
                     'gender'                          => $gender,
                     'gender_code'                     => $afiliado['genero'],
                     'affiliated_type_document'        => $affiliated_type_document,
@@ -559,6 +584,7 @@ class BillingIncomeController extends Controller
                 $type_register            = isset($client['type_register']) ? $client['type_register'] : NULL;
                 $relationship             = isset($client['relationship']) ? $client['relationship'] : NULL;
                 $type_link                = isset($client['type_link']) ? $client['type_link'] : NULL;
+                $type_sublink             = isset($client['type_sublink']) ? $client['type_sublink'] : NULL;
                 $affiliated_type_document = isset($client['affiliated_type_document']) ? $client['affiliated_type_document'] : NULL;
                 $affiliated_document      = isset($client['affiliated_document']) ? $client['affiliated_document'] : NULL;
                 $affiliated_name          = isset($client['affiliated_name']) ? $client['affiliated_name'] : NULL;
@@ -589,6 +615,7 @@ class BillingIncomeController extends Controller
                     'type_register'                   => $type_register,
                     'relationship'                    => $relationship,
                     'type_link'                       => $type_link,
+                    'type_sublink'                    => $type_sublink,
                     'affiliated_type_document'        => $affiliated_type_document,
                     'affiliated_document'             => $affiliated_document,
                     'affiliated_name'                 => $affiliated_name

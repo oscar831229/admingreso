@@ -28,6 +28,7 @@ class IcmLiquidationDetail extends Model
         'type_register',
         'relationship',
         'type_link',
+        'type_sublink',
         'affiliated_type_document',
         'affiliated_document',
         'affiliated_name'

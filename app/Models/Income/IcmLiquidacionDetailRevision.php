@@ -16,6 +16,7 @@ class IcmLiquidacionDetailRevision extends Model
         'type_register',
         'relationship',
         'type_link',
+        'type_sublink',
         'affiliated_type_document',
         'affiliated_document_number',
         'affiliated_name',

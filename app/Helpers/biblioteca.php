@@ -544,10 +544,10 @@ if (!function_exists('homologacionDatosAfiliado')) {
 if (!function_exists('calcularEdad')) {
     function calcularEdad($fechaNacimiento)
     {
+        $fechaNacimiento = (string) $fechaNacimiento;
         $fechaNacimiento = Carbon::parse($fechaNacimiento);
-    $edad = $fechaNacimiento->age;
-
-    return $edad;
+        $edad = $fechaNacimiento->age;
+        return $edad;
     }
 }
 
