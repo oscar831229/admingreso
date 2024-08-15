@@ -3,7 +3,7 @@
   <div class="left_col scroll-view">
 
     <div class="navbar nav_title" style="border: 0;">
-      <a href="#" class="site_title" style="font-size: 18px;"><i class="fa fa-arrow-right"></i> <span>{{ config('app.name', 'Laravel') }}</span></a>
+      <a href="#" class="site_title" style="font-size: 18px;"><i class="fa fa-arrow-right"></i> <span>{{ env('APP_NAME')}}</span></a>
     </div>
 
     <div class="clearfix"></div>
