@@ -637,7 +637,7 @@ class Coberturas
         LEFT JOIN icm_family_compensation_funds AS ifcf ON ifcf.id = ild.icm_family_compensation_fund_id
         WHERE
             il.liquidation_date = ?
-            AND il.state = 'F'
+            AND il.state IN ('F', 'X')
             AND ils.is_deleted = 0
             AND ild.is_deleted = 0";
 

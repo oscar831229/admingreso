@@ -464,6 +464,8 @@ invoice = {
         });
     },
 
+    number_lines  : 0,
+
     loadLiquidationDetail(){
 
         var icm_liquidation_id = invoice.icm_liquidation_id
@@ -495,6 +497,7 @@ invoice = {
                     var tr = '';
                     $('#tbl-details tbody').empty();
                     var number = 1;
+                    invoice.number_lines = 0;
                     $.each(response.data, function(key, value){
 
                         var base        = formatearNumero(value.base);
@@ -513,6 +516,8 @@ invoice = {
                             <td>${impoconsumo}</td>
                             <td>${total}</td>
                         </tr>`;
+
+                        invoice.number_lines = invoice.number_lines + 1;
 
                         // Personas vinculadas a liquidación del servicio de entrada
                         tr += `<tr>
@@ -624,6 +629,19 @@ invoice = {
                     var impoconsumo   = formatearNumero(response.data.impoconsumo);
                     var total         = formatearNumero(response.data.total);
                     var total_subsidy = formatearNumero(response.data.total_subsidy)
+
+                    $('.div-pay-settlement').hide();
+                    $('.div-close-coverage').hide();
+
+                    let valor = parseFloat(response.data.total_subsidy) + parseFloat(response.data.total);
+                    if(valor > 0){
+                        $('.div-pay-settlement').show();
+                    }
+
+                    if(invoice.number_lines > 0 && valor == 0){
+                        $('.div-close-coverage').show();
+                    }
+
                     $('#subtotal').html(subtotal);
                     $('#iva').html(iva);
                     $('#impoconsumo').html(impoconsumo);
@@ -1479,6 +1497,74 @@ payment = {
         });
     },
 
+    acceptCompleteCoverage : function(){
+
+        element = $(this);
+
+        swal({
+            title: 'Completar proceso para coberturas',
+            text: "¿Esta seguro de continuar con el proceso.?",
+            icon: 'warning',
+            showConfirmButton:false,
+            buttons: {
+                Aceptar: {
+                    text: "Aceptar",
+                    value: 'Aceptar',
+                    visible: true
+                },
+                cancel: true
+            },
+        }).then((value) => {
+            if (value) {
+
+                btn.loading(element);
+
+                setTimeout(function(){
+
+                    $.ajax({
+                        url: '/income/complete-coverage',
+                        async: true,
+                        data: {
+                            icm_liquidation_id : invoice.icm_liquidation_id,
+                            _token             : $('[name=_token]').val()
+                        },
+                        beforeSend: function(objeto){
+
+                        },
+                        complete: function(objeto, exito){
+                            btn.reset(element);
+                            if(exito != "success"){
+                                alert("No se completo el proceso!");
+                            }
+                        },
+                        contentType: "application/x-www-form-urlencoded",
+                        dataType: "json",
+                        error: function(objeto, quepaso, otroobj){
+                            alert("Ocurrio el siguiente error: "+quepaso);
+                            btn.reset(element);
+                        },
+                        global: true,
+                        ifModified: false,
+                        processData:true,
+                        success: function(response){
+                            btn.reset(element);
+                            if(response.success){
+                                Biblioteca.notificaciones('Proceso exitoso.', 'Ingreso a sedes', 'success');
+                                invoice.icm_liquidation_id = 0;
+                                invoice.loadLiquidationDetail();
+                            }else{
+                                Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
+                            }
+                        },
+                        timeout: 30000,
+                        type: 'POST'
+                    });
+                },60)
+
+            }
+        });
+    },
+
     printInvoice : function(){
         window.open(`/income/billing-incomes-print/${payment.icm_liquidation_id}`, null, 'width=300, height=700, toolbar=no, statusbar=no');
     },
@@ -1497,6 +1583,8 @@ payment = {
 
         $('body').on('click', '#btn-execute-payment', this.executePayment);
         $('#md-resolutions').on('click', '#btn-accept-payment', this.acceptPayment);
+        $('body').on('click', '#close-coverage', this.acceptCompleteCoverage);
+
         $('body').on('click', '#btn-print-payment', this.printInvoice);
 
 

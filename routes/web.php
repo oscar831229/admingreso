@@ -73,6 +73,8 @@
         Route::get('view-liquidation-totals/{icm_liquidation_id}', 'BillingIncomeController@viewLiquidationTotals');
         Route::get('view-liquidation-payment/{icm_liquidation_id}', 'BillingIncomeController@viewLiquidationPayment');
         Route::post('pay-billing-incomes', 'BillingIncomeController@payBillingIncomes');
+        Route::post('complete-coverage', 'BillingIncomeController@completeCoverage');
+
         Route::get('billing-incomes-print/{icm_liquidation_id}', 'BillingIncomeController@billingIncomesPrint');
 
         Route::resource('incomes','IncomeController');

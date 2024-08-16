@@ -72,6 +72,16 @@
             border-color: #7493c4 !important;
         }
 
+        .btn-close-coverage {
+            color: #fff;
+            background-color: #940cce !important;
+            border-color: #731dd0 !important;
+        }
+
+        .btn-close-coverage:hover {
+            color: #fff !important; /* Nuevo color del texto al pasar el ratón */
+        }
+
     </style>
 @endsection
 
@@ -283,8 +293,11 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <div class="form-group">
+                                <div class="form-group div-pay-settlement" style="display: none;">
                                     <button class="btn btn-primary btn-sm  btn-block" id="pay-settlement"><i class="fa fa-money mg-r-10"></i> Pagar  </button>
+                                </div>
+                                <div class="form-group div-close-coverage" style="display:none;">
+                                    <button class="btn btn-close-coverage btn-sm  btn-block" id="close-coverage"><i class="fa fa-server mg-r-10"></i> Completar para coberturas  </button>
                                 </div>
                             </div>
                         </div>

@@ -36,10 +36,10 @@ class ClosingTasks implements ShouldQueue
     {
 
         # Cancelar liquidaciones
-        $affected = DB::update('UPDATE icm_liquidations SET is_deleted = 1 WHERE liquidation_date < ?', [$this->system_date]);
+        $affected = DB::update("UPDATE icm_liquidations SET is_deleted = 1 WHERE liquidation_date < ? AND state='P'", [$this->system_date]);
 
-        $system_date       = getSystemDate();
-        $agreements = IcmAgreement::where(['state' => 'A'])->whereDate('date_to', '<', $this->system_date)->get();
+        $system_date  = getSystemDate();
+        $agreements   = IcmAgreement::where(['state' => 'A'])->whereDate('date_to', '<', $this->system_date)->get();
 
         foreach ($agreements as $key => $agreement) {
             $agreement->state = 'I';

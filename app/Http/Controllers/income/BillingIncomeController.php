@@ -726,6 +726,58 @@ class BillingIncomeController extends Controller
 
     }
 
+    public function completeCoverage(Request $request){
+
+        DB::beginTransaction();
+
+        $billing_prefix      = '';
+        $consecutive_billing = '';
+
+        try {
+
+            $user_id            = auth()->user()->id;
+            $icm_liquidation_id = $request->icm_liquidation_id;
+
+            # Liquidacion
+            $icm_liquidation = IcmLiquidation::where(['id' => $icm_liquidation_id])->first();
+
+            if(!$icm_liquidation){
+                throw new \Exception("No existe la liquidación a completar para cobertura.", 1);
+            }
+
+            if($icm_liquidation->total > 0 || $icm_liquidation->total_subsidy > 0){
+                throw new \Exception("La liquidación debe ser facturada tiene subsidio o valor venta.", 1);
+            }
+
+            $icm_liquidation->update([
+                'state'               => 'X',
+                'user_updated'        => $user_id
+            ]);
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return response()->json([
+                'success' =>  false,
+                'message' => $e->getMessage(),
+                'data'    => []
+            ]);
+
+        }
+
+        return response()->json([
+            'success'             =>  true,
+            'message'             => '',
+            'data'                => [],
+            'billing_prefix'      => $billing_prefix,
+            'consecutive_billing' => $consecutive_billing
+        ]);
+
+    }
+
     public function payBillingIncomes(Request $request){
 
         $this->AmadeusPosApiService = new AmadeusPosApiService;
@@ -869,7 +921,14 @@ class BillingIncomeController extends Controller
         }
 
         # Servicio facturados
-        $liquidation_lines = $icm_liquidation->icm_liquidation_services()->where(['is_deleted' => 0])->get();
+        $liquidation_lines = $icm_liquidation->icm_liquidation_services()
+            ->where(['is_deleted' => 0])
+            ->where(function ($query) {
+                $query->where('subsidy', '>', 0)
+                      ->orWhere('total', '>', 0);
+            })
+            ->get();
+
         foreach ($liquidation_lines as $key => $liquidation_line) {
 
             $discount = $liquidation_line->icm_type_subsidy_id == 0 ? $liquidation_line->discount : $liquidation_line->subsidy;
