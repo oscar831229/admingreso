@@ -100,6 +100,7 @@ if (!function_exists('synchronizePOSSystem')) {
                     $icmmenusitem->save();
                 }else{
                     $icmmenusitem->update([
+                        'name'                   => $menusitem->nombre,
                         'requested_name'         => $menusitem->nombre_pedido,
                         'barcode'                => $menusitem->codigo_barras,
                         'value'                  => $menusitem->valor,
