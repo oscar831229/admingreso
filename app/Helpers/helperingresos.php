@@ -479,16 +479,18 @@ if (!function_exists('formatDate')) {
 if (!function_exists('obtenerTemporadaDate')) {
     function obtenerTemporadaDate($date)
     {
-        $objdate = Carbon::createFromFormat('Y-m-d', $date);
-        $year    = $objdate->format('Y');
+
+        $objdate      = Carbon::createFromFormat('Y-m-d', $date);
+        $year         = $objdate->format('Y');
+        $date_holiday = $objdate->format('Ymd');
 
         # Festivo
         $holidays       = getHolidays($year);
-        $tempodada_alta = isset($holidays[$date]) ? 'A' : 'V';
+        $tempodada_alta = isset($holidays[$date_holiday]) ? 'A' : 'V';
 
         # Temporada alta
-        if(!isset($holidays[$date])){
-            $special_rate   = IcmSpecialRate::where(['date' => $date])->first();
+        if(!isset($holidays[$date_holiday])){
+            $special_rate   = IcmSpecialRate::where(['date' => $date_holiday])->first();
             $tempodada_alta = $special_rate ? 'A' : 'V';
         }
 
