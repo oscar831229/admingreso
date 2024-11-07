@@ -18,6 +18,8 @@ class ExecuteCoverage implements ShouldQueue
 
     protected $date;
 
+     public $timeout = 0; // Establece el tiempo de ejecución a null para que sea ilimitado
+
     /**
      * Create a new job instance.
      *
