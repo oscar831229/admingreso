@@ -95,9 +95,9 @@ class ReportLiquidationDetails
             iac.name AS icm_affiliate_category_name,
             ifc.name AS icm_family_compensation_fund_name,
             ild.nit_company_affiliates,
-            ils.name_company_affiliates,
+            ild.name_company_affiliates,
             ils.nit_company_agreement,
-            name_company_agreement,
+            ils.name_company_agreement,
             ia.code AS icm_agreement_code,
             ia.name AS icm_agreement_name
         ")
