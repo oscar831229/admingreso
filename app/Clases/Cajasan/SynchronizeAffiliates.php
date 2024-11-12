@@ -109,7 +109,7 @@ class SynchronizeAffiliates
             $clientesseac->whereDate('fecha_actualizacion', '>=', $parameters->start_date_synchronization);
             $clientesseac->whereDate('fecha_actualizacion', '<=', $parameters->end_date_synchronization);
 
-            $clientesseac->cursor()->each(function ($cliente){
+            $clientesseac->cursor()->each(function ($cliente) use ($synctracer){
 
                 try {
 

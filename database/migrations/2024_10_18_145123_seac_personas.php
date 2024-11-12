@@ -81,7 +81,7 @@ class SeacPersonas extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('sisafi_sync_tracers');
-        // Schema::dropIfExists('sisafi_seac_personas');
+        Schema::dropIfExists('sisafi_sync_tracers');
+        Schema::dropIfExists('sisafi_seac_personas');
     }
 }
