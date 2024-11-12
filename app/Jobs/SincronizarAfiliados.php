@@ -22,6 +22,8 @@ class SincronizarAfiliados implements ShouldQueue
      */
     private $parameters;
 
+    public $timeout = 0; // Establece el tiempo de ejecución a null para que sea ilimitado
+
     public function __construct($parameters = null)
     {
         $this->parameters = $parameters;
