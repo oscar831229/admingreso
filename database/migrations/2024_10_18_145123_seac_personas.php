@@ -33,7 +33,7 @@ class SeacPersonas extends Migration
             $table->id();
             $table->string('relacion', 2);
             $table->string('tipo_reg', 2);
-            $table->bigInteger('consecutivo_dep');
+            $table->bigInteger('consecutivo_dep')->nullable();
             $table->string('tipo_id', 2);
             $table->string('identificacion', 15);
             $table->string('primer_apellido', 100);
@@ -42,8 +42,8 @@ class SeacPersonas extends Migration
             $table->string('segundo_nombre', 100)->nullable();
             $table->date('fecha_nacimiento');
             $table->string('genero', 1);
-            $table->string('direccion', 150);
-            $table->string('barrio', 150);
+            $table->string('direccion', 150)->nullable();
+            $table->string('barrio', 150)->nullable();
             $table->Integer('cod_municipio');
             $table->Integer('cod_depto');
             $table->string('celular', 15);
