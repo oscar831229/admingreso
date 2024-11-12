@@ -95,8 +95,8 @@ class ReportLiquidationDetails
             iac.name AS icm_affiliate_category_name,
             ifc.name AS icm_family_compensation_fund_name,
             ild.nit_company_affiliates,
-            ild.name_company_affiliates,
-            ild.nit_company_agreement,
+            ils.name_company_affiliates,
+            ils.nit_company_agreement,
             name_company_agreement,
             ia.code AS icm_agreement_code,
             ia.name AS icm_agreement_name
@@ -114,7 +114,7 @@ class ReportLiquidationDetails
         ->join('icm_types_incomes AS iti', 'iti.id', '=', 'ild.icm_types_income_id')
         ->join('icm_affiliate_categories AS iac', 'iac.id', '=', 'ild.icm_affiliate_category_id')
         ->leftJoin('icm_family_compensation_funds AS ifc', 'ifc.id', '=', 'ild.icm_family_compensation_fund_id')
-        ->leftJoin('icm_agreements AS ia', 'ia.id', '=', 'ild.icm_agreement_id')
+        ->leftJoin('icm_agreements AS ia', 'ia.id', '=', 'ils.icm_agreement_id')
         ->join('users AS u', 'u.id', '=', 'il.user_created')
         ->where(['il.state' => 'F'])
         ->orderBy('il.id', 'ASC');

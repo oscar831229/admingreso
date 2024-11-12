@@ -37,6 +37,8 @@ use App\Jobs\ClosingTasks;
 use App\Jobs\ExecuteCoverage;
 
 
+use App\Clases\Cajasan\SynchronizeAffiliates;
+
 
 if (!function_exists('synchronizePOSSystem')) {
 
@@ -602,6 +604,17 @@ if (!function_exists('validateClosure')) {
             'success' => true,
             'message' => ''
         ];
+
+    }
+}
+
+
+if (!function_exists('SincronizacionSisafi')) {
+    function SincronizacionSisafi()
+    {
+        $sincronizar = new SynchronizeAffiliates;
+        $sincronizar->automaticSynchronization();
+
 
     }
 }

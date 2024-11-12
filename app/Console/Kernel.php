@@ -5,6 +5,8 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+use App\Jobs\SincronizarAfiliados;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -25,11 +27,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('indicators:mail')
-        ->everyMinute();
-
-        $schedule->command('monitoringcontrol:mail')
-        ->everyMinute();
+        $schedule->job(new SincronizarAfiliados(null))
+                 ->dailyAt('22:00'); // '22:00' es las 10 PM
     }
 
     /**

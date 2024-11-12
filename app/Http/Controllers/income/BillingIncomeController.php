@@ -855,9 +855,11 @@ class BillingIncomeController extends Controller
 
             DB::rollback();
 
+            $mensajeDetallado = "Excepción capturada en el archivo: " . $e->getFile() . " en la línea: " . $e->getLine() . ". Mensaje: " . $e->getMessage();
+
             return response()->json([
                 'success' =>  false,
-                'message' => $e->getMessage(),
+                'message' => $mensajeDetallado,
                 'data'    => []
             ]);
 
