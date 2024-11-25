@@ -59,7 +59,7 @@ class LoginController extends Controller
             return view('auth.navegador');
         }
 
-        if(empty($configuration->background)){
+        if($configuration && empty($configuration->background)){
 
             $imagePath = public_path('img/fondo.jpg'); // Asegúrate de que esta ruta sea correcta
 

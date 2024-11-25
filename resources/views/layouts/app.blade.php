@@ -26,7 +26,7 @@
         body {
             font-family: Arial, Helvetica, sans-serif !important;
             margin: 0 !important;
-            background: url('{{ $configuration->background }}') no-repeat center center fixed;
+            background: url('{{ $configuration ? $configuration->background : '' }}') no-repeat center center fixed;
             background-size: cover;
         }
 
