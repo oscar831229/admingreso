@@ -95,6 +95,9 @@
                                             <th>#</th>
                                             <th>Url pos bamboo</th>
                                             <th>Politica grupo familiar</th>
+                                            <th>Infraestructura</th>
+                                            <th>Nombre sistema</th>
+                                            <th>Consulta categoria</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -151,6 +154,14 @@
                                     <div class="form-group">
                                         {!! Form::label('system_names','Nombre sistema', [], false) !!}
                                         {!! Form::text('system_names', null, array('placeholder' => 'Nombre sistema','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('query_type_category','Tipo consulta categoria', [], false) !!}
+                                        {!! Form::select('query_type_category',['local'=>'Servicio ingreso sedes (Local)', 'servicio' => 'Servicio SISAFI'],null, array('id' => 'query_type_category','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('background','Imagen de fondo', [], false) !!}
+                                        {!! Form::file('background',null, array('id' => 'background','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'accept' => 'image/*')) !!}
                                     </div>
                                 {{ Form::close() }}
                                 <div class="row">

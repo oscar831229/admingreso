@@ -202,7 +202,99 @@ customers = {
     },
 
     init : function(){
-        Biblioteca.validacionGeneral('form-customers');
+
+        $.validator.addMethod("phoneCustom", function (value, element) {
+            return this.optional(element) || /^[+]?[0-9]{1,4}?[-.●]?[0-9]{1,4}?[-.●]?[0-9]{1,4}?[-.●]?[0-9]{1,4}$/.test(value) && value.replace(/[^\d]/g, '').length <= 10;
+        }, "Por favor, ingresa un número de teléfono válido con un máximo de 10 dígitos.");
+
+        // Método de validación personalizada para verificar que el dominio es válido
+        $.validator.addMethod("validEmailDomain", function(value, element) {
+            // Expresión regular para verificar el dominio
+            // Este patrón revisa que el dominio tenga al menos un '.' y un dominio válido de nivel superior
+            var domainPattern = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return this.optional(element) || domainPattern.test(value.split('@')[1]);
+        }, "Por favor ingresa un dominio válido.");
+
+        var rules= {
+            document_type: {
+                required: true
+            },
+            document_number: {
+                required: true
+            },
+            first_name: {
+                required: true
+            },
+            first_surname: {
+                required: true
+            },
+            birthday_date: {
+                required: true
+            },
+            gender: {
+                required: true
+            },
+            icm_municipality_id: {
+                required: true
+            },
+            address: {
+                required: true
+            },
+            type_regime_id: {
+                required: true
+            },
+            phone: {
+                required: true,
+                phoneCustom: true // Para validar números de teléfono en formato US (puedes cambiar esto si tu país tiene un formato distinto)
+            },
+            email: {
+                required: true,
+                email: true, // Validación de correo electrónico
+                validEmailDomain: true // Verifica que el dominio sea válido
+            }
+        };
+
+        var messages = {
+            document_type: {
+                required: "Tipo de documento de identificación es obligatorio.",
+            },
+            document_number: {
+                required: "Número de documento de identificación es obligatorio.",
+            },
+            first_name: {
+                required: "Primer nombre es obligatorio.",
+            },
+            first_surname: {
+                required: "Primer apellido es obligatorio.",
+            },
+            birthday_date: {
+                required: "Fecha de nacimiento es obligatorio.",
+            },
+            gender: {
+                required: "Genero es obligatorio.",
+            },
+            icm_municipality_id: {
+                required: "Municipio es obligatorio.",
+            },
+            address: {
+                required: "Dirección es obligatorio.",
+            },
+            type_regime_id: {
+                required: "Regimen es obligatorio.",
+            },
+            phone: {
+                required: "El teléfono es obligatorio.",
+                phoneCustom: "Por favor, ingresa un número de teléfono válido." // Mensaje de error personalizado para teléfono
+            },
+            email: {
+                required: "El correo electrónico es obligatorio.",
+                email: "Por favor, ingresa un correo electrónico válido.",
+                validEmailDomain: "El dominio del correo no es válido" // Mensaje si el dominio no es correcto
+            }
+        };
+
+        Biblioteca.validacionGeneral('form-customers', rules, messages);
+
         $('body').on('click', '#btn-save', customers.confirmSavecustomers);
         $('body').on('click', '.btn-edit-form-customers', customers.editcustomers);
         $('body').on('click', '#btn-new-customers', customers.viewModalcustomers);

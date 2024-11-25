@@ -38,8 +38,11 @@ class CrearMenuSeeder extends Seeder
             array('id' => '20' , 'menu_id'  => '16' , 'nombre' => 'Reportes'                  , 'url' => 'income/income-reports'               , 'orden' => '21' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             // array('id' => '18' , 'menu_id'  => '16' , 'nombre' => 'Proceso ingreso'        , 'url' => 'income/incomes'                      , 'orden' => '18' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '21'  , 'menu_id'  => '1' , 'nombre' => 'Configuración sistema'     , 'url' => 'Admin/system-configuration'                    , 'orden' => '15'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '22'  , 'menu_id'  => '7' , 'nombre' => 'Tipos de subsidios'                 , 'url' => 'income/subsidies'                    , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-            array('id' => '23' , 'menu_id'  => '16' , 'nombre' => 'Coberturas'                , 'url' => 'income/coverages'                    , 'orden' => '20' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '22'  , 'menu_id'  => '7' , 'nombre' => 'Tipos de subsidios'        , 'url' => 'income/subsidies'                    , 'orden' => '8'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '23'  , 'menu_id'  => '16', 'nombre' => 'Coberturas'                , 'url' => 'income/coverages'                    , 'orden' => '20' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '24'  , 'menu_id'  => '1' , 'nombre' => 'Sincronizacion SISAFI'     , 'url' => 'Admin/sisafi-synchronization'        , 'orden' => '10'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+            array('id' => '25'  , 'menu_id'  => '16', 'nombre' => 'Consulta SISAFI'           , 'url' => 'income/sisafi-consultation'          , 'orden' => '20' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
+
         ];
 
         foreach ($menus as $key => $menu) {

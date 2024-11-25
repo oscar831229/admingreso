@@ -30,30 +30,35 @@ class AuthController extends Controller
             'message' => 'Successfully created user!'
         ], 201);
     }
-  
+
     /**
      * Inicio de sesión y creación de token
      */
     public function login(Request $request)
     {
+
         $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
+            'username'    => 'required|string',
+            'password'    => 'required|string'
         ]);
 
-        $credentials = request(['email', 'password']);
+        $credentials = request(['username', 'password']);
+
+        if (array_key_exists('username', $credentials)) {
+            $credentials['login'] = $credentials['username'];  // Reasigna el valor a la nueva clave 'login'
+            unset($credentials['username']);  // Elimina la clave original 'username'
+        }
 
         if (!Auth::attempt($credentials))
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
 
-        $user = $request->user();
+        $user        = $request->user();
         $tokenResult = $user->createToken('Personal Access Token');
 
         $token = $tokenResult->token;
-        $token->expires_at = Carbon::now()->addWeeks(400);            
+        $token->expires_at = Carbon::now()->addWeeks(400);
         $token->save();
 
         return response()->json([
@@ -62,7 +67,7 @@ class AuthController extends Controller
             'expires_at' => Carbon::parse($token->expires_at)->toDateTimeString()
         ]);
     }
-  
+
     /**
      * Cierre de sesión (anular el token)
      */
@@ -74,7 +79,7 @@ class AuthController extends Controller
             'message' => 'Successfully logged out'
         ]);
     }
-  
+
     /**
      * Obtener el objeto User como json
      */

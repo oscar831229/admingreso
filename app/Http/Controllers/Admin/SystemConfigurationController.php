@@ -70,18 +70,28 @@ class SystemConfigurationController extends Controller
             ]);
         }
 
+
         $data = $request->all();
         $user = auth()->user();
-        if(isset($data['id']) && !empty($data['id'])){
-            IcmSystemConfiguration::find($data['id'])->update(array_merge($request->all(), ['user_updated' => $user->id ]));
+
+        if ($request->hasFile('background')) {
+            $image = $request->file('background');
+            $imageData = base64_encode(file_get_contents($image->getRealPath()));
+            $data['background'] = 'data:image/' . $image->getClientOriginalExtension() . ';base64,' . $imageData;
         }else{
-            IcmSystemConfiguration::create(array_merge($request->all(), ['user_created' => $user->id ]));
+            unset($data['background']);
+        }
+
+        if(isset($data['id']) && !empty($data['id'])){
+            IcmSystemConfiguration::find($data['id'])->update(array_merge($data, ['user_updated' => $user->id ]));
+        }else{
+            IcmSystemConfiguration::create(array_merge($data, ['user_created' => $user->id ]));
         }
 
         return response()->json([
             'success' => true,
             'message' => '',
-            'data' => []
+            'data' => $data
         ]);
 
     }
@@ -94,7 +104,21 @@ class SystemConfigurationController extends Controller
      */
     public function show($id)
     {
-        $ratetype = IcmSystemConfiguration::find($id);
+        $ratetype = IcmSystemConfiguration::selectRaw("
+            id,
+            url_pos_system,
+            pos_system_token,
+            system_date,
+            policy_enabled,
+            infrastructure_code,
+            system_names,
+            state,
+            user_created,
+            user_updated,
+            created_at,
+            updated_at,
+            query_type_category
+        ")->where(['id' => $id])->first();
 
         return response()->json([
             'success' => true,

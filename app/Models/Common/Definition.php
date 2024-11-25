@@ -49,6 +49,20 @@ class Definition extends Model
 
     }
 
+    public function getDetailHomologationAlternativeRevertDefinitions($code){
+        $detail = Definition::where(['code' => $code])->first();
+
+        if(!$detail){
+            return [];
+        }else{
+            return $detail->detaildefinitions->pluck('alternative_code', 'id');
+        }
+
+    }
+
+
+
+
 
 
 

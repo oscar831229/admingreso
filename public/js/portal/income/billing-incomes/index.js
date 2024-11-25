@@ -1571,7 +1571,76 @@ payment = {
 
     init : function(){
 
-        Biblioteca.validacionGeneral('form-billing-customer');
+        // Biblioteca.validacionGeneral('form-billing-customer');
+
+        $.validator.addMethod("phoneCustom", function (value, element) {
+            return this.optional(element) || /^[+]?[0-9]{1,4}?[-.●]?[0-9]{1,4}?[-.●]?[0-9]{1,4}?[-.●]?[0-9]{1,4}$/.test(value) && value.replace(/[^\d]/g, '').length <= 10;
+        }, "Por favor, ingresa un número de teléfono válido con un máximo de 10 dígitos.");
+
+        // Método de validación personalizada para verificar que el dominio es válido
+        $.validator.addMethod("validEmailDomain", function(value, element) {
+            // Expresión regular para verificar el dominio
+            // Este patrón revisa que el dominio tenga al menos un '.' y un dominio válido de nivel superior
+            var domainPattern = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return this.optional(element) || domainPattern.test(value.split('@')[1]);
+        }, "Por favor ingresa un dominio válido.");
+
+
+        $('#form-billing-customer').validate({
+            rules: {
+              phone: {
+                required: true,
+                phoneCustom: true // Para validar números de teléfono en formato US (puedes cambiar esto si tu país tiene un formato distinto)
+              },
+              email: {
+                required: true,
+                email: true, // Validación de correo electrónico
+                validEmailDomain: true // Verifica que el dominio sea válido
+              }
+            },
+            messages: {
+              phone: {
+                required: "El teléfono es obligatorio.",
+                phoneCustom: "Por favor, ingresa un número de teléfono válido." // Mensaje de error personalizado para teléfono
+              },
+              email: {
+                required: "El correo electrónico es obligatorio.",
+                email: "Por favor, ingresa un correo electrónico válido.",
+                validEmailDomain: "El dominio del correo no es válido" // Mensaje si el dominio no es correcto
+              }
+            },
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error invalid-feedback', // default input error message class
+            focusInvalid: false, // do not focus the last invalid input
+            ignore: [], // validate all fields including form hidden input
+            highlight: function (element, errorClass, validClass) { // hightlight error inputs
+                $(element).closest('.form-control').addClass('is-invalid'); // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-control').removeClass('is-invalid'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-control').removeClass('is-invalid'); // set success class to the control group
+            },
+            errorPlacement: function (error, element) {
+                if ($(element).is('select') && element.hasClass('bs-select')) {//PARA LOS SELECT BOOSTRAP
+                    error.insertAfter(element);//element.next().after(error);
+                } else if ($(element).is('select') && element.hasClass('select2-hidden-accessible')) {
+                    element.next().after(error);
+                } else if (element.attr("data-error-container")) {
+                    error.appendTo(element.attr("data-error-container"));
+                } else {
+                    error.insertAfter(element); // default placement for everything else
+                }
+            },
+            invalidHandler: function (event, validator) { //display error alert on form submit
+
+            },
+            submitHandler: function (form) {
+                return true;
+            }
+        });
+
         Biblioteca.validacionGeneral('form-payments');
 
         $('#form-billing-customer').on('blur', '#document_number', this.searchForClient);

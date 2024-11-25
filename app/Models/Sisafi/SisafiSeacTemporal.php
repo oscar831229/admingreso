@@ -4,9 +4,10 @@ namespace App\Models\Sisafi;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SisafiSeacPersonas extends Model
+class SisafiSeacTemporal extends Model
 {
-    protected $table = 'sisafi_seac_personas';
+
+    protected $table = 'sisafi_seac_temporal';
 
     protected $fillable = [
         "relacion",
@@ -50,4 +51,5 @@ class SisafiSeacPersonas extends Model
         "fecha_ret",
         "sisafi_sync_tracer_id"
     ];
+
 }

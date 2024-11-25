@@ -4,9 +4,8 @@ namespace App\Clases\Cajasan;
 
 class Parameters
 {
-    public $start_date_synchronization;
-    public $end_date_synchronization;
+    public $type_synchronization;
     public $type_execution;
-    public $sync_type;
+    public $type_document;
     public $document_number;
 }

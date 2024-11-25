@@ -359,13 +359,16 @@ class Coberturas
         $categories       =  IcmAffiliateCategory::all()->pluck('id', 'code');
         $control_politica = [];
         $afiliado_grupo   = []; // servicio, afiliado
+        $homologacion_documento_sisafi = getDetailHomologationAlternativeRevertDefinitions('identification_document_types');
 
         foreach ($affiliates as $key => $affiliate) {
 
             $affiliates_group = [];
 
             # Consultar servicio SISAFI
-            $response = $this->services_sisafi->consultarCategoria($affiliate->document_number);
+            $tipo_documento = $homologacion_documento_sisafi->get($affiliate->document_type) ? $homologacion_documento_sisafi->get($affiliate->document_type)  : 'CC';
+            $response       = $this->services_sisafi->consultarCategoria($affiliate->document_number, $tipo_documento);
+
             if(!$response['success'])
                 throw new \Exception($response['message'], 1);
 

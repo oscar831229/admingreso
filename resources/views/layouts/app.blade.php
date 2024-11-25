@@ -21,18 +21,81 @@
 
     <!-- Custom Theme Style -->
     <link href="{{ asset('Gentelella/build/css/custom.min.css') }}" rel="stylesheet">
+
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif !important;
             margin: 0 !important;
-            background: url({{ asset('img/fondo.jpg') }}) !important;
-            background-size: cover !important;
-            background-attachment: fixed !important;
+            background: url('{{ $configuration->background }}') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .login_wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login_form {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border-radius: 4px;
+            margin-bottom: 15px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-default {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            width: 100%;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn-default:hover {
+            background-color: #0056b3;
+        }
+
+        .separator {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .login_content {
+            text-align: center;
+        }
+
+        .login_content img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 20px;
         }
     </style>
-
 </head>
-<body class="login">
+<body>
 
     @yield('content')
 

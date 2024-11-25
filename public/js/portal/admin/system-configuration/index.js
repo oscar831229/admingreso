@@ -46,9 +46,9 @@ configuration = {
             },
             createdRow: function (row, data, index) {
                 var btnaction = '<a href="javascript:void(0)" data-id="'+data[0]+'" class="tooltipsC btn-edit-form-configuration" title="Editar entidad"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>'
-                $('td', row).eq(3).html(btnaction).addClass('dt-center');
+                $('td', row).eq(6).html(btnaction).addClass('dt-center');
                 $('td', row).eq(2).html(setLabelEnabled(data[2])).addClass('dt-center');
-                $('td', row).eq(0).html(data[4]).addClass('dt-center');
+                $('td', row).eq(0).html(data[7]).addClass('dt-center');
             }
         });
 
@@ -94,7 +94,8 @@ configuration = {
     saveconfiguration : function(){
 
         var element = $('#btn-save');
-        var formadata = $('#form-configuration').serialize();
+        var formadata = new FormData($('#form-configuration')[0]);
+
         btn.loading(element);
 
         setTimeout(function(){
@@ -114,7 +115,7 @@ configuration = {
                         alert("No se completo el proceso!");
                     }
                 },
-                contentType: "application/x-www-form-urlencoded",
+                /*contentType: "application/x-www-form-urlencoded",*/
                 dataType: "json",
                 error: function(objeto, quepaso, otroobj){
                     alert("Ocurrio el siguiente error: "+quepaso);
@@ -122,7 +123,8 @@ configuration = {
                 },
                 global: true,
                 ifModified: false,
-                processData:true,
+                processData: false, // No procesar los datos (formato de archivo)
+                contentType: false, // No establecer el tipo de contenido
                 success: function(response){
                     btn.reset(element);
                     if(response.success){

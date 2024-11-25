@@ -275,6 +275,14 @@ if (!function_exists('getDetailHomologationAlternativeDefinitions')) {
     }
 }
 
+if (!function_exists('getDetailHomologationAlternativeRevertDefinitions')) {
+    function getDetailHomologationAlternativeRevertDefinitions($code)
+    {
+        $defintion = new Definition;
+        return $defintion->getDetailHomologationAlternativeRevertDefinitions($code);
+    }
+}
+
 if (!function_exists('getDetailDefinition')) {
     function getDetailDefinition($codedefinition, $codedetail)
     {

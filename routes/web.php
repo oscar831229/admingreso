@@ -44,6 +44,13 @@
         Route::resource('system-configuration','SystemConfigurationController');
         Route::post('datatable-configuration','SystemConfigurationController@datatableConfiguration');
 
+        # Sincronizacion SISAFI
+        Route::resource('sisafi-synchronization','SisafiSynchronizationController');
+
+        #
+        Route::post('datatable-sisafi-synchronization','SisafiSynchronizationController@datatableSisafiSynchronization');
+
+
 
 
     });
@@ -106,6 +113,9 @@
 
         Route::resource('coverages','CoverageController');
         Route::post('datatable-coverages','CoverageController@datatableCoverages');
+
+        Route::resource('sisafi-consultation','SisafiConsultationController');
+        Route::post('datatable-consultations','SisafiConsultationController@datatableConsultations');
 
 
     });

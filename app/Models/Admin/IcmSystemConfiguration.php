@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Clases\DataTable\SSP;
 
+
+
 class IcmSystemConfiguration extends Model
 {
 
@@ -17,7 +19,9 @@ class IcmSystemConfiguration extends Model
         'user_updated',
         'policy_enabled',
         'infrastructure_code',
-        'system_names'
+        'system_names',
+        'query_type_category',
+        'background'
     ];
 
     private $columnsdatatable = array(
@@ -32,6 +36,12 @@ class IcmSystemConfiguration extends Model
             isc.id,
             isc.url_pos_system,
             isc.policy_enabled,
+            isc.infrastructure_code,
+            isc.system_names,
+            CASE
+                WHEN isc.query_type_category = 'local'    THEN 'Servicio ingreso sedes (Local)'
+                WHEN isc.query_type_category = 'servicio' THEN 'Servicio SISAFI'
+            END AS query_type_category,
             '' as action
         ")
         ->join('users AS u', 'u.id', '=','isc.user_created')

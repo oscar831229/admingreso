@@ -26,6 +26,8 @@ Route::group([
     Route::post('login' , 'AuthController@login');
     Route::post('signup', 'AuthController@signUp')->middleware(['auth.token']);
 
+    Route::post('token' , 'AuthController@login');
+
     Route::group([
       'middleware' => 'auth:api'
     ], function() {
@@ -38,7 +40,8 @@ Route::group([
 
 # API V1
 Route::group([
-    'prefix' => 'v1'
+    'prefix' => 'v1',
+    'middleware' => 'auth:api'
 ], function () {
 
     # SERVICIOS  TIQUETERA ELECTRÓNICA
@@ -52,11 +55,21 @@ Route::group([
 
         Route::get('token-validation', 'income\SynchronizationController@tokenValidation');
 
-
+        Route::post('affiliate-family-group', 'income\SisafiConsultationController@getAffiliateCategory');
 
     });
 
+    Route::post('/src1/v1/pack_funciones_cobertura/f_afiliado_ws_recrea', 'income\SisafiConsultationController@getAffiliateCategory');
 
 
+});
+
+
+Route::group([
+    'prefix' => 'src1',
+    'middleware' => 'auth:api'
+], function () {
+
+    Route::post('v1/pack_funciones_cobertura/f_afiliado_ws_recrea', 'income\SisafiConsultationController@getAffiliateCategory');
 
 });
