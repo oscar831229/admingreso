@@ -152,7 +152,7 @@ class SincronizarAfiliados implements ShouldQueue
         } catch (\Throwable $th) {
             # Marcar como finalizado
             $synctracer->state  = 'B';
-            $synctracer->errors = $th->getMessange();
+            $synctracer->errors = $th->getMessage();
             $synctracer->update();
         }
 
