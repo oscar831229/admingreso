@@ -17,6 +17,7 @@ use App\Models\Sisafi\SisafiSeacTemporal;
 use App\Models\Seac\ClientesSeac;
 
 use App\Clases\Cajasan\Afiliacion;
+use App\Models\Admin\cmSystemConfiguration;
 
 use Log;
 
@@ -64,8 +65,12 @@ class SincronizarAfiliados implements ShouldQueue
 
                 \DB::table('sisafi_seac_temporal')->truncate();
 
+                $counter   = 0;
+                $synctracer->total_records = ClientesSeac::whereIn('vinculacion', $vinculaciones)->count(); // Total de registros
+                $synctracer->update();
+
                 # Conexion clientes oracle
-                ClientesSeac::whereIn('vinculacion', $vinculaciones)->cursor()->each(function ($cliente) use ($synctracer){
+                ClientesSeac::whereIn('vinculacion', $vinculaciones)->cursor()->each(function ($cliente) use ($synctracer, &$counter){
 
                     try {
 
@@ -76,6 +81,9 @@ class SincronizarAfiliados implements ShouldQueue
                     } catch (\Throwable $th) {
                         Log::info($th->getMessage());
                     }
+
+                    $synctracer->total_processed++;
+                    $synctracer->update();
 
                 });
 

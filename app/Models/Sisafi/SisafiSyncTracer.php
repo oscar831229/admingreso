@@ -48,6 +48,8 @@ class SisafiSyncTracer extends Model
                 WHEN sst.state = 'F' THEN 'Finalizado'
                 WHEN sst.state = 'B' THEN 'Finalizado con error'
             END state,
+            sst.total_records,
+            sst.total_processed,
             u.name as user_created,
             sst.created_at,
             sst.updated_at

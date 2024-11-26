@@ -10,6 +10,7 @@ use App\Clases\DataTable\TableServer;
 use App\Clases\Cajasan\Parameters;
 use App\Jobs\SincronizarAfiliados;
 use App\Clases\Cajasan\SynchronizeAffiliates;
+use App\Models\Sisafi\SisafiSeacPersonas;
 
 class SisafiSynchronizationController extends Controller
 {
@@ -20,7 +21,8 @@ class SisafiSynchronizationController extends Controller
      */
     public function index()
     {
-        return view('admin.sisafi-synchronization.index');
+        $total_affiliates  = SisafiSeacPersonas::count();
+        return view('admin.sisafi-synchronization.index', compact('total_affiliates'));
     }
 
     public function datatableSisafiSynchronization(Request $request){

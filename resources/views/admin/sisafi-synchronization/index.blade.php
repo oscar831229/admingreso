@@ -105,7 +105,7 @@
                         </td>
                         <td>
                             <h4 class="tx-gray-800 mg-b5" style="margin-bottom: 0px;">Sincronizacion SISAFI</h4>
-                            <span class='titulos'>&nbsp;</span>
+                            <span class='titulos'>TOTAL AFILIADOS LOCAL: <strong>{{ $total_affiliates }}</strong></span>
                         </td>
                     </tr>
                 </table>
@@ -166,6 +166,8 @@
                                             <th>Tipo documento</th>
                                             <th>Numero documento</th>
                                             <th>Estado proceso</th>
+                                            <th>Total registros</th>
+                                            <th>Total procesados</th>
                                             <th>Usuario ejecuto</th>
                                             <th>Fecha creación</th>
                                             <th>Fecha actualización</th>

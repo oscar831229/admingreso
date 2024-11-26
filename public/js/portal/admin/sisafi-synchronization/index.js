@@ -49,7 +49,7 @@ synchronizations = {
             initComplete : function(settings, json){
             },
             createdRow: function (row, data, index) {
-                $('td', row).eq(0).html(data[9]).addClass('dt-center');
+                $('td', row).eq(0).html(data[11]).addClass('dt-center');
             }
         });
 
