@@ -65,27 +65,46 @@ class SincronizarAfiliados implements ShouldQueue
 
                 \DB::table('sisafi_seac_temporal')->truncate();
 
-                $counter   = 0;
-                $synctracer->total_records = ClientesSeac::whereIn('vinculacion', $vinculaciones)->count(); // Total de registros
+                $counter = 0;
+                $logFile = storage_path('app/cliente_sync_log.csv'); // Ruta al archivo CSV, cambia la ruta si es necesario
+
+                // Si el archivo no existe, creamos el encabezado
+                if (!file_exists($logFile)) {
+                    $header = ['identificacion', 'nombre', 'apellido', 'sisafi_sync_tracer_id']; // Añadir todas las columnas que necesitas
+                    $file = fopen($logFile, 'w');
+                    fputcsv($file, $header);
+                    fclose($file);
+                }
+
+                // Establecer el total de registros que se van a procesar
+                $synctracer->total_records = ClientesSeac::whereIn('vinculacion', $vinculaciones)->count();
                 $synctracer->update();
 
-                # Conexion clientes oracle
-                ClientesSeac::whereIn('vinculacion', $vinculaciones)->cursor()->each(function ($cliente) use ($synctracer, &$counter){
+                ClientesSeac::whereIn('vinculacion', $vinculaciones)
+                    ->cursor() // Utilizamos el cursor para evitar cargar todos los registros a la vez en memoria
+                    ->each(function ($cliente) use ($synctracer, &$counter, $logFile) {
+                        try {
+                            // Crear los datos que se insertarán en el archivo CSV
+                            $newafiliate = array_merge($cliente->toArray(), ['sisafi_sync_tracer_id' => $synctracer->id]);
 
-                    try {
+                            // Abrimos el archivo en modo de añadir (append)
+                            $file = fopen($logFile, 'a');
 
-                        $newafiliate = array_merge($cliente->toArray(), ['sisafi_sync_tracer_id' => $synctracer->id]);
+                            // Escribir los datos en el archivo CSV
+                            fputcsv($file, $newafiliate); // Escribir una fila de datos
 
-                        SisafiSeacTemporal::create($newafiliate);
+                            fclose($file); // Cerrar el archivo después de escribir
 
-                    } catch (\Throwable $th) {
-                        Log::info($th->getMessage());
-                    }
+                        } catch (\Throwable $th) {
+                            Log::info('Error al procesar el cliente', ['error' => $th->getMessage()]);
+                        }
 
-                    $synctracer->total_processed++;
-                    $synctracer->update();
+                        // Actualizar el contador y el progreso
+                        $counter++;
+                        $synctracer->total_processed = $counter;
+                        $synctracer->update();
+                    });
 
-                });
 
                 \DB::beginTransaction();
 
