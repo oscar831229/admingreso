@@ -120,7 +120,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header text-white bg-primary">
-                    <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Tipos de tarifa</span></h6>
+                    <h6 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-store"></i><span id="label-type">Confirugación sistema</span></h6>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -135,7 +135,7 @@
                                     'onsubmit' => 'return false;'
                                 )) }}
                                     <div class="form-group">
-                                        {!! Form::label('url_pos_system','Nombre tarifa', [], false) !!}
+                                        {!! Form::label('url_pos_system','Url sistema POS', [], false) !!}
                                         {!! Form::text('url_pos_system', null, array('id' => 'url_pos_system','placeholder' => 'Url sistema POS Bamboo','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
                                         {!! Form::hidden('id') !!}
                                     </div>
