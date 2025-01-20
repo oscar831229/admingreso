@@ -67,7 +67,7 @@ class ResetPasswordController extends Controller
             ]);
 
             $user->setSession($roles->toArray());
-            
+
         }
 
         $this->guard()->login($user);
@@ -89,7 +89,7 @@ class ResetPasswordController extends Controller
         else if(isset($_SERVER['REMOTE_ADDR']))
             $ipaddress = $_SERVER['REMOTE_ADDR'];
         else
-            $ipaddress = 'UNKNOWN';    
+            $ipaddress = 'UNKNOWN';
         return $ipaddress;
      }
 

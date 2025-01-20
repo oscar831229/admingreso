@@ -41,7 +41,9 @@ class DefinitionsSeeder extends Seeder
                     ['code' => '41', 'alternative_code' => 'PA', 'name' => 'PASAPORTE', 'details' => 'PASAPORTE'],
                     ['code' => '11', 'alternative_code' => 'RC', 'name' => 'REGISTRO CIVIL', 'details' => 'REGISTRO CIVIL'],
                     ['code' => '31', 'alternative_code' => 'NI', 'name' => 'NIT', 'details' => 'NIT'],
-                    ['code' => '91', 'alternative_code' => 'NU', 'name' => 'NUIP', 'details' => 'NUIP']
+                    ['code' => '91', 'alternative_code' => 'NU', 'name' => 'NUIP', 'details' => 'NUIP'],
+                    ['code' => '47', 'alternative_code' => 'PE', 'name' => 'PERMISO ESPECIAL DE PERMANENCI', 'details' => 'PERMISO ESPECIAL DE PERMANENCI'],
+                    ['code' => '48', 'alternative_code' => 'PT', 'name' => 'PERMISO PROTECCION TEMPORAL', 'details' => 'PERMISO PROTECCION TEMPORAL'],
                 ]
                 ], [
                     'code' => 'gender',
