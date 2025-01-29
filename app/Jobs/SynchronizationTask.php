@@ -35,6 +35,6 @@ class SynchronizationTask implements ShouldQueue
      */
     public function handle()
     {
-        synchronizePOSSystem($this->component, $this->document_number);
+        synchronizePOSSystem($this->component, $this->document_number, true);
     }
 }

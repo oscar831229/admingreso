@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+
 use App\Models\Admin\IcmSystemConfiguration;
 
 use BrowserDetect;
@@ -60,4 +61,5 @@ class ForgotPasswordController extends Controller
 
         return view('auth.passwords.email', compact('configuration'));
     }
+
 }

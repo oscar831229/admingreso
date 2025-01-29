@@ -42,9 +42,11 @@ use App\Clases\Cajasan\SynchronizeAffiliates;
 
 if (!function_exists('synchronizePOSSystem')) {
 
-    function synchronizePOSSystem($component, $document_number = '')
+    function synchronizePOSSystem($component, $document_number = '', $cerrar_conexion = false)
     {
 
+        $ramopos       = false;
+        $oracle_second = false;
         # Parametros
         /**
          * description component
@@ -139,6 +141,7 @@ if (!function_exists('synchronizePOSSystem')) {
             }
 
             \Log::info("sincronización de menus items {$component}");
+            $ramopos = true;
 
         }
 
@@ -171,6 +174,7 @@ if (!function_exists('synchronizePOSSystem')) {
             }
 
             \Log::info("sincronización medios de pago {$component}");
+            $ramopos = true;
 
         }
 
@@ -197,6 +201,7 @@ if (!function_exists('synchronizePOSSystem')) {
             }
 
             \Log::info("sincronización de ciudades dian {$component}");
+            $ramopos = true;
 
         }
 
@@ -239,6 +244,7 @@ if (!function_exists('synchronizePOSSystem')) {
             }
 
             \Log::info("sincronización de resoluciones {$component}");
+            $ramopos = true;
 
         }
 
@@ -286,6 +292,8 @@ if (!function_exists('synchronizePOSSystem')) {
                 ]);
 
             });
+
+            $oracle_second = true;
 
         }
 
@@ -336,6 +344,8 @@ if (!function_exists('synchronizePOSSystem')) {
                 ]);
 
             });
+
+            $oracle_second = true;
 
         }
 
@@ -446,11 +456,19 @@ if (!function_exists('synchronizePOSSystem')) {
             }
 
             \Log::info("finalizdo sincronización cliente {$component}  cedula: $document_number");
+            $ramopos = true;
         }
 
 
         \Log::info("finalizdo proceso");
 
+        if($cerrar_conexion && $ramopos){
+            DB::disconnect('ramopos');
+        }
+
+        if($cerrar_conexion && $oracle_second){
+            DB::disconnect('oracle_second');
+        }
 
     }
 }
