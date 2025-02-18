@@ -38,4 +38,27 @@ class IcmLiquidationDetail extends Model
         return $this->hasMany('App\Models\Income\IcmLiquidationService');
     }
 
+    public function getFullName(){
+
+        $full_name = [];
+
+        if(!empty($this->first_name)){
+            $full_name[] = $this->first_name;
+        }
+
+        if(!empty($this->second_name)){
+            $full_name[] = $this->second_name;
+        }
+
+        if(!empty($this->first_surname)){
+            $full_name[] = $this->first_surname;
+        }
+
+        if(!empty($this->second_surname)){
+            $full_name[] = $this->second_surname;
+        }
+
+        return $this->document_number.' -> '. implode(' ', $full_name);
+    }
+
 }

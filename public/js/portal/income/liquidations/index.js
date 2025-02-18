@@ -48,7 +48,7 @@ liquidations = {
             initComplete : function(settings, json){
             },
             createdRow: function (row, data, index) {
-                var btnaction = data[5] == 'F' ? '<a href="javascript:void(0)" data-id="'+data[0]+'" data-environment="'+data[4]+'" class="tooltipsC btn-print-invoice" title="Imprimir factura"><i class="fa fa-print" aria-hidden="true"></i></a>' : '';
+                var btnaction = data[5] == 'F' || data[5] == 'X' ? '<a href="javascript:void(0)" data-id="'+data[0]+'" data-environment="'+data[4]+'" class="tooltipsC btn-print-invoice" title="Imprimir factura"><i class="fa fa-print" aria-hidden="true"></i></a>' : '';
                 var btnstart  = data[5] == 'P' ? '<a href="javascript:void(0)" data-id="'+data[0]+'" data-environment="'+data[4]+'" class="tooltipsC btn-reload-liquidation" title="Cargar liquidación"><i class="fa fa-archive" aria-hidden="true"></i></a>' : '';
                 var btnview   = data[5] == 'F' || data[5] == 'X' ? '<a href="javascript:void(0)" data-id="'+data[0]+'" data-environment="'+data[4]+'" class="tooltipsC btn-view-liquidation ml-2"   title="Ver liquidación facturada"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i></a>' : '';
                 $('td', row).eq(7).html(btnaction + btnstart + btnview).addClass('dt-center');

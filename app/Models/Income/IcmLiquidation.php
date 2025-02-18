@@ -25,6 +25,7 @@ class IcmLiquidation extends Model
         'icm_resolution_id',
         'billing_prefix',
         'consecutive_billing',
+        'voucher_date',
         'user_created',
         'user_updated'
     ];
@@ -233,10 +234,8 @@ class IcmLiquidation extends Model
         return $this->belongsTo('App\Models\Income\IcmCustomer', 'document_number', 'document_number');
     }
 
-
-
-
-
-
+    public function users(){
+        return $this->belongsTo('App\User', 'user_created');
+    }
 
 }

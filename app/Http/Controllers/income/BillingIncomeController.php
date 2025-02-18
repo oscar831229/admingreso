@@ -13,7 +13,7 @@ use App\Models\Income\IcmIncomeItem;
 use App\Models\Income\IcmEnvirontmentIcmIncomeItem;
 use App\Models\Income\IcmEnvironmentIcmMenuItem;
 use App\Models\Income\IcmLiquidationPayment;
-
+use App\Models\Income\IcmConsecutive;
 
 use App\Models\Income\IcmLiquidationService;
 use App\Models\Income\IcmLiquidationDetail;
@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\AmadeusPosApiService;
 use Ramsey\Uuid\Uuid;
 use App\Models\Admin\IcmSystemConfiguration;
+use Illuminate\Support\Facades\View;
 
 class BillingIncomeController extends Controller
 {
@@ -693,36 +694,58 @@ class BillingIncomeController extends Controller
 
     public function billingIncomesPrint($icm_liquidation_id){
 
-        $this->AmadeusPosApiService = new AmadeusPosApiService;
-
         $icm_liquidation = IcmLiquidation::find($icm_liquidation_id);
-        $user_id = auth()->user()->id;
-        $password = \Session::get('auth_amadeus_pos'.$user_id);
 
-        // Llamar al servicio REST con los datos de la factura
-        $this->AmadeusPosApiService->setHeader([
-            'autorization'  => $password,
-            'Accept'        => 'application/json',
-            'Content-Type'  => 'application/json'
-        ]);
+        switch ($icm_liquidation->state) {
+            case 'X':
+                # Comprobantes por cobertura
+                $configuration = IcmSystemConfiguration::first();
+                $facturahtml = View::make('income.billing-incomes.invoice', compact('configuration', 'icm_liquidation'))->render();
+                break;
+            case 'F':
 
-        $response = $this->AmadeusPosApiService->imprimirFactura([
-            "environment_id"      => $icm_liquidation->sales_icm_environment_id,
-            "billing_prefix"      => $icm_liquidation->billing_prefix,
-            "consecutive_billing" => $icm_liquidation->consecutive_billing,
-	        "document_type"       => 'F',
-        ]);
+                # Comprobantes facturados
+                $this->AmadeusPosApiService = new AmadeusPosApiService;
 
+                $user_id  = auth()->user()->id;
+                $password = \Session::get('auth_amadeus_pos'.$user_id);
 
-        if(!$response['success']){
-            throw new \Exception($response['message'], 1);
+                // Llamar al servicio REST con los datos de la factura
+                $this->AmadeusPosApiService->setHeader([
+                    'autorization'  => $password,
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json'
+                ]);
+
+                $response = $this->AmadeusPosApiService->imprimirFactura([
+                    "environment_id"      => $icm_liquidation->sales_icm_environment_id,
+                    "billing_prefix"      => $icm_liquidation->billing_prefix,
+                    "consecutive_billing" => $icm_liquidation->consecutive_billing,
+                    "document_type"       => 'F',
+                ]);
+
+                if(!$response['success']){
+                    throw new \Exception($response['message'], 1);
+                }
+
+                $facturabase64 = $response['name'];
+                $facturahtml   = base64_decode($facturabase64);
+
+                break;
+
+            default:
+                # code...
+                $facturahtml =  '<div id="myAlert"
+                        style="padding: 20px; background-color: #f44336; color: white; margin-bottom: 15px; border-radius: 5px;">
+                        <span onclick="closeAlert()"
+                            style="margin-left: 15px; color: white; font-weight: bold; float: right; font-size: 22px; cursor: pointer;">
+                            &times;</span>
+                        El comprobante a imprimir no ha sido facturado
+                    </div>';
+                break;
         }
 
-        $facturabase64 = $response['name'];
-        $facturahtml   = base64_decode($facturabase64);
-
         echo $facturahtml;
-
 
     }
 
@@ -741,16 +764,34 @@ class BillingIncomeController extends Controller
             # Liquidacion
             $icm_liquidation = IcmLiquidation::where(['id' => $icm_liquidation_id])->first();
 
+            # Validar que existan registros de coverturas
+            if($icm_liquidation->icm_liquidation_details()->where(['is_deleted' => 0])->count() == 0){
+                throw new \Exception("No existe registro de coberturas a generar.", 1);
+            }
+
+            # Validar que la liquidacion existe
             if(!$icm_liquidation){
                 throw new \Exception("No existe la liquidación a completar para cobertura.", 1);
+            }
+
+            #
+            if($icm_liquidation->state != 'P'){
+                throw new \Exception("No se encuentra en un estado valido para genera cobertura.", 1);
             }
 
             if($icm_liquidation->total > 0 || $icm_liquidation->total_subsidy > 0){
                 throw new \Exception("La liquidación debe ser facturada tiene subsidio o valor venta.", 1);
             }
 
+            $consecutive = IcmConsecutive::getConsecutiveValidity();
+
+            $voucher_date = $icm_liquidation->liquidation_date.' '.now()->format('H:i:s');
+
             $icm_liquidation->update([
                 'state'               => 'X',
+                'billing_prefix'      => $consecutive->validity,
+                'consecutive_billing' => $consecutive->consecutive,
+                'voucher_date'        => $voucher_date,
                 'user_updated'        => $user_id
             ]);
 
@@ -855,12 +896,14 @@ class BillingIncomeController extends Controller
 
             DB::rollback();
 
-            $mensajeDetallado = "Excepción capturada en el archivo: " . $e->getFile() . " en la línea: " . $e->getLine() . ". Mensaje: " . $e->getMessage();
+            $debug = "Excepción capturada en el archivo: " . $e->getFile() . " en la línea: " . $e->getLine() . ". Mensaje: " . $e->getMessage();
+            $mensajeDetallado = $e->getMessage();
 
             return response()->json([
                 'success' =>  false,
                 'message' => $mensajeDetallado,
-                'data'    => []
+                'data'    => [],
+                'debug'   => $debug
             ]);
 
         }

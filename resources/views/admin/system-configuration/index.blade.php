@@ -163,6 +163,41 @@
                                         {!! Form::label('background','Imagen de fondo', [], false) !!}
                                         {!! Form::file('background',null, array('id' => 'background','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;', 'accept' => 'image/*')) !!}
                                     </div>
+
+                                    <!-- Agregar línea de separación -->
+                                    <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+                                    <!-- Nuevo Label y Campo -->
+                                    <div class="form-group">
+                                        {!! Form::label('datos_impresion_comprobante','Datos Impresión Comprobante', [], false) !!}
+                                        <p class="text-muted">Ingrese los datos necesarios para la impresión del comprobante.</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        {!! Form::label('company_name','Nombre empresa', [], false) !!}
+                                        {!! Form::text('company_name', null, array('placeholder' => 'Nombre empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {!! Form::label('document_type','Tipo documento empresa', [], false) !!}
+                                        {!! Form::select('document_type', $identification_document_types, null, array('id' => 'query_type_category','class' => 'form-control form-control-sm','placeholder' => 'Seleccione..', 'required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {!! Form::label('identification_number','Nit empresa', [], false) !!}
+                                        {!! Form::text('identification_number', null, array('placeholder' => 'Numero documento empresa','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {!! Form::label('address','Dirección', [], false) !!}
+                                        {!! Form::text('address', null, array('placeholder' => 'Dirección','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {!! Form::label('phone','Teléfono', [], false) !!}
+                                        {!! Form::text('phone', null, array('placeholder' => 'Teléfono','class' => 'form-control form-control-sm','required' => 'required', 'style' => 'height: 25px;')) !!}
+                                    </div>
+
                                 {{ Form::close() }}
                                 <div class="row">
                                     <div class="col-sm-12 text-center">

@@ -547,8 +547,12 @@ invoice = {
 
                     });
                     $('#tbl-details tbody').html(tr);
-                    // invoice.loadTablePeople();
+
+                    // Cargar las personas del servicio
                     invoice.getPeopleService();
+
+                    // Cargar el total liquidación
+                    invoice.viewLiquidationTotals();
                 }
             },
             timeout: 30000,
@@ -557,7 +561,7 @@ invoice = {
         });
 
 
-        invoice.viewLiquidationTotals();
+
 
 
     },
@@ -884,6 +888,10 @@ invoice = {
         }
     },
 
+    printVoucherCoverage : function(){
+        window.open(`/income/billing-incomes-print/${invoice.icm_liquidation_id}`, null, 'width=300, height=700, toolbar=no, statusbar=no');
+    },
+
     init : function(){
 
         Biblioteca.validacionGeneral('form-billing-incomes');
@@ -899,7 +907,7 @@ invoice = {
         $('body').on('click', '#btn-mass-affiliate', this.conAffiliateRegistration);
         $('body').on('click', '#pay-settlement', this.confirmExecutePay);
         $('body').on('click', '.btn-delete-person', this.btndeletePerson);
-
+        $('body').on('click', '#btn-print-coverage', this.printVoucherCoverage);
 
 
         $('#icm_companies_agreement_name').autocomplete({
@@ -1550,8 +1558,9 @@ payment = {
                             btn.reset(element);
                             if(response.success){
                                 Biblioteca.notificaciones('Proceso exitoso.', 'Ingreso a sedes', 'success');
-                                invoice.icm_liquidation_id = 0;
-                                invoice.loadLiquidationDetail();
+                                $('.div-save-coverage').hide();
+                                $('.div-complete-coverage').show();
+                                $('#btn-save').hide();
                             }else{
                                 Biblioteca.notificaciones(response.message, 'Ingreso a sedes', 'error');
                             }
@@ -1563,6 +1572,14 @@ payment = {
 
             }
         });
+    },
+
+    newLiquidation : function(){
+        invoice.icm_liquidation_id = 0;
+        invoice.loadLiquidationDetail();
+        $('.div-save-coverage').show();
+        $('.div-complete-coverage').hide();
+        $('#btn-save').show();
     },
 
     printInvoice : function(){
@@ -1653,6 +1670,9 @@ payment = {
         $('body').on('click', '#btn-execute-payment', this.executePayment);
         $('#md-resolutions').on('click', '#btn-accept-payment', this.acceptPayment);
         $('body').on('click', '#close-coverage', this.acceptCompleteCoverage);
+        $('body').on('click', '#btn-new-liquidation', this.newLiquidation);
+
+
 
         $('body').on('click', '#btn-print-payment', this.printInvoice);
 

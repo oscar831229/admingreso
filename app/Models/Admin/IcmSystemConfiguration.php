@@ -21,7 +21,12 @@ class IcmSystemConfiguration extends Model
         'infrastructure_code',
         'system_names',
         'query_type_category',
-        'background'
+        'background',
+        'company_name',
+        'document_type',
+        'identification_number',
+        'address',
+        'phone'
     ];
 
     private $columnsdatatable = array(

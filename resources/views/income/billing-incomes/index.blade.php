@@ -296,8 +296,18 @@
                                 <div class="form-group div-pay-settlement" style="display: none;">
                                     <button class="btn btn-primary btn-sm  btn-block" id="pay-settlement"><i class="fa fa-money mg-r-10"></i> Pagar  </button>
                                 </div>
-                                <div class="form-group div-close-coverage" style="display:none;">
-                                    <button class="btn btn-close-coverage btn-sm  btn-block" id="close-coverage"><i class="fa fa-server mg-r-10"></i> Completar para coberturas  </button>
+                                <div class="form-group div-close-coverage" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-sm-12 div-save-coverage">
+                                            <button class="btn btn-close-coverage btn-sm  btn-block" id="close-coverage"><i class="fa fa-server mg-r-10"></i> Completar para coberturas  </button>
+                                        </div>
+                                        <div class="col-sm-6 div-complete-coverage" style="display: none;">
+                                            <button class="btn btn-primary btn-sm btn-block" id="btn-print-coverage"><i class="fa fa-print" aria-hidden="true"></i> Imprimir comprobante</button>
+                                        </div>
+                                        <div class="col-sm-6 div-complete-coverage" style="display: none;">
+                                            <button class="btn btn-success btn-sm btn-block" id="btn-new-liquidation"><i class="fa fa-file-o" aria-hidden="true"></i> Nueva liquidación</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

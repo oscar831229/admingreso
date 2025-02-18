@@ -20,7 +20,8 @@ class SystemConfigurationController extends Controller
     {
         $configuracion = IcmSystemConfiguration::count();
         $create = $configuracion == 0 ? true : false;
-        return view('admin.system-configuration.index', compact('create'));
+        $identification_document_types = getDetailDefinitions('identification_document_types');
+        return view('admin.system-configuration.index', compact('create', 'identification_document_types'));
     }
 
     public function datatableConfiguration(Request $request){
@@ -117,7 +118,12 @@ class SystemConfigurationController extends Controller
             user_updated,
             created_at,
             updated_at,
-            query_type_category
+            query_type_category,
+            company_name,
+            document_type,
+            identification_number,
+            address,
+            phone
         ")->where(['id' => $id])->first();
 
         return response()->json([

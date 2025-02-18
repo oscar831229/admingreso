@@ -56,5 +56,9 @@ class IcmLiquidationService extends Model
         return $this->hasMany('App\Models\Income\IcmLiquidationDetail');
     }
 
+    public function icm_income_items(){
+        return $this->belongsTo('App\Models\Income\IcmIncomeItem', 'icm_income_item_id');
+    }
+
 
 }
