@@ -20,9 +20,9 @@ class Afiliacion
 
     public function __construct(){
 
-        $this->urlapi   = env('CAJASAN_CATEGORIA_API');
-        $this->usuario  = env('USUARIO_API_SISAFI');
-        $this->password = env('PASSWORD_API_SISAFI');
+        $this->urlapi   = 'https://wsc.cajasan.com/api';
+        $this->usuario  = 'AMADEUS';
+	    $this->password = 'df310116ab7d35c34bc91c4fe7383b2fbedf2320cb589fdfe2a8c703e3bc42e6';
 
         $system_configuration  = IcmSystemConfiguration::first();
         $this->medio_utilizado = $system_configuration->query_type_category;
