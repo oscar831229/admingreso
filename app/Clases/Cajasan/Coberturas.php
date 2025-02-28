@@ -157,7 +157,7 @@ class Coberturas
             'PN' AS MDEPER_TIPO_PERSONA,
             ildr.email AS MDEPER_CORREO,
             ildr.code_seac AS MDECOB_PRODUCTO_SEAC,
-            ildr.icm_income_item_code AS MDECOB_PRODUCTO_ORIGEN,
+            MAX(ildr.icm_income_item_code) AS MDECOB_PRODUCTO_ORIGEN,
             ildr.infrastructure_code AS MDECOB_INFRAESTRUCTURA,
             ildr.liquidation_date AS MDECOB_FECHA_SERVICIO,
             ildr.nit_company_affiliates AS MDECOB_NITEMP,
@@ -222,7 +222,7 @@ class Coberturas
                 ildr.phone,
                 ildr.email,
                 ildr.code_seac,
-                ildr.icm_income_item_code,
+                /*ildr.icm_income_item_code,*/
                 ildr.infrastructure_code,
                 ildr.liquidation_date,
                 ildr.nit_company_affiliates,
@@ -325,7 +325,18 @@ class Coberturas
 
                     $political_people = DB::select($querySQL, []);
                     foreach ($political_people as $key => $person) {
-                        IcmCoverageDetail::create((Array) $person);
+
+                        # Validar que no exista politica por cógido SEAC PRODUCTO
+                        $exist = IcmCoverageDetail::where([
+                            'MDECOB_FECHA_SERVICIO' => $person->MDECOB_FECHA_SERVICIO,
+                            'MDEPER_BEN_IDENTIF'    => $person->MDEPER_BEN_IDENTIF,
+                            'MDECOB_PRODUCTO_SEAC'  => $person->MDECOB_PRODUCTO_SEAC
+                        ])->first();
+
+                        if(!$exist){
+                            IcmCoverageDetail::create((Array) $person);
+                        }
+
                     }
                 }
 
