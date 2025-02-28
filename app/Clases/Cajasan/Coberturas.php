@@ -134,7 +134,53 @@ class Coberturas
 
         $this->deleteConsolidatedCoverage($this->icm_coverage);
 
-        $querySQL = "SELECT
+        $querySQL = "SELECT  icm_coverage_id,
+            MDEPER_COT_TIPOID,
+            MDEPER_COT_IDENTIF,
+            MDEPER_BEN_TIPOID,
+            MDEPER_BEN_IDENTIF,
+            MDEPER_PRIAPE,
+            MDEPER_SEGAPE,
+            MDEPER_PRINOM,
+            MDEPER_SEGNOM,
+            MDEPER_RAZSOC,
+            MDEPER_NACIMIENTO,
+            MDEPER_GENERO,
+            MDEPER_DIRECCION_RES,
+            MDEPER_CODDPTO_RES,
+            MDEPER_CODMUN_RES,
+            MDEPER_BARRIO_RES,
+            MDEPER_CELULAR,
+            MDEPER_TEL_FIJO_RES,
+            MDEPER_HABEAS_DATA,
+            MDEPER_TIPO_PERSONA,
+            MDEPER_CORREO,
+            MDECOB_PRODUCTO_SEAC,
+            MAX(MDECOB_PRODUCTO_ORIGEN) AS MDECOB_PRODUCTO_ORIGEN,
+            MDECOB_INFRAESTRUCTURA,
+            MDECOB_FECHA_SERVICIO,
+            MDECOB_NITEMP,
+            MDECOB_ROL_CLIENTE,
+            MDECOB_RELACION,
+            MDECOB_VINCULACION,
+            MDECOB_SUBVIN,
+            MDECOB_CATEGORIA,
+            SUM(MDECOB_VALOR_VENTA) AS MDECOB_VALOR_VENTA,
+            MDECOB_TIPO_SUB,
+            SUM(MDECOB_SUBSIDIO) AS MDECOB_SUBSIDIO,
+            SUM(MDECOB_USOS) AS MDECOB_USOS,
+            SUM(MDECOB_PARTICIPANTES) AS MDECOB_PARTICIPANTES,
+            MDECOB_POLITICA,
+            MDECOB_CAJA,
+            MDECOB_SISTEMAFUENTE,
+            MDEPRO_PROCESO,
+            MDECOB_TARIFA_PROMO,
+            MAX(MDECOB_FOLIO) AS MDECOB_FOLIO,
+            GROUP_CONCAT(MDECOB_FACTURA SEPARATOR ', ') AS MDECOB_FACTURA,
+            MDESIS_FECHACARGUE,
+            MDECOB_CATEGORIA_SSF
+        FROM(
+        SELECT
             ildr.icm_coverage_id,
             tda.alternative_code AS MDEPER_COT_TIPOID,
             ildr.affiliated_document_number AS MDEPER_COT_IDENTIF,
@@ -157,7 +203,7 @@ class Coberturas
             'PN' AS MDEPER_TIPO_PERSONA,
             ildr.email AS MDEPER_CORREO,
             ildr.code_seac AS MDECOB_PRODUCTO_SEAC,
-            MAX(ildr.icm_income_item_code) AS MDECOB_PRODUCTO_ORIGEN,
+            ildr.icm_income_item_code AS MDECOB_PRODUCTO_ORIGEN,
             ildr.infrastructure_code AS MDECOB_INFRAESTRUCTURA,
             ildr.liquidation_date AS MDECOB_FECHA_SERVICIO,
             ildr.nit_company_affiliates AS MDECOB_NITEMP,
@@ -169,18 +215,18 @@ class Coberturas
                 WHEN iti.code IN ('AFI', 'CAJ', 'PAR') THEN iac.code
                 ELSE 'D'
             END AS MDECOB_CATEGORIA,
-            SUM(ildr.total) AS MDECOB_VALOR_VENTA,
-            its.code AS MDECOB_TIPO_SUB,
-            SUM(ildr.subsidy) AS MDECOB_SUBSIDIO,
-            COUNT(ildr.id) AS MDECOB_USOS,
+            ildr.total   AS MDECOB_VALOR_VENTA,
+            its.code     AS MDECOB_TIPO_SUB,
+            ildr.subsidy AS MDECOB_SUBSIDIO,
+            1            AS MDECOB_USOS,
             ildr.number_places AS MDECOB_PARTICIPANTES,
             'VNT' AS MDECOB_POLITICA,
             ifcf.name AS MDECOB_CAJA,
             ildr.system_names AS MDECOB_SISTEMAFUENTE,
             NULL AS MDEPRO_PROCESO,
             NULL AS MDECOB_TARIFA_PROMO,
-            MAX(ildr.icm_liquidation_id) AS MDECOB_FOLIO,
-            GROUP_CONCAT(IFNULL(ildr.billing_prefix, ''), ildr.consecutive_billing SEPARATOR ', ') AS MDECOB_FACTURA,
+            ildr.icm_liquidation_id AS MDECOB_FOLIO,
+            CONCAT(IFNULL(ildr.billing_prefix, ''), ildr.consecutive_billing) AS MDECOB_FACTURA,
             NULL AS MDESIS_FECHACARGUE,
             CASE
                 WHEN iti.code = 'AFI' AND iac.code = 'A' THEN 1
@@ -193,7 +239,7 @@ class Coberturas
                 ELSE 4
             END AS MDECOB_CATEGORIA_SSF
         FROM `icm_liquidacion_detail_revisions` AS ildr
-        INNER JOIN icm_liquidation_services AS ils on ils.id = ildr.icm_liquidation_service_id
+        INNER JOIN icm_liquidation_services AS ils ON ils.id = ildr.icm_liquidation_service_id
         LEFT JOIN `detail_definitions` AS tda ON tda.id = ildr.affiliated_type_document
         LEFT JOIN `detail_definitions` AS tdb ON tdb.id = ildr.document_type
         LEFT JOIN `common_cities` AS cc ON cc.id = ildr.icm_municipality_id
@@ -203,38 +249,53 @@ class Coberturas
         LEFT JOIN icm_family_compensation_funds AS ifcf ON ifcf.id = ildr.icm_family_compensation_fund_id
         LEFT JOIN detail_definitions AS gb ON gb.id = ildr.gender
         WHERE ildr.icm_coverage_id = ?
+        ) AS tempo
         GROUP BY
-                ildr.icm_coverage_id,
-                ils.icm_agreement_id,
-                tda.alternative_code,
-                ildr.affiliated_document_number,
-                tdb.alternative_code,
-                ildr.document_number,
-                ildr.first_surname,
-                ildr.second_surname,
-                ildr.first_name,
-                ildr.second_name,
-                ildr.birthday_date,
-                gb.code,
-                ildr.address,
-                cc.department_code,
-                cc.city_code,
-                ildr.phone,
-                ildr.email,
-                ildr.code_seac,
-                /*ildr.icm_income_item_code,*/
-                ildr.infrastructure_code,
-                ildr.liquidation_date,
-                ildr.nit_company_affiliates,
-                ildr.relationship,
-                ildr.type_link ,
-                ildr.type_sublink ,
-                iti.code,
-                iac.code,
-                its.code,
-                ildr.number_places,
-                ifcf.name,
-                ildr.system_names";
+            tempo.icm_coverage_id,
+            tempo.MDEPER_COT_TIPOID,
+            tempo.MDEPER_COT_IDENTIF,
+            tempo.MDEPER_BEN_TIPOID,
+            tempo.MDEPER_BEN_IDENTIF,
+            tempo.MDEPER_PRIAPE,
+            tempo.MDEPER_SEGAPE,
+            tempo.MDEPER_PRINOM,
+            tempo.MDEPER_SEGNOM,
+            tempo.MDEPER_RAZSOC,
+            tempo.MDEPER_NACIMIENTO,
+            tempo.MDEPER_GENERO,
+            tempo.MDEPER_DIRECCION_RES,
+            tempo.MDEPER_CODDPTO_RES,
+            tempo.MDEPER_CODMUN_RES,
+            tempo.MDEPER_BARRIO_RES,
+            tempo.MDEPER_CELULAR,
+            tempo.MDEPER_TEL_FIJO_RES,
+            tempo.MDEPER_HABEAS_DATA,
+            tempo.MDEPER_TIPO_PERSONA,
+            tempo.MDEPER_CORREO,
+            tempo.MDECOB_PRODUCTO_SEAC,
+            /*tempo.MDECOB_PRODUCTO_ORIGEN,*/
+            tempo.MDECOB_INFRAESTRUCTURA,
+            tempo.MDECOB_FECHA_SERVICIO,
+            tempo.MDECOB_NITEMP,
+            tempo.MDECOB_ROL_CLIENTE,
+            tempo.MDECOB_RELACION,
+            tempo.MDECOB_VINCULACION,
+            tempo.MDECOB_SUBVIN,
+            tempo.MDECOB_CATEGORIA,
+            /*tempo.MDECOB_VALOR_VENTA,	*/
+            tempo.MDECOB_TIPO_SUB,
+            /*tempo.MDECOB_SUBSIDIO,	*/
+            /*tempo.MDECOB_USOS,	*/
+            /*tempo.MDECOB_PARTICIPANTES,*/
+            tempo.MDECOB_POLITICA,
+            tempo.MDECOB_CAJA,
+            tempo.MDECOB_SISTEMAFUENTE,
+            tempo.MDEPRO_PROCESO,
+            tempo.MDECOB_TARIFA_PROMO,
+            /*tempo.MDECOB_FOLIO,	*/
+            /*tempo.MDECOB_FACTURA,	*/
+            tempo.MDESIS_FECHACARGUE,
+            tempo.MDECOB_CATEGORIA_SSF";
 
         $consolidate = DB::select($querySQL, [$this->icm_coverage->id]);
 
