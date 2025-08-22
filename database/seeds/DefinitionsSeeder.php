@@ -254,7 +254,7 @@ class DefinitionsSeeder extends Seeder
                 'document_number' => '800003122',
                 'name'            => 'CAMFAMAZ'
             ],[
-                'code'            => 'CCF22',
+                'code'            => 'CCF28',
                 'document_number' => '860007336',
                 'name'            => 'COLSUBSIDIO'
             ]
