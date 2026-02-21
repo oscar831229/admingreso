@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Auth;
 use Carbon\Carbon;
+use Laravel\Passport\Passport;
 
 class AuthController extends Controller
 {
@@ -65,6 +66,40 @@ class AuthController extends Controller
             'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse($token->expires_at)->toDateTimeString()
+        ]);
+    }
+
+
+    /**
+     * Inicio de sesión y creación de token
+     */
+    public function loginAuth(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $credentials = $request->only(['username', 'password']);
+        $credentials['login'] = $credentials['username'];
+        unset($credentials['username']);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $user = $request->user();
+
+        // SOLO AQUÍ: token de 5 minutos
+        Passport::tokensExpireIn(now()->addMinutes(5));
+        Passport::personalAccessTokensExpireIn(now()->addMinutes(5));
+
+        $tokenResult = $user->createToken('External API Token');
+
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 300 // segundos
         ]);
     }
 

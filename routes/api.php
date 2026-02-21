@@ -26,7 +26,7 @@ Route::group([
     Route::post('login' , 'AuthController@login');
     Route::post('signup', 'AuthController@signUp')->middleware(['auth.token']);
 
-    Route::post('token' , 'AuthController@login');
+    Route::post('token' , 'AuthController@loginAuth');
 
     Route::group([
       'middleware' => 'auth:api'

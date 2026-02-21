@@ -101,9 +101,9 @@ class SisafiConsultationController extends Controller
     public function getAffiliateCategory(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'tipo_documento' => 'required|string|in:CC,TI,PP',  // Ejemplo de tipos permitidos
-            'nro_documento'  => 'required|numeric|digits_between:7,15',  // Número de documento
-            'tipo'           => 'required|integer|in:1,2',  // Validación para los valores posibles de tipo
+            'tipo_documento' => 'required',
+            'nro_documento'  => 'required',
+            'tipo'           => 'required',
         ]);
 
         if ($validator->fails()) {
