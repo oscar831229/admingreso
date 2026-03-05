@@ -386,12 +386,11 @@ class BillingIncomeController extends Controller
      */
     public function store(Request $request)
     {
-
         DB::beginTransaction();
 
         try {
 
-             # Validar infomración
+            # Validar infomración
             $validator = Validator::make(
                 $request->all(),
                 [
@@ -404,13 +403,12 @@ class BillingIncomeController extends Controller
                 ]
             );
 
-
             if ($validator->fails()) {
                 $errors = array_values($validator->errors()->toArray());
                 $expection = '';
                 foreach ($errors as $key => $error) {
-                    $separador = empty($expection) ? '':', ';
-                    $expection .= $separador.implode(', ', $error);
+                    $separador = empty($expection) ? '' : ', ';
+                    $expection .= $separador . implode(', ', $error);
                 }
                 throw new \Exception($expection, 1);
             }
@@ -419,20 +417,41 @@ class BillingIncomeController extends Controller
             $icm_liquidation_id = $request->icm_liquidation_id;
             $icm_income_item_id = $request->icm_income_item_id;
             $clients            = $request->clients;
-            $user               = auth()->user();
-            $icm_environment    = $user->icm_environments()->first();
-            $user_id            = $user->id;
 
-            $income_item        = IcmIncomeItem::find($icm_income_item_id);
-            $icmliquidation     = IcmLiquidation::find($icm_liquidation_id);
-            $liquidation_date   = getSystemDate();
+            // CONTROL 1: auth
+            $user = auth()->user();
+            if (empty($user)) {
+                throw new \Exception('Usuario no autenticado', 1);
+            }
 
-            if(empty($icmliquidation)){
+            // CONTROL 2: ambiente
+            $icm_environment = $user->icm_environments()->first();
+            if (empty($icm_environment)) {
+                throw new \Exception('El usuario no tiene ambiente asignado', 1);
+            }
+
+            $user_id = $user->id;
+
+            // CONTROL 3: servicio existe
+            $income_item = IcmIncomeItem::find($icm_income_item_id);
+            if (empty($income_item)) {
+                throw new \Exception('No existe el servicio de ingreso (icm_income_item_id)', 1);
+            }
+
+            $icmliquidation   = IcmLiquidation::find($icm_liquidation_id);
+            $liquidation_date = getSystemDate();
+
+            if (empty($icmliquidation)) {
+
+                // CONTROL 4: clients[0]
+                if (!is_array($clients) || count($clients) == 0) {
+                    throw new \Exception('Clientes requeridos', 1);
+                }
 
                 $client_liquidation = $clients[0];
 
                 # UUID identificación unica para facturación.
-                $uuid             = Uuid::uuid4()->toString();
+                $uuid = Uuid::uuid4()->toString();
 
                 $icmliquidation = IcmLiquidation::create([
                     'uuid'                     => $uuid,
@@ -451,25 +470,14 @@ class BillingIncomeController extends Controller
                     'state'                    => 'P',
                     'user_created'             => $user_id
                 ]);
-
             }
-
-            # Categoria D
-            // $icm_affiliate_category_d = IcmAffiliateCategory::where(['code' => 'D'])->first();
 
             # Registar servicios
             foreach ($clients as $key => $client) {
 
                 $customer = IcmCustomer::where(['document_number' => $client['document_number']])->first();
 
-                if(!$customer){
-
-                    # Tipo ingreso
-                    // $icm_types_income          = IcmTypesIncome::find($client['icm_types_income_id']);
-
-                    # Asignar la categoria de la persona
-                    // $icm_affiliate_category_id = $icm_types_income->code == 'AFI' ? $client['icm_affiliate_category_id'] : $icm_affiliate_category_d->id;
-
+                if (!$customer) {
                     IcmCustomer::create([
                         'document_type'             => $client['document_type'],
                         'document_number'           => $client['document_number'],
@@ -484,7 +492,6 @@ class BillingIncomeController extends Controller
                         'icm_affiliate_category_id' => $client['icm_affiliate_category_id'],
                         'user_created'              => $user_id
                     ]);
-
                 } else {
                     $customer->update([
                         'birthday_date'             => $client['birthday_date'],
@@ -506,14 +513,14 @@ class BillingIncomeController extends Controller
                 foreach ($liquidationservices as $key => $service) {
                     $details = IcmLiquidationDetail::where(['icm_liquidation_service_id' => $service->id])->get();
                     $cantidad_disponible = $income_item->number_places - $details->count();
-                    if($cantidad_disponible > 0){
+                    if ($cantidad_disponible > 0) {
                         $liquidationservice = $service;
                         break;
                     }
                 }
 
                 # Si el servicio no tiene disponible cupos
-                if($cantidad_disponible == 0){
+                if ($cantidad_disponible == 0) {
 
                     # Calcular valor servicio
                     $system_date   = getSystemDate();
@@ -522,7 +529,7 @@ class BillingIncomeController extends Controller
                     $nit_company_agreement  = NULL;
                     $name_company_agreement = NULL;
                     $icm_agreement_id       = NULL;
-                    if(isset($valorservicio[0]['icm_agreement'])){
+                    if (isset($valorservicio[0]['icm_agreement'])) {
                         $company = $valorservicio[0]['icm_agreement']->icm_companies_agreement;
                         $nit_company_agreement  = $company->document_number;
                         $name_company_agreement = $company->name;
@@ -530,34 +537,64 @@ class BillingIncomeController extends Controller
                     }
 
                     # Servicios autorizados para venta desde otros ambientes
-                    $icm_environtment_icm_income_item = IcmEnvirontmentIcmIncomeItem::where(['icm_income_item_id' => $income_item->id, 'icm_environment_id' => $icm_environment->id])->first();
+                    $icm_environtment_icm_income_item = IcmEnvirontmentIcmIncomeItem::where([
+                        'icm_income_item_id' => $income_item->id,
+                        'icm_environment_id' => $icm_environment->id
+                    ])->first();
+
+                    // CONTROL 5: si está vendiendo desde otro ambiente, esta relación DEBE existir
+                    if ($income_item->icm_environment_id != $icm_environment->id && empty($icm_environtment_icm_income_item)) {
+                        throw new \Exception('Servicio no autorizado para el ambiente actual', 1);
+                    }
 
                     # Obtener servicio con el cual se liquida depende del ambiente de venta
                     $icm_environment_icm_menu_item_id = $income_item->icm_environment_id != $icm_environment->id
-                        ?
-                        $icm_environtment_icm_income_item->icm_environment_icm_menu_item_id :
-                        $income_item->icm_environment_icm_menu_item_id;
+                        ? $icm_environtment_icm_income_item->icm_environment_icm_menu_item_id
+                        : $income_item->icm_environment_icm_menu_item_id;
 
                     # Menus items
                     $icm_environment_icm_menu_item = IcmEnvironmentIcmMenuItem::find($icm_environment_icm_menu_item_id);
-                    $icm_menu_items                = $icm_environment_icm_menu_item->icm_menu_item;
+
+                    // CONTROL 6: menu item debe existir
+                    if (empty($icm_environment_icm_menu_item)) {
+                        throw new \Exception('No existe configuración de menú para liquidar el servicio', 1);
+                    }
+
+                    $icm_menu_items = $icm_environment_icm_menu_item->icm_menu_item;
+
+                    // CONTROL 7: relación icm_menu_item debe existir
+                    if (empty($icm_menu_items)) {
+                        throw new \Exception('No existe el menú item asociado a la configuración', 1);
+                    }
 
                     # Calcular impuesto producto
-                    $discriminated_value           = Compute::calculateTaxes($icm_menu_items, $valorservicio[0]['value']);
+                    $discriminated_value = Compute::calculateTaxes($icm_menu_items, $valorservicio[0]['value']);
 
                     # Identificar descuento - tipo de descuento
                     $value_default = $valorservicio[0]['icm_rate_type_code'] == 'V' ? $income_item->value : $income_item->value_high;
                     $discount      = $valorservicio[0]['alterno'] != 'AFI' ? $value_default - $valorservicio[0]['value'] : 0;
 
                     # Identificar si el servicio aplica subsidio
-                    $icm_types_income    = IcmTypesIncome::find($client['icm_types_income_id']);
-                    $icm_type_subsidy    = $income_item->icm_type_subsidy;
+                    $icm_types_income = IcmTypesIncome::find($client['icm_types_income_id']);
+
+                    // CONTROL 8: tipo ingreso debe existir (porque después podrías usarlo en otra lógica)
+                    if (empty($icm_types_income)) {
+                        throw new \Exception('No existe tipo de ingreso (icm_types_income_id)', 1);
+                    }
+
+                    $icm_type_subsidy = $income_item->icm_type_subsidy;
+
+                    // CONTROL 9: si se va a usar subsidio, el tipo subsidio debe existir
+                    if ($valorservicio[0]['alterno'] == 'AFI' && $valorservicio[0]['subsidy'] > 0 && empty($icm_type_subsidy)) {
+                        throw new \Exception('No existe configuración de tipo subsidio para el servicio', 1);
+                    }
+
                     $icm_type_subsidy_id = $valorservicio[0]['alterno'] == 'AFI' && $valorservicio[0]['subsidy'] > 0 ? $icm_type_subsidy->id : 0;
 
-                    $liquidationservice  = IcmLiquidationService::create([
+                    $liquidationservice = IcmLiquidationService::create([
                         'icm_liquidation_id'               => $icmliquidation->id,
                         'icm_income_item_id'               => $income_item->id,
-                        'icm_environment_id'               => $income_item->icm_environment_id,  // PENDIENTE
+                        'icm_environment_id'               => $income_item->icm_environment_id,
                         'icm_environment_icm_menu_item_id' => $icm_environment_icm_menu_item_id,
                         'number_places'                    => $income_item->number_places,
                         'icm_rate_type_id'                 => $valorservicio[0]['icm_rate_type_id'],
@@ -577,10 +614,20 @@ class BillingIncomeController extends Controller
                         'name_company_agreement'           => $name_company_agreement,
                         'icm_agreement_id'                 => $icm_agreement_id,
                     ]);
-
                 }
 
-                $icm_affiliate_category   = IcmAffiliateCategory::find($client['icm_affiliate_category_id']);
+                // CONTROL 10: liquidationservice debe existir sí o sí antes de usar $liquidationservice->id
+                if (empty($liquidationservice)) {
+                    throw new \Exception('No fue posible obtener/crear el servicio de liquidación', 1);
+                }
+
+                $icm_affiliate_category = IcmAffiliateCategory::find($client['icm_affiliate_category_id']);
+
+                // CONTROL 11: categoría debe existir porque usas ->code
+                if (empty($icm_affiliate_category)) {
+                    throw new \Exception('No existe categoría de afiliado (icm_affiliate_category_id)', 1);
+                }
+
                 $is_processed_affiliate   = isset($client['is_processed_affiliate']) ? $client['is_processed_affiliate'] : 0;
                 $type_register            = isset($client['type_register']) ? $client['type_register'] : NULL;
                 $relationship             = isset($client['relationship']) ? $client['relationship'] : NULL;
@@ -591,7 +638,7 @@ class BillingIncomeController extends Controller
                 $affiliated_name          = isset($client['affiliated_name']) ? $client['affiliated_name'] : NULL;
 
                 # Registrar cliente
-                $liquidationdetail  = IcmLiquidationDetail::create([
+                $liquidationdetail = IcmLiquidationDetail::create([
                     'icm_liquidation_service_id'      => $liquidationservice->id,
                     'document_type'                   => $client['document_type'],
                     'document_number'                 => $client['document_number'],
@@ -621,21 +668,26 @@ class BillingIncomeController extends Controller
                     'affiliated_document'             => $affiliated_document,
                     'affiliated_name'                 => $affiliated_name
                 ]);
-
-
             }
 
             # Procesar registro de politicas
             $system_configurations = IcmSystemConfiguration::first();
-            if($system_configurations->policy_enabled == 1 && $request->has('family_group')){
+
+            // CONTROL 12: si no existe configuración, evita ->policy_enabled
+            if (empty($system_configurations)) {
+                // No cambio lógica: solo evita el crash. Si no hay config, no procesa políticas.
+            } else if ($system_configurations->policy_enabled == 1 && $request->has('family_group')) {
+
                 $family_group = $request->family_group;
+
                 foreach ($family_group as $key => $person) {
                     $registered = IcmPoliticalAffiliate::where([
                         'document_number'    => $person['document_number'],
                         'political_date'     => $liquidation_date,
                         'icm_income_item_id' => $income_item->id
                     ])->first();
-                    if(!$registered){
+
+                    if (!$registered) {
                         $person['user_created']       = $user_id;
                         $person['political_date']     = $liquidation_date;
                         $person['icm_income_item_id'] = $income_item->id;
@@ -687,9 +739,7 @@ class BillingIncomeController extends Controller
                 'message' => $e->getMessage(),
                 'data'    => []
             ]);
-
         }
-
     }
 
     public function billingIncomesPrint($icm_liquidation_id){
