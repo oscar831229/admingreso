@@ -233,7 +233,8 @@ class BillingIncomeController extends Controller
             $icm_affiliate_category =  IcmAffiliateCategory::where(['code' => $trabajador['categoria']])->first();
 
             if(!$icm_affiliate_category){
-                throw new \Exception("Error categoria trabajador desconocidad {$trabajador['categoria']}", 1);
+                $icm_types_income       = IcmTypesIncome::where(['code' => 'PAR'])->first();
+                $icm_affiliate_category = IcmAffiliateCategory::where(['code' => 'D'])->first();
             }
 
             $genders                  = getDetailHomologationDefinitions('gender');
@@ -248,7 +249,7 @@ class BillingIncomeController extends Controller
                 $gender        = isset($genders[$afiliado['genero']]) ? $genders[$afiliado['genero']]: $genders['M'];
                 $edad          = calcularEdad($afiliado['fecha_nacimiento']);
                 $document_type = isset($document_types[$afiliado['tipo_dcto_beneficiario']]) ? $document_types[$afiliado['tipo_dcto_beneficiario']] : $document_types['CC'];
-                $fidelidad     = $afiliado['tipo_vinculacion'] == 'T' ? 'NO' : 'SI';
+                $fidelidad     = $afiliado['tipo_vinculacion'] != 'F' ? 'NO' : 'SI';
 
 
                 $affiliate_group[] = [
