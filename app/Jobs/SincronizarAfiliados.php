@@ -159,6 +159,24 @@ class SincronizarAfiliados implements ShouldQueue
             throw $th;
         }
 
+        /*
+        * Limpieza posterior de la tabla temporal.
+        * Se realiza fuera de la transacción principal para que,
+        * si falla la limpieza, no afecte la sincronización ya confirmada.
+        */
+        try {
+            DB::table('sisafi_seac_temporal')
+                ->where('sisafi_sync_tracer_id', $synctracer->id)
+                ->delete();
+        } catch (\Throwable $th) {
+            Log::warning('No fue posible limpiar registros temporales de sisafi_seac_temporal', [
+                'trace_id' => $synctracer->id,
+                'message'  => $th->getMessage(),
+                'file'     => $th->getFile(),
+                'line'     => $th->getLine(),
+            ]);
+        }
+
         Log::info('Sincronización completa finalizada', [
             'trace_id'      => $synctracer->id,
             'total_records' => $synctracer->total_records,
@@ -248,6 +266,24 @@ class SincronizarAfiliados implements ShouldQueue
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;
+        }
+
+        /*
+        * Limpieza posterior de la tabla temporal.
+        * Se realiza fuera de la transacción principal para que,
+        * si falla la limpieza, no afecte la sincronización ya confirmada.
+        */
+        try {
+            DB::table('sisafi_seac_temporal')
+                ->where('sisafi_sync_tracer_id', $synctracer->id)
+                ->delete();
+        } catch (\Throwable $th) {
+            Log::warning('No fue posible limpiar registros temporales de sisafi_seac_temporal', [
+                'trace_id' => $synctracer->id,
+                'message'  => $th->getMessage(),
+                'file'     => $th->getFile(),
+                'line'     => $th->getLine(),
+            ]);
         }
 
         Log::info('Sincronización puntual finalizada', [
