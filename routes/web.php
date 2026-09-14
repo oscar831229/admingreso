@@ -120,6 +120,23 @@
 
     });
 
+    Route::group(['prefix' => 'Admin/customer-update', 'middleware' => ['auth']], function () {
+        Route::get('/', 'income\CustomerUpdateController@index')->name('customer-update.index');
+        Route::post('/upload', 'income\CustomerUpdateController@upload')->name('customer-update.upload');
+        Route::get('/{id}/status', 'income\CustomerUpdateController@status')->name('customer-update.status');
+        Route::post('/{id}/apply', 'income\CustomerUpdateController@apply')->name('customer-update.apply');
+        Route::post('/{id}/cancel', 'income\CustomerUpdateController@cancel')->name('customer-update.cancel');
+        Route::get('/{id}/errors', 'income\CustomerUpdateController@errors')->name('customer-update.errors');
+        Route::get('/{id}/download', 'income\CustomerUpdateController@download')->name('customer-update.download');
+    });
+
+    Route::group(['prefix'=>'income/customer-export','middleware'=>['auth']],function(){
+        Route::post('/start','income\CustomerExportController@start')->name('customer-export.start');
+        Route::get('/latest','income\CustomerExportController@latest')->name('customer-export.latest');
+        Route::get('/{id}/status','income\CustomerExportController@status')->name('customer-export.status');
+        Route::get('/{id}/download','income\CustomerExportController@download')->name('customer-export.download');
+    });
+
 
 
 

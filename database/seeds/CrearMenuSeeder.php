@@ -42,7 +42,7 @@ class CrearMenuSeeder extends Seeder
             array('id' => '23'  , 'menu_id'  => '16', 'nombre' => 'Coberturas'                , 'url' => 'income/coverages'                    , 'orden' => '20' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '24'  , 'menu_id'  => '1' , 'nombre' => 'Sincronizacion SISAFI'     , 'url' => 'Admin/sisafi-synchronization'        , 'orden' => '10'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
             array('id' => '25'  , 'menu_id'  => '16', 'nombre' => 'Consulta SISAFI'           , 'url' => 'income/sisafi-consultation'          , 'orden' => '20' , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
-
+            array('id' => '26'  , 'menu_id'  => '1' , 'nombre' => 'Actualización Clientes'    , 'url' => 'Admin/customer-update'               , 'orden' => '40'  , 'icono' => NULL, 'created_at' => $now, 'updated_at' => $now),
         ];
 
         foreach ($menus as $key => $menu) {
